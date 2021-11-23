@@ -1,17 +1,17 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} <!-- Estensione del template di base -->
 
 {% block title %}Login{% endblock %}
 
 {% block content %}
-  {% if not user.is_authenticated %}
+  {% if not user.is_authenticated %} <!-- utente NON autenticato -->
     <h2>Log In</h2>
-    <form method="post">
+    <form method="post"> <!-- Form di Login -->
       {% csrf_token %}
       {{ form.as_p }}
       <button type="submit">Log In</button>
     </form>
-  {% else %}
+  {% else %} <!-- Utente autenticato -->
     <p>Sei già loggato</p>
-    <a href="{% url 'gbliometrics:home' %}">Torna alla home</a></t>
+    <a href="{% url 'gbliometrics:home' %}">Torna alla home</a></t> <!-- redirezione -->
   {% endif %}
 {% endblock %}
