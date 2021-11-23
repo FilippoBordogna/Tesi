@@ -1,11 +1,11 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} <!-- Estensione del template di base -->
 
 {% block title %}Home{% endblock %}
   
 {% block content %}
-  {% if user.is_authenticated %}
+  {% if user.is_authenticated %} <!-- Utente autenticato -->
     <p>Ciao {{ user.username }}!</p>
-  {% else %}
+  {% else %} <!-- Utente non autenticato -->
     <p>Non sei loggato</p>
   {% endif %}
 {% endblock %}
