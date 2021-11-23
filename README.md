@@ -22,12 +22,9 @@ ATTENZIONE:
 - E' necessario possedere una API Key anche per le API di WoS (impossibile richiederla come singolo ma solo come organizzazione es. Università).
 
 FUNZIONALITA' IMPLEMENTATE:
-- 
-- 
-- 
-FUNZIONALITA' DA IMPLEMENTARE IN FUTURO:
-- 
-- 
-- 
+- Autenticazione
+- Creazione degli utenti
+FUNZIONALITA' DA IMPLEMENTARE PROSSIMAMENTE:
+- Recupero della password via email
 
 Nella cartella TEST sono presenti le prove preliminari
