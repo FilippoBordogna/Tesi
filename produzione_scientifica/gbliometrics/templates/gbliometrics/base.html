@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>GBliometrics - {% block title %}{% endblock %}</title>
+    </head>
+    <body>
+        <p id="links">
+            <a href="{% url 'gbliometrics:home' %}">Home</a>
+            <span style="float:right">
+                {% block links %}
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'gbliometrics:logout' %}">Logout</a></t>
+                    {% else %}
+                        <a href="{% url 'gbliometrics:login' %}">Log In</a></t>
+                        <a href="{% url 'gbliometrics:signup' %}">Registrati</a></t>
+                    {% endif %}     
+                {% endblock %}
+            </span>
+        </p>
+        <main>
+        {% block content %}
+        {% endblock %}
+        </main>
+    </body>
+</html>

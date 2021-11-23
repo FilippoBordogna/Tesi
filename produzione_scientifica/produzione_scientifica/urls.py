@@ -17,6 +17,6 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('gbliometrics/', include('gbliometrics.urls')),
-    path('admin/', admin.site.urls),
+    path('gbliometrics/', include('gbliometrics.urls')), # Applicazione: riferimento al file urls.py nella cartella gbliometrics
+    path('admin/', admin.site.urls, name='home'), # Pagina Admin
 ]
