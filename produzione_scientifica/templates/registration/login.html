@@ -1,17 +1,16 @@
-{% extends 'base.html' %} <!-- Estensione del template di base -->
+{% extends 'base.html' %} <!-- Estensione il template di base -->
 
-{% block title %}Login{% endblock %}
+{% block title %}Login{% endblock %} <!-- Titolo -->
 
 {% block content %}
-  {% if not user.is_authenticated %} <!-- utente NON autenticato -->
-    <h2>Log In</h2>
-    <form method="post"> <!-- Form di Login -->
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit">Log In</button>
-    </form>
-  {% else %} <!-- Utente autenticato -->
-    <p>Sei già loggato</p>
-    <a href="{% url 'gbliometrics:home' %}">Torna alla home</a></t> <!-- redirezione -->
-  {% endif %}
+    {% if not user.is_authenticated %} <!-- utente non autenticato -->
+        <h2>Registrazione</h2>
+        <form method="post"> <!-- form di registrazione -->
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Registrati</button>
+        </form>
+    {% else %} <!-- Utente autenticato -->
+        <p>Sei loggato. Per creare un nuovo utente devi prima effettuare il Logout</p>
+    {% endif %}
 {% endblock %}
