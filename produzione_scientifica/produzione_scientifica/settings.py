@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-i%1!s^b(fm+ihup@rcg=v-=6cs$f29x&y^^)daubfatzorxkpj'
+SECRET_KEY = 'django-insecure-16ur!i_&$s4xicjay#l8hh)%c@6#)e#b(7%53v87$@&w!u_46o'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -32,19 +32,20 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'django.contrib.admin',
-    'django.contrib.auth', # Autenticazione
-    'django.contrib.contenttypes', # Associazioni modelli - autorizzazioni
+    'django.contrib.auth',  # Autenticazione
+    'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-]
+    'gbliometrics', # Mia app
+    ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware', # Sessioni
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware', # Autenticazione
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -55,9 +56,9 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-                    BASE_DIR / 'templates', 
-                    BASE_DIR / 'gbliometrics/templates/gbliometrics',
-                ], 
+                    BASE_DIR / 'templates', # Cartella della Home 
+                    BASE_DIR / 'gbliometrics/templates/gbliometrics', # Cartella dell'app
+                ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -106,9 +107,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'it' # Lingua italiana
+LANGUAGE_CODE = 'it' # Lingua Italiana
 
-TIME_ZONE = 'Etc/GMT-1' # Orario italiano
+TIME_ZONE = 'Etc/GMT-1' # Timezone Italiana
 
 USE_I18N = True
 
@@ -127,6 +128,8 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# NON DI DEFAULT
+# Aggiunti a mano 
+AUTH_USER_MODEL = 'gbliometrics.CustomUser' # Override della classe user (per inserire la mail)
+
 LOGIN_REDIRECT_URL='gbliometrics:home' # Pagina a cui ridirigere dopo il login
 LOGOUT_REDIRECT_URL = 'gbliometrics:home' # Pagina a cui ridirigere dopo il logout
