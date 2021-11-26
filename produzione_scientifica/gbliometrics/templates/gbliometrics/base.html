@@ -13,7 +13,7 @@
                         <a href="{% url 'gbliometrics:logout' %}">Logout</a></t>
                     {% else %} <!-- Utente non autenticato -->
                         <a href="{% url 'gbliometrics:login' %}">Log In</a></t>
-                        <a href="{% url 'gbliometrics:signup' %}">Registrati</a></t>
+                        <a href="{% url 'gbliometrics:signup' %}">Registrati</a>
                     {% endif %}     
                 {% endblock %}
             </span>
