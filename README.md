@@ -36,7 +36,7 @@ GUIDE seguite:
 - Pagine di Login, Logout e Signup:
 	https://learndjango.com/tutorials/django-login-and-logout-tutorial
 	https://learndjango.com/tutorials/django-signup-tutorial
-- Conferma email:
+- Conferma email (con email vera): (In realtà adatterò per simulare la mail tramite file)
 	https://medium.com/@frfahim/django-registration-with-confirmation-email-bb5da011e4ef
-- Reset della password via email
+- Reset della password via email (email simulata tramite file)
 	https://learndjango.com/tutorials/django-password-reset-tutorial
