@@ -22,9 +22,21 @@ ATTENZIONE:
 - E' necessario possedere una API Key anche per le API di WoS (impossibile richiederla come singolo ma solo come organizzazione es. Università).
 
 FUNZIONALITA' IMPLEMENTATE:
-- Autenticazione
-- Creazione degli utenti
+- Implementazione della classe utente custom (mail come id ed username unico a differenza del modello Django di default)
+- Login, Logout e Signup
 FUNZIONALITA' DA IMPLEMENTARE PROSSIMAMENTE:
+- Conferma dell'account via email
 - Recupero della password via email
 
 Nella cartella TEST sono presenti le prove preliminari
+
+GUIDE seguite:
+- Classe User custom: 
+	https://testdriven.io/blog/django-custom-user-model
+- Pagine di Login, Logout e Signup:
+	https://learndjango.com/tutorials/django-login-and-logout-tutorial
+	https://learndjango.com/tutorials/django-signup-tutorial
+- Conferma email:
+	https://medium.com/@frfahim/django-registration-with-confirmation-email-bb5da011e4ef
+- Reset della password via email
+	https://learndjango.com/tutorials/django-password-reset-tutorial
