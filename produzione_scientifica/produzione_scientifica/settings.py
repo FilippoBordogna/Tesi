@@ -133,3 +133,6 @@ AUTH_USER_MODEL = 'gbliometrics.CustomUser' # Override della classe user (per in
 
 LOGIN_REDIRECT_URL='gbliometrics:home' # Pagina a cui ridirigere dopo il login
 LOGOUT_REDIRECT_URL = 'gbliometrics:home' # Pagina a cui ridirigere dopo il logout
+
+EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend" # Simulazione di mail tramite file
+EMAIL_FILE_PATH = str(BASE_DIR.joinpath('sent_emails')) # Cartella in cui salveremo i file (mail)

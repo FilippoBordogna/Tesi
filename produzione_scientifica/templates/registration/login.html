@@ -4,13 +4,15 @@
 
 {% block content %}
     {% if not user.is_authenticated %} <!-- utente non autenticato -->
-        <h2>Registrazione</h2>
+        <h2>Login</h2>
         <form method="post"> <!-- form di registrazione -->
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit">Registrati</button>
+            <button type="submit">Accedi</button>
         </form>
+        <p><a href="{% url 'password_reset' %}">Hai dimenticato la password?</a></p>
     {% else %} <!-- Utente autenticato -->
-        <p>Sei loggato. Per creare un nuovo utente devi prima effettuare il Logout</p>
+        <p>Sei già loggato</p>
+        <p><a href="{% url 'gbliometrics:home' %}">Torna alla home</a></p>
     {% endif %}
 {% endblock %}

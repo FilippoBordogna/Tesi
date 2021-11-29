@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>GBliometrics - {% block title %}{% endblock %}</title>
+        <title>GBs - {% block title %}{% endblock %}</title> <!-- Titolo -->
     </head>
     <body>
         <p id="links"> <!-- Link 'Navbar' -->
@@ -10,10 +10,10 @@
             <span style="float:right">
                 {% block links %}
                     {% if user.is_authenticated %} <!-- Utente autenticato -->
-                        <a href="{% url 'gbliometrics:logout' %}">Logout</a></t>
+                        <a href="{% url 'logout' %}">Logout</a></t>
                     {% else %} <!-- Utente non autenticato -->
-                        <a href="{% url 'gbliometrics:login' %}">Log In</a></t>
-                        <a href="{% url 'gbliometrics:signup' %}">Registrati</a>
+                        <a href="{% url 'login' %}">Log In</a></t>
+                        <a href="{% url 'signup' %}">Registrati</a>
                     {% endif %}     
                 {% endblock %}
             </span>
