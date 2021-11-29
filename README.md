@@ -24,9 +24,10 @@ ATTENZIONE:
 FUNZIONALITA' IMPLEMENTATE:
 - Implementazione della classe utente custom (mail come id ed username unico a differenza del modello Django di default)
 - Login, Logout e Signup
+- Recupero della password (da non loggati) via email (Simulato il flusso email tramite file per un debug più facile)
 FUNZIONALITA' DA IMPLEMENTARE PROSSIMAMENTE:
 - Conferma dell'account via email
-- Recupero della password via email
+- Modifica della password (da loggati)
 
 Nella cartella TEST sono presenti le prove preliminari
 
