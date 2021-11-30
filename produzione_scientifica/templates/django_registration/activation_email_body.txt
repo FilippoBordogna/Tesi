@@ -1,0 +1,11 @@
+{% autoescape off %}
+Ciao {{ user.username }},
+Clicca sul link per confermare la registrazione:
+{{scheme}}://{{site}}{% url 'django_registration_activate' activation_key %}
+
+ATTENZIONE!!!
+Se non confermi la registrazione entro {{expiration_days}} non potrai più farlo in futuro.
+Request: {{request}}
+Scheme: {{scheme}}
+Site: {{site}}
+{% endautoescape %}

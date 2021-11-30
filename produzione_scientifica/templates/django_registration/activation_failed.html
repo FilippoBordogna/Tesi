@@ -1,0 +1,9 @@
+{% extends 'base.html' %} <!-- Estensione il template di base -->
+
+{% block title %}Attivazione fallita{% endblock %} <!-- Titolo -->
+
+{% block content %}
+  <h1>OPS!!! Qualcosa è andato storto.</h1>
+  <h2>Messaggio di Errore:</h2>
+  <p>{{activation_error.message}}</p> <!-- Mostro messaggio d'errore -->
+{% endblock %}
