@@ -14,7 +14,7 @@ MATERIALE UTILIZZATO:
 ATTENZIONE:
 - E' necessario possedere una API Key ed eventualmente un token per poter reperire le API di Scopus.
   Nel codice non ci saranno riferimento ad API Key e Token poichè una volta scaricato il pacchetto andrà modificato il file C:\Users\<user>\.pybliometrics\config.ini
-  dove al posto di <user> dovrete sostituire il vostro nome utente e aggiungere:
+  dove al posto di '<user>' dovrete sostituire il vostro nome utente e aggiungere:
   [Authentication]
   APIKey = ... (Obbligatorio)
   InstToken = ... (Opzionale)
