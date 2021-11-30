@@ -23,21 +23,31 @@ ATTENZIONE:
 
 FUNZIONALITA' IMPLEMENTATE:
 - Implementazione della classe utente custom (mail come id ed username unico a differenza del modello Django di default)
-- Login, Logout e Signup
+- Registrazione in 2 passi (form + mail di conferma) (Simulato il flusso email tramite file per un debug più facile)
+- Login, Logout
 - Recupero della password (da non loggati) via email (Simulato il flusso email tramite file per un debug più facile)
-FUNZIONALITA' DA IMPLEMENTARE PROSSIMAMENTE:
-- Conferma dell'account via email
 - Modifica della password (da loggati)
 
-Nella cartella TEST sono presenti le prove preliminari
+FUNZIONALITA' DA IMPLEMENTARE PROSSIMAMENTE:
+- Mappare API già testate nella cartella TEST per successive chiamate API da parte dell'app
+- CRUD Tabella Authors
+- CRUD Tabella Groups
+- CRUD Tabella Authors_Groups
+- CRUD Tabella Users_Groups
+- CRUD Tabella Stats
+
+STRUTTURA del PROGETTO:
+- Nella cartella 'produzione_scientifica' è presente il progetto Django vero e proprio.
+- Nella cartella 'TEST' sono presenti le prove preliminari effettuate tramite client Python.
 
 GUIDE seguite:
 - Classe User custom: 
 	https://testdriven.io/blog/django-custom-user-model
-- Pagine di Login, Logout e Signup:
+- Registrazione in 2 passi (form + mail di conferma simulata tramite file):
+	https://django-registration.readthedocs.io/en/3.2/activation-workflow.html
+	https://django-registration.readthedocs.io/en/3.2/quickstart.html
+	https://stackoverflow.com/questions/21004455/how-to-subclass-registration-form-in-django-registration	
+- Pagine di Login e Logout:
 	https://learndjango.com/tutorials/django-login-and-logout-tutorial
-	https://learndjango.com/tutorials/django-signup-tutorial
-- Conferma email (con email vera): (In realtà adatterò per simulare la mail tramite file)
-	https://medium.com/@frfahim/django-registration-with-confirmation-email-bb5da011e4ef
-- Reset della password via email (email simulata tramite file)
-	https://learndjango.com/tutorials/django-password-reset-tutorial
+- Reset della password via email (email simulata tramite file) e modifica della password da loggatti:
+	https://learndjango.com/tutorials/django-password-reset-tutorial 
