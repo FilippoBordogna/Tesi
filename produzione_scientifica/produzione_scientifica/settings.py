@@ -137,5 +137,4 @@ LOGOUT_REDIRECT_URL = 'gbliometrics:home' # Pagina a cui ridirigere dopo il logo
 EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend" # Simulazione di mail tramite file
 EMAIL_FILE_PATH = str(BASE_DIR.joinpath('sent_emails')) # Cartella in cui salveremo i file (mail)
 
-# NON SICURI
 ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window
