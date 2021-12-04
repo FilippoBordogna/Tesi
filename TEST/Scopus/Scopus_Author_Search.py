@@ -3,7 +3,7 @@ from datetime import datetime
 from pybliometrics.scopus import AuthorSearch
 from pybliometrics.scopus.utils import config
 
-# print("My API-Key: "+config['Authentication']['APIKey']+"\nMy Token: "+config['Authentication']['InstToken'])
+#print("My API-Key: "+config['Authentication']['APIKey']+"\nMy Token: "+config['Authentication']['InstToken'])
 
 ### AuthorSearch(query, refresh=False, verbose=False, download=True, integrity_fields=None, integrity_action='raise', count=200 (DEPRECATED), **kwds)
 q="af-id(60005254)";
