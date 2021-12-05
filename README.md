@@ -10,6 +10,8 @@ Tool che gestisce diverse funzionalità tramite una interfaccia grafica tra cui:
 - [API Phyton per accedere al Database di Scopus mediante le loro API REST](https://github.com/jkitchin/scopus)
 - [SOAP Client for querying the Web of Science database](https://github.com/enricobacis/wos) (al momento inutilizzato)
 - [Framework Phyton Django](https://www.djangoproject.com)
+	- [Django Registration](https://django-registration.readthedocs.io/en/3.2/index.html)
+	<!--- [Django Rest Framework](https://www.django-rest-framework.org)-->
 
 ## ATTENZIONE:
 E' necessario possedere una API Key ed eventualmente un token per poter reperire le API di Scopus.
