@@ -2,7 +2,15 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from .forms import CustomUserChangeForm, CustomRegistrationForm
-from .models import Authors_Group, CustomUser
+from .models import AuthorsGroup, CustomUser
+
+class GroupInline(admin.TabularInline):
+    model = AuthorsGroup
+    extra = 0
+    fieldsets = ( # Campi di visualizzazione
+        ('Dati', {'fields': ('name', 'user',)}),
+        ('Timestamps', {'fields': ('creation', 'last_update')}),
+    )
 
 class CustomUserAdmin(UserAdmin):
     add_form = CustomRegistrationForm # Form custom per creare un utente
@@ -14,6 +22,7 @@ class CustomUserAdmin(UserAdmin):
         ('Dati d\'accesso', {'fields': ('email', 'password', 'username', 'last_login')}),
         ('Permessi', {'fields': ('is_staff', 'is_active')}),
     )
+    inlines = [GroupInline] # Aggiungo il modulo ChoiceInline dichiarato sopra
     add_fieldsets = ( # Campi dell'aggiunta di un utente
         (None, {
             'classes': ('wide',),
@@ -24,4 +33,4 @@ class CustomUserAdmin(UserAdmin):
     ordering = ('email','username') # Campi di ordinamento
 
 admin.site.register(CustomUser, CustomUserAdmin) # Aggiungo la visualizzazione degli utenti Custom
-admin.site.register(Authors_Group) # Aggiungo la visualizzazione dei gruppi
+admin.site.register(AuthorsGroup) # Aggiungo la visualizzazione dei gruppi

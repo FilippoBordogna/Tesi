@@ -15,19 +15,19 @@ class CustomUser(AbstractUser):
     objects = CustomUserManager()
 
     def __str__(self):
-        return self.username
+        return self.username+" : "+self.email
 
-class Authors_Group(models.Model):
+class AuthorsGroup(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE); # Utente che ha creato il gruppo
     name = models.CharField(max_length=50); # Nome del gruppo
     creation = models.DateTimeField(); # Data di creazione
     last_update = models.DateTimeField(); # Ultima modifica
-    other_info = models.TextField(); # Annotazioni Extra
+    other_info = models.TextField(max_length=200) # Annotazioni Extra
     
     REQUIRED_FIELDS = ['user', 'name']
     
     def __str__(self):
-        return self.user.username+":"+self.name # Nome elemento nella vista dell'admin
+        return self.user.username+"@"+self.name # Nome elemento nella vista dell'admin
     
     class Meta:
         unique_together = ('user','name'); # La coppia di camoi deve essere univoca
