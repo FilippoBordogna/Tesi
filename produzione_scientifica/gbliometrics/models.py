@@ -1,21 +1,38 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy
 
 from .managers import CustomUserManager
+from django.conf import settings
 
 
 class CustomUser(AbstractUser):
-    email = models.EmailField(_('email address'), unique=True)
+    email = models.EmailField(ugettext_lazy('email address'), unique=True)
 
-    USERNAME_FIELD = 'email'
+    USERNAME_FIELD = 'email' # email dell'utente
     REQUIRED_FIELDS = ['username'] # Campi richiesti oltre all'USERNAME_FIELD e la Password
 
     objects = CustomUserManager()
 
     def __str__(self):
-        return self.email
+        return self.username
 
+class Authors_Group(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE); # Utente che ha creato il gruppo
+    name = models.CharField(max_length=50); # Nome del gruppo
+    creation = models.DateTimeField(); # Data di creazione
+    last_update = models.DateTimeField(); # Ultima modifica
+    other_info = models.TextField(); # Annotazioni Extra
+    
+    REQUIRED_FIELDS = ['user', 'name']
+    
+    def __str__(self):
+        return self.user.username+":"+self.name # Nome elemento nella vista dell'admin
+    
+    class Meta:
+        unique_together = ('user','name'); # La coppia di camoi deve essere univoca
+    
+'''
 class Affiliation(models.Model):
     # IDs
     aff_id = models.PositiveBigIntegerField(unique=True);
@@ -49,3 +66,4 @@ class Author(models.Model):
     affiliation = models.ForeignKey(Affiliation, on_delete=models.RESTRICT);
     
     REQUIRED_FIELDS = ['name', 'surname', 'full_name', 'affiliation'];
+'''

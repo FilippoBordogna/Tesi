@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from .forms import CustomUserChangeForm, CustomRegistrationForm
-from .models import CustomUser
+from .models import Authors_Group, CustomUser
 
 class CustomUserAdmin(UserAdmin):
     add_form = CustomRegistrationForm # Form custom per creare un utente
@@ -23,4 +23,5 @@ class CustomUserAdmin(UserAdmin):
     search_fields = ('email','username') # Campi di ricerca
     ordering = ('email','username') # Campi di ordinamento
 
-admin.site.register(CustomUser, CustomUserAdmin)
+admin.site.register(CustomUser, CustomUserAdmin) # Aggiungo la visualizzazione degli utenti Custom
+admin.site.register(Authors_Group) # Aggiungo la visualizzazione dei gruppi

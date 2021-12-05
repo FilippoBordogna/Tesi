@@ -1,0 +1,9 @@
+{% if groups_list %} <!-- Controllo la presenza di elementi nella lista -->
+    <ul> <!-- Creo una lista -->
+    {% for group in groups_list %} <!-- Ciclo fra i gruppi -->
+        <li>{{ group.name }}</li> <!-- Elemento della lista contenente il nome del gruppo -->
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Non ci sono gruppi disponibili</p> <!-- Comunico la mancanza di gruppi -->
+{% endif %}
