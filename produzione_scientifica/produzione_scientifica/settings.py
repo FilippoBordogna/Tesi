@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'gbliometrics', # Mia app
+    'rest_framework' # API REST
     ]
 
 MIDDLEWARE = [

@@ -17,7 +17,7 @@ class CustomUser(AbstractUser):
     def __str__(self):
         return self.username+" : "+self.email
 
-class AuthorsGroup(models.Model):
+class Agroup(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE); # Utente che ha creato il gruppo
     name = models.CharField(max_length=50); # Nome del gruppo
     creation = models.DateTimeField(); # Data di creazione

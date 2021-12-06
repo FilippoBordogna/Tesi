@@ -2,13 +2,13 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from .forms import CustomUserChangeForm, CustomRegistrationForm
-from .models import AuthorsGroup, CustomUser
+from .models import Agroup, CustomUser
 
-class GroupInline(admin.TabularInline):
-    model = AuthorsGroup
+class GroupInline(admin.StackedInline): # Oggetto Inline che verrà aggiunto
+    model = Agroup
     extra = 0
     fieldsets = ( # Campi di visualizzazione
-        ('Dati', {'fields': ('name', 'user',)}),
+        ('Dati', {'fields': ('name','other_info')}),
         ('Timestamps', {'fields': ('creation', 'last_update')}),
     )
 
@@ -33,4 +33,4 @@ class CustomUserAdmin(UserAdmin):
     ordering = ('email','username') # Campi di ordinamento
 
 admin.site.register(CustomUser, CustomUserAdmin) # Aggiungo la visualizzazione degli utenti Custom
-admin.site.register(AuthorsGroup) # Aggiungo la visualizzazione dei gruppi
+admin.site.register(Agroup) # Aggiungo la visualizzazione dei gruppi
