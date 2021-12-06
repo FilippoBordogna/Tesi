@@ -11,7 +11,7 @@ Tool che gestisce diverse funzionalità tramite una interfaccia grafica tra cui:
 - [SOAP Client for querying the Web of Science database](https://github.com/enricobacis/wos) (al momento inutilizzato)
 - [Framework Phyton Django](https://www.djangoproject.com)
 	- [Django Registration](https://django-registration.readthedocs.io/en/3.2/index.html)
-	<!--- [Django Rest Framework](https://www.django-rest-framework.org)-->
+	- [Django Rest Framework](https://www.django-rest-framework.org) 
 
 ## ATTENZIONE:
 E' necessario possedere una API Key ed eventualmente un token per poter reperire le API di Scopus.
@@ -53,4 +53,7 @@ E' necessario possedere una API Key anche per le API di WoS (impossibile richied
 - Pagine di Login e Logout:
   - https://learndjango.com/tutorials/django-login-and-logout-tutorial
 - Reset della password via email (email simulata tramite file) e modifica della password da loggatti:
-  - https://learndjango.com/tutorials/django-password-reset-tutorial 
+  - https://learndjango.com/tutorials/django-password-reset-tutorial
+- API Rest
+  - https://www.django-rest-framework.org/tutorial/quickstart
+  - https://www.youtube.com/watch?v=TmsD8QExZ84&ab_channel=DennisIvy
