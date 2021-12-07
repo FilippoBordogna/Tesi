@@ -32,12 +32,12 @@ E' necessario possedere una API Key anche per le API di WoS (impossibile richied
 - [x] Login, Logout
 - [x] Recupero della password (da non loggati) via email (Simulato il flusso email tramite file per un debug più facile)
 - [x] Modifica della password (da loggati)
+- [x] CRUD Tabella Agroups
 - [ ] Mappare API già testate nella cartella TEST per successive chiamate API da parte dell'app
 - [ ] CRUD Tabella Authors
-- [ ] CRUD Tabella Groups
-- [ ] CRUD Tabella Authors_Groups
-- [ ] CRUD Tabella Users_Groups
+- [ ] CRUD Tabella Authors2Agroups
 - [ ] CRUD Tabella Stats
+- [ ] Aggiornamento dello stile del front-end
 
 ## STRUTTURA del PROGETTO:
 - Nella cartella [produzione_scientifica](produzione_scientifica) è presente il progetto Django vero e proprio.
