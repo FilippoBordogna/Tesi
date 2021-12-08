@@ -76,11 +76,17 @@ def groupCreate(request):
         request.data['creation'] = datetime.now()
         request.data['last_update'] = datetime.now()
         
-        serializers = AgroupSerializer(data=request.data) # Trasformo il JSON passatomi in oggetto Agroup
-        if(serializers.is_valid()): # Oggetto creato correttamente
-            serializers.save(); # Salvo l'oggetto nel DB
+        if(Agroup.objects.filter(user=request.user, name=request.data['name']).exists()): # Elemento con uguali campi user e name già presente
+            message = "Il gruppo che stai inserendo esiste già";
+            
+            return Response({'status':'false', 'message':message}, status=500) # Errore
         
-        return Response(serializers.data) # Ritorno il JSON con le opportune modifiche (vedi request.data poco sopra)
+        else: # Non esiste un elemento con uguali campi user e name
+            serializers = AgroupSerializer(data=request.data) # Trasformo il JSON passatomi in oggetto Agroup
+            if(serializers.is_valid()): # Oggetto creato correttamente
+                serializers.save(); # Salvo l'oggetto nel DB
+            
+            return Response(serializers.data) # Ritorno il JSON con le opportune modifiche (vedi request.data poco sopra)
     
     else: # Utente NON loggato
         message = "Non sei loggato";
@@ -105,6 +111,11 @@ def groupUpdate(request, pk): # Necessita del parametro pk
         request.data['user'] = request.user.id
         request.data['last_update'] = datetime.now()
         request.data['creation'] = group.creation
+        
+        if(Agroup.objects.filter(user=request.user, name=request.data['name'], ).exclude(id=pk).exists()): # Elemento con uguali campi user e name già presente (con id diverso)
+            message = "E' già presente un gruppo con lo stesso nome associato al tuo utente";
+            
+            return Response({'status':'false', 'message':message}, status=500) # Errore
         
         serializers = AgroupSerializer(instance=group, data=request.data) # Creo un istanza dell'oggetto con i campi modificati
         
