@@ -1,25 +1,27 @@
+from django.http.response import JsonResponse
 from django_registration.forms import User
-from gbliometrics.models import Agroup
-from django.shortcuts import render
-from django.core import serializers
+from pybliometrics import scopus
+from gbliometrics.models import Agroup, Affiliation
 from datetime import datetime
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import AgroupSerializer
+from .serializers import AgroupSerializer, AffiliationSerializer
+
+from pybliometrics.scopus import AffiliationRetrieval
 
 @api_view(['GET']) # Accetta solo metodo GET
-def apiOverview(request):
+def groupApiOverview(request):
     '''
-        API che ritorna la lista di API che si possono interrogare
+        API che ritorna la lista di API dei gruppi che si possono interrogare
     '''
     
     api_urls = { # Lista delle API disponibili
-        'List': '/group-list/',
-        'Detail view': '/group-detail/<str:pk>/',
-        'Create': '/group-create/',
-        'Update': '/group-update/<str:pk>/',
-        'Delete': '/group-delete/<str:pk>/',
+        'Lista': '/group-list/',
+        'Dettagli': '/group-detail/<str:pk>/',
+        'Creazione': '/group-create/',
+        'Modifica': '/group-update/<str:pk>/',
+        'Elimina': '/group-delete/<str:pk>/',
     }
      
     return Response(api_urls)
@@ -108,6 +110,7 @@ def groupUpdate(request, pk): # Necessita del parametro pk
             return Response({'status':'false', 'message':message}, status=500) # Errore
         
         # I campi user, data di creazione e data di ultima modifica settati per evitare modifiche che favoriscono inconsistenza
+        request.data['id'] = group.id
         request.data['user'] = request.user.id
         request.data['last_update'] = datetime.now()
         request.data['creation'] = group.creation
@@ -151,3 +154,75 @@ def groupDelete(request, pk):
         message = "Non sei loggato";
         
         return Response({'status':'false', 'message':message}, status=500) # Errore
+    
+
+## API AFFILIAZIONI ##
+@api_view(['GET']) # Accetta solo metodo GET
+def affiliationApiOverview(request):
+    '''
+        API che ritorna la lista di API delle Affiliazioni che si possono interrogare
+    '''
+    
+    api_urls = { # Lista delle API disponibili
+        'Dettagli affiliazione (da DB se possibile)': '/affiliation-detail/<str:pk>/',
+        'Dettagli affiliazione (da Elsevier)': '/affiliation-detail/<str:pk>/refresh/'
+    }
+     
+    return Response(api_urls)
+
+@api_view(['GET']) # Accetta solo metodo GET
+def affiliationDetail(request, pk, refresh):
+    '''
+        API che ritorna i dettagli di una affiliazione.
+        Se refresh = False restituisco i dati dal DB
+            - Se l'oggetto non è presente interrogo le API di Elsevier
+                - Creo l'oggetto con le informazioni ricevute
+            - Ritorno i dettagli in formato JSON
+        Se refresh = True prendo i dati aggiornati da Elsevier
+            - Se l'oggetto non è presente nel DB lo creo
+            - Se l'oggetto è presente lo aggiorno
+            - Ritorno i dettagli in formato JSON
+        N.B. PER IL MOMENTO QUESTA CHIAMATA E' DISPONIBILE ANCHE SE NON LOGGATI (IN FUTURO CHISSA')
+    '''
+    
+    affiliation = Affiliation.objects.get(scopusId=pk)
+    esiste = Affiliation.objects.filter(scopusId=pk).exists() # Se uso .get() anzichè .filter() errore
+    
+    if(not(refresh) and esiste): # Ho i dati e non devo aggiornare: Prendo i dati dal DB
+        serializer = AffiliationSerializer(affiliation, many=False) # many = True è incorretto siccome prendo 1 solo oggetto ma mi permette di usare il .filter() sopra
+        
+        return Response(serializer.data)
+        #return Response("Prova")
+    
+    else: # Non ho i dati o li devo aggiornare: Prendo i dati da Elsevier
+        ar=AffiliationRetrieval(aff_id=pk, refresh=True, view="STANDARD");
+        
+        af={
+            'scopusId': ar.eid.split('-')[2],
+            'name': ar.affiliation_name,
+            'address': ar.address,
+            'city': ar.city,
+            'state': ar.state,
+            'postal_code': ar.postal_code,
+            'country': ar.country,
+            'url': ar.org_URL,
+        }
+        
+        af['last_update'] = datetime.now() # Aggiungo la data di modifica
+        
+        if(not esiste): # Devo creare l'oggetto
+            af['creation'] = datetime.now() # Aggiungo la data di creazione 
+            
+            serializers = AffiliationSerializer(data=af) # Trasformo il JSON passatomi in oggetto Affiliation
+            if(serializers.is_valid()): # Oggetto creato correttamente
+                serializers.save(); # Salvo l'oggetto nel DB
+       
+        else: # Devo aggiornare l'oggetto
+            af['creation'] = affiliation.creation # Mantengo la data di creazione: Per restituire il campo nella risposta (Per il DB operazione inutile)
+            serializers = AffiliationSerializer(instance=affiliation, data=af) # Creo un istanza dell'oggetto con i campi modificati
+        
+        if(serializers.is_valid()): # Oggetto modificato correttamente
+            serializers.save(); # Salvo le modifiche all'oggetto nel DB 
+        
+        return Response(serializers.data) # Ritorno il JSON con le opportune modifiche (vedi last_update e creation)
+        

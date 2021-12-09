@@ -1,3 +1,4 @@
+from enum import unique
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import ugettext_lazy
@@ -22,7 +23,7 @@ class Agroup(models.Model):
     name = models.CharField(max_length=50); # Nome del gruppo
     creation = models.DateTimeField(); # Data di creazione
     last_update = models.DateTimeField(); # Ultima modifica
-    other_info = models.TextField(max_length=200) # Annotazioni Extra
+    other_info = models.TextField(max_length=200, null=True, blank=True) # Annotazioni Extra
     
     REQUIRED_FIELDS = ['user', 'name']
     
@@ -32,25 +33,29 @@ class Agroup(models.Model):
     class Meta:
         unique_together = ('user','name'); # La coppia di camoi deve essere univoca
     
-'''
+
 class Affiliation(models.Model):
     # IDs
-    aff_id = models.PositiveBigIntegerField(unique=True);
-    aff_eid = models.TextField(unique=True, max_length=20);
+    scopusId = models.PositiveBigIntegerField(unique=True); # Identificativo (uso solo questo poichè è possibile costruire l'eid come 10-s2.0-<scopusId>)
+    # eid = models.TextField(unique=True, max_length=20); 
     # Dati
-    name = models.TextField(max_length=50);
-    address = models.TextField(max_length=50);
-    city = models.TextField(max_length=50);
-    state = models.TextField(max_length=50);
-    postal_code = models.TextField(max_length=50);
-    country = models.TextField(max_length=50);
-    url = models.URLField();
-    # Timestamps
-    creation_date = models.DateTimeField('Creation date into DB');
-    scopus_create_date = models.DateTimeField('Creation date provided by Scopus API');
+    name = models.CharField(max_length=50, unique=True);
+    address = models.CharField(max_length=50, null=True, blank=True);
+    city = models.CharField(max_length=50, null=True, blank=True);
+    state = models.CharField(max_length=50, null=True, blank=True);
+    postal_code = models.CharField(max_length=50, null=True, blank=True);
+    country = models.CharField(max_length=50, null=True, blank=True);
+    url = models.URLField(null=True, blank=True);
+    # Campi di competenza della mia app (NO ELSEVIER)
+    creation = models.DateTimeField();
+    last_update = models.DateTimeField();
     
-    REQUIRED_FIELDS = ['name'];
-
+    REQUIRED_FIELDS = ['scopusId', 'name'];
+    
+    def __str__(self):
+        return self.name+" ("+str(self.scopusId)+")"
+    
+'''
 class Author(models.Model):
     # IDs
     auth_id = models.PositiveBigIntegerField(unique=True);
