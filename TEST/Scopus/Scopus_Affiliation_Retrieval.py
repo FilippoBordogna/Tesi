@@ -6,7 +6,7 @@ from pybliometrics.scopus.utils import config
 # print("My API-Key: "+config['Authentication']['APIKey']+"\nMy Token: "+config['Authentication']['InstToken'])
 
 ### AffiliationRetrieval(aff_id, refresh=False, view='STANDARD', **kwds) ###
-ar=AffiliationRetrieval(aff_id="60005254", refresh=False, view="STANDARD");
+ar=AffiliationRetrieval(aff_id="60028218", refresh=False, view="STANDARD");
 
 for numero in range(5):
     print("******************************************************************************************************************************************************");
@@ -28,7 +28,7 @@ print("- Country: "+ar.country);
 print("- Postal Code: "+ar.postal_code);
 print("- Author count: "+str(ar.author_count));
 print("- Document count: "+str(ar.document_count));
-print("- ORG domain: "+ar.org_domain);
+#print("- ORG domain: "+ar.org_domain);
 print("- ORG type: "+ar.org_type);
 
 # LINKS
@@ -48,4 +48,4 @@ date=datetime(ar.date_created[0],ar.date_created[1],ar.date_created[2]);
 print("- Record date of creation: "+str(date)); # DATA DI CREAZIONE DEL RECORD
 
 # DATI API
-print("\n\nAPI:\nRimanenti: "+ar.get_key_remaining_quota()+"\nRefresh: "+ar.get_key_reset_time());
+#print("\n\nAPI:\nRimanenti: "+ar.get_key_remaining_quota()+"\nRefresh: "+ar.get_key_reset_time());
