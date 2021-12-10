@@ -24,4 +24,7 @@ urlpatterns = [ # Url appartenenti all'app gbliometrics
     path('authors/',views.authorApiOverview, name='author-overview'), # Lista delle API dei gruppi disponibili
     path('authors/author-detail/<str:pk>/',views.authorDetail, name='author-detail'), # Dettagli dell'associazione (API Scopus)
     
+    # API DELLA CONNESSIONE AUTORE-GRUPPO
+    path('connection/', views.connectionApiOverview, name='connection-overview'), # Lista delle API delle connessione
+      
 ]

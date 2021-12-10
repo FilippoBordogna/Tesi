@@ -338,9 +338,6 @@ def authorDetail(request, pk):
     ar=AuthorRetrieval(author_id=pk, refresh=True, view="ENHANCED");
     au={
             'scopusId': ar.identifier,
-            #'scopusId': ar.eid.split("-")[2] # Inutile se funziona il metodo sopra
-            # 'ScopusId': pk # Preferisco prenderlo da Scopus (perchè potrebbe essere cambiato per qualche motivo)
-            'orcid': ar.orcid,
             'name': ar.given_name,
             'surname': ar.surname,
             'full_name': ar.indexed_name,
@@ -371,4 +368,21 @@ def authorDetail(request, pk):
         #return Response(ar._json) Ritorna troppi campi che non mi servono
         
         return risposta
+
+####################################################################################
+###################################### API CONNESSIONI #############################
+####################################################################################
+
+@api_view(['GET']) # Accetta solo metodo GET
+def connectionApiOverview(request):
+    '''
+        API che ritorna la lista di API delle connessioni che si possono interrogare
+    '''
     
+    api_urls = { # Lista delle API disponibili
+        'Lista degli autori in un gruppo': '/connection-list/<str:groupId>/',
+        'Aggiungi autore da un gruppo': '/connection-add/<str:groupId>/<str:authorId>/',
+        'Elimina autore da un gruppo': '/connection-delete/<str:groupId>/<str:authorId>/'
+    }
+     
+    return Response(api_urls, status=200)
