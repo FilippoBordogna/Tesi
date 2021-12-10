@@ -2,15 +2,27 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from .forms import CustomUserChangeForm, CustomRegistrationForm
-from .models import Affiliation, Agroup, CustomUser
+from .models import Affiliation, Agroup, Author, CustomUser
+
+# MODELLI INLINE
 
 class GroupInline(admin.StackedInline): # Oggetto Inline che verrà aggiunto
     model = Agroup
     extra = 0
     fieldsets = ( # Campi di visualizzazione
-        ('Dati', {'fields': ('name', 'id', 'other_info')}),
+        ('Dati', {'fields': ('id', 'name', 'other_info')}),
         ('Timestamps', {'fields': ('creation', 'last_update')}),
     )
+    
+class AuthorInline(admin.StackedInline): # Oggetto Inline che verrà aggiunto
+    model = Author
+    extra = 0
+    fieldsets = ( # Campi di visualizzazione
+        ('Dati', {'fields': ('scopusId', 'orcid', 'full_name')}),
+        ('Timestamps', {'fields': ('creation', 'last_update')}),
+    )
+
+# MODELLI CUSTOM
 
 class CustomUserAdmin(UserAdmin):
     add_form = CustomRegistrationForm # Form custom per creare un utente
@@ -22,7 +34,6 @@ class CustomUserAdmin(UserAdmin):
         ('Dati d\'accesso', {'fields': ('email', 'password', 'username', 'last_login')}),
         ('Permessi', {'fields': ('is_staff', 'is_active')}),
     )
-    inlines = [GroupInline] # Aggiungo il modulo ChoiceInline dichiarato sopra
     add_fieldsets = ( # Campi dell'aggiunta di un utente
         (None, {
             'classes': ('wide',),
@@ -31,6 +42,8 @@ class CustomUserAdmin(UserAdmin):
     )
     search_fields = ('email','username') # Campi di ricerca
     ordering = ('email','username') # Campi di ordinamento
+    
+    inlines = [GroupInline] # Aggiungo il modulo GroupInline dichiarato sopra
   
 class CustomAgroup(admin.ModelAdmin):
     model = Agroup
@@ -46,8 +59,8 @@ class CustomAgroup(admin.ModelAdmin):
             'fields': ('user','name', 'creation', 'last_update', 'other_info')}
         ),
     )
-    search_fields = ('user','name', 'creation', 'last_update') # Campi di ricerca
-    ordering = ('user','name', 'creation', 'last_update') # Campi di ordinamento
+    search_fields = ('id', 'name', 'creation', 'last_update',) # Campi di ricerca
+    ordering = ('id', 'name', 'creation', 'last_update') # Campi di ordinamento
     
 class CustomAffiliation(admin.ModelAdmin):
     model = Affiliation
@@ -65,7 +78,28 @@ class CustomAffiliation(admin.ModelAdmin):
     )
     search_fields = ('scopusId', 'name', 'address', 'city', 'state', 'postal_code', 'country', 'url', 'creation', 'last_update') # Campi di ricerca
     ordering = ('scopusId', 'name', 'address', 'city', 'state', 'postal_code', 'country', 'url', 'creation', 'last_update') # Campi di ordinamento
-
+    
+    inlines = [AuthorInline] # Aggiungo il modulo AuthorInline dichiarato sopra
+    
+class CustomAuhtor(admin.ModelAdmin):
+    model = Author
+    list_display = ('id', 'scopusId', 'orcid', 'full_name', 'affiliation', 'creation', 'last_update') # Campi da mostrare nella pagina principale
+    list_filter = ('scopusId', 'orcid', 'name', 'surname', 'full_name', 'affiliation', 'creation', 'last_update') # Campi su cui filtrare
+    fieldsets = ( # Campi di modifica di un utente
+        ('Identificativi', {'fields': ('scopusId', 'orcid', 'affiliation')}),
+        ('Dati Anagrafici', {'fields': ('name', 'surname', 'full_name')}),
+        ('Timestamps', {'fields': ('creation', 'last_update')}),
+    )
+    add_fieldsets = ( # Campi dell'aggiunta di un utente
+        (None, {
+            'classes': ('wide',),
+            'fields': ('scopusId', 'orcid', 'name', 'surname', 'full_name', 'affiliation', 'creation', 'last_update')}
+        ),
+    )
+    search_fields = ('scopusId', 'orcid', 'name', 'surname', 'full_name', 'creation', 'last_update') # Campi di ricerca
+    ordering = ('scopusId', 'orcid', 'name', 'surname', 'full_name', 'affiliation', 'creation', 'last_update') # Campi di ordinamento
+    
 admin.site.register(CustomUser, CustomUserAdmin) # Aggiungo la visualizzazione degli Utenti Custom
 admin.site.register(Agroup, CustomAgroup) # Aggiungo la visualizzazione dei Gruppi
 admin.site.register(Affiliation, CustomAffiliation) # Aggiungo la visualizzazione delle Affiliazioni
+admin.site.register(Author, CustomAuhtor) # Aggiungo la visualizzazione degli Autori
