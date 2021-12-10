@@ -1,3 +1,4 @@
+from django.http import response
 from django.http.response import HttpResponse
 from django_registration.forms import User
 from pybliometrics import scopus
@@ -118,7 +119,7 @@ def groupUpdate(request, pk): # Necessita del parametro pk
             return myError("E' già presente un gruppo con lo stesso nome associato al tuo utente") # Errore
         
         serializers = AgroupSerializer(instance=group, data=request.data) # Creo un istanza dell'oggetto con i campi modificati
-        if(serializers.is_valid()): # Oggetto modificato correttamente
+        if(serializers.is_valid()): # Formato corretto
             serializers.save(); # Salvo le modifiche all'oggetto nel DB 
         
         return Response(serializers.data, status=200) 
@@ -155,14 +156,12 @@ def affiliationCreate(dizionario):
     '''
     
     # Il controllo sull'eventuale esistenza (prima della chiamata) nel DB del record da inserire lo lascio alla funzione chiamante
-    #dizionario['scopusId']=int(dizionario['scopusId'])
     serializers = AffiliationSerializer(data=dizionario) # Trasformo il JSON passatomi in oggetto Affiliation
     
-    if(serializers.is_valid()): # Oggetto creato correttamente
+    if(serializers.is_valid()): # Formato corretto
         serializers.save(); # Salvo l'oggetto nel DB
         return Response(serializers.data, status=200)
     else:
-        
         return myError(serializers.error_messages) # Errore 
     
 def affiliationUpdate(dizionario, pk):
@@ -174,32 +173,31 @@ def affiliationUpdate(dizionario, pk):
     
     # Il controllo sull'eventuale esistenza nel DB di un record con gli stessi campi chiave la lascio alla funzione chiamante
     
-    affiliation =  Affiliation.objects.get(scopusId=pk)
+    affiliation =  Affiliation.objects.get(scopusId=pk) # Affiliazione su cui effettuare le modifiche
     serializers = AffiliationSerializer(instance=affiliation, data=dizionario) # Creo un istanza dell'oggetto con i campi modificati
         
-    if(serializers.is_valid()): # Oggetto modificato correttamente
+    if(serializers.is_valid()): # Formato corretto
         serializers.save(); # Salvo l'oggetto nel DB
         
         return Response(serializers.data, status=200)
     else:    
         return myError(serializers.error_messages) # Errore
     
-def affiliationCheck_Create(id):
+def affiliationUpdate_Create(id):
     '''
         Funzione che controlla la presenza nel DB della affiliazione con scopusId=id
+        Se non è presente la aggiunge al DB
+        Se è presente aggiorna il record
     '''
-    esiste = Affiliation.objects.filter(scopusId=id).exists()
     
-    if(esiste): # Se esiste prendo direttamente il valore dell'id e lo metto nel campo affiliation (foreign key)
-        affiliation = Affiliation.objects.get(scopusId=id)
-        #dizionario['affiliation'] = affiliation.id
-    else: # Se non esiste, creo l'oggetto Affiliazione nel DB
-        try:
-            ar=AffiliationRetrieval(aff_id=id, refresh=True, view="STANDARD");
-        except:
-           return myError("Non esiste un Affiliazione con id = "+str(id))
-       
-        af={
+    esiste = Affiliation.objects.filter(scopusId=id).exists() # Presenza nel DB dell'affiliazione
+    
+    try:
+        ar=AffiliationRetrieval(aff_id=id, refresh=True, view="STANDARD");
+    except:
+        return myError("Non esiste un Affiliazione con id = "+str(id))
+    
+    af={
                 'scopusId': ar.eid.split('-')[2],
                 # 'ScopusId': pk # Preferisco prenderlo da Scopus (perchè potrebbe essere cambiato per qualche motivo)
                 'name': ar.affiliation_name,
@@ -210,15 +208,19 @@ def affiliationCheck_Create(id):
                 'country': ar.country,
                 'url': ar.org_URL,
                 'last_update': datetime.now(),
-                'creation': datetime.now(),
             }
-        
+    
+    if(not esiste): # Se non esiste, creo l'oggetto Affiliazione nel DB        
+        af['creation'] = datetime.now()
         risposta = affiliationCreate(af)
-        if(risposta.status_code==500): # Errore
-            return risposta    
         
-        #dizionario['affiliation'] = Affiliation.objects.get(scopusId=dizionario['affiliation-scopusId']).id # Assegno l'id della Associazione alla foreign key affiliation dell'autore
-
+    else: # Se esiste Aggiorno
+        affiliation = Affiliation.objects.get(scopusId=id)
+        af['creation'] = affiliation.creation
+        risposta = affiliationUpdate(af, id)
+        
+    return risposta
+    
 @api_view(['GET']) # Accetta solo metodo GET
 def affiliationApiOverview(request):
     '''
@@ -249,43 +251,15 @@ def affiliationDetail(request, pk, refresh):
     
     esiste = Affiliation.objects.filter(scopusId=pk).exists() # Se uso .get() anzichè .filter() errore
     if(esiste):
-        affiliation = Affiliation.objects.get(scopusId=pk)
+        affiliation = Affiliation.objects.get(scopusId=pk) # Oggetto Affiliation di cui mi interessano i dettagli
     
     if(not(refresh) and esiste): # Ho i dati e non devo aggiornare: Prendo i dati dal DB
         serializer = AffiliationSerializer(affiliation, many=False)
         
         return Response(serializer.data, status=200)
-    
-    else: # Non ho i dati o li devo aggiornare: Prendo i dati da Elsevier
-        try:
-            ar=AffiliationRetrieval(aff_id=pk, refresh=True, view="STANDARD");
-        except:
-           return myError("Non esiste un Affiliazione con id = "+str(pk))
-        
-        af={
-            'scopusId': ar.eid.split('-')[2],
-            # 'ScopusId': pk # Preferisco prenderlo da Scopus (perchè potrebbe essere cambiato per qualche motivo)
-            'name': ar.affiliation_name,
-            'address': ar.address,
-            'city': ar.city,
-            'state': ar.state,
-            'postal_code': ar.postal_code,
-            'country': ar.country,
-            'url': ar.org_URL,
-            'last_update': datetime.now(),
-        }
-        
-        if(not esiste): # Devo creare l'oggetto
-            af['creation'] = datetime.now() # Aggiungo la data di creazione 
-            
-            risposta = affiliationCreate(af) # Creo una affiliazione
-       
-        else: # Devo aggiornare l'oggetto
-            af['creation'] = affiliation.creation # Mantengo la data di creazione: Per restituire il campo nella risposta (Per il DB operazione inutile)
-            
-            risposta = affiliationUpdate(af, pk) # Modifico una affiliazione
-                     
-        return risposta
+    else:
+        response = affiliationUpdate_Create(pk) # Creo o aggiorno il record dell'affiliazione
+        return response
     
 ####################################################################################
 #################################### API AUTORI ####################################
@@ -299,14 +273,14 @@ def authorCreate(dizionario):
     '''
     
     # Il controllo sull'eventuale esistenza (prima della chiamata) nel DB del record da inserire lo lascio alla funzione chiamante
-    risposta = affiliationCheck_Create(id=dizionario['affiliation-scopusId'])
+    risposta = affiliationUpdate_Create(id=dizionario['affiliation-scopusId'])
     if(risposta.status_code==500):
         return risposta
     
-    dizionario['affiliation'] = Affiliation.objects.get(scopusId=dizionario['affiliation-scopusId']).id # Assegno l'id della Associazione alla foreign key affiliation dell'autore
+    dizionario['affiliation'] = risposta.data["id"] # La risposta mi dà (tra le altre cose) l'id della affiliazione appena creata/aggiornata che userò come chiave esterna
     
     serializers = AuthorSerializer(data=dizionario) # Trasformo il JSON passatomi in oggetto Author
-    if(serializers.is_valid()): # Oggetto creato correttamente
+    if(serializers.is_valid()): # Formato corretto
         serializers.save(); # Salvo l'oggetto nel DB
         
         return Response(serializers.data, status=200)
@@ -328,7 +302,7 @@ def authorUpdate(dizionario, pk):
     author =  Author.objects.get(scopusId=pk)
     serializers = AuthorSerializer(instance=author, data=dizionario) # Creo un istanza dell'oggetto con i campi modificati
         
-    if(serializers.is_valid()): # Oggetto modificato correttamente
+    if(serializers.is_valid()): # Formato corretto
         serializers.save(); # Salvo l'oggetto nel DB
         
         return Response(serializers.data, status=200)
@@ -372,7 +346,7 @@ def authorDetail(request, pk):
             'full_name': ar.indexed_name,
             'affiliation-scopusId': ar.affiliation_current[0][0],
             'last_update': datetime.now()
-        }
+        } # Dizionario che passerò alla funzione che crea/aggiorna l'autore
     
     if(esiste): # Devo aggiornare l'oggetto
         author = Author.objects.get(scopusId=pk)  
@@ -382,4 +356,19 @@ def authorDetail(request, pk):
         au['creation'] = datetime.now()
         risposta = authorCreate(au)        
     
-    return risposta
+    if(risposta.status_code==500):
+        return risposta
+    else:
+        # Setto i campi extra della risposta che non ho utilizzato per creare il DB
+        risposta.data["document-count"] = ar.document_count
+        risposta.data["cited-by-count"] = ar.cited_by_count # Citazioni ad Autori
+        risposta.data["citation-count"] = ar.citation_count # Citazioni a Documenti
+        risposta.data["h-index"] = ar.h_index
+        risposta.data["publication-range"] = ar.publication_range
+        risposta.data["subjects"] = ar.subject_areas
+        risposta.data["classification"] = ar.classificationgroup
+        
+        #return Response(ar._json) Ritorna troppi campi che non mi servono
+        
+        return risposta
+    
