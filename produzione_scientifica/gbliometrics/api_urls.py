@@ -18,6 +18,10 @@ urlpatterns = [ # Url appartenenti all'app gbliometrics
     # API DELLE AFFILIAZIONI (ELSEVIER + MIA APP)
     path('affiliations/',views.affiliationApiOverview, name='affiliationapi-overview'), # Lista delle API dei gruppi disponibili
     path('affiliations/affiliation-detail/<str:pk>/',views.affiliationDetail, {'refresh': False}, name='affiliation-detail'), # Dettagli dell'associazione (Se possibile da DB)
-    path('affiliations/affiliation-detail/<str:pk>/refresh/',views.affiliationDetail, {'refresh': True}, name='affiliation-detail-refresh'), # Dettagli dell'associazione (API Elsevier)
+    path('affiliations/affiliation-detail/<str:pk>/refresh/',views.affiliationDetail, {'refresh': True}, name='affiliation-detail-refresh'), # Dettagli dell'associazione (API Scopus)
+    
+    # API DEGLI AUTORI (ELSEVIER + MIA APP)
+    path('authors/',views.authorApiOverview, name='author-overview'), # Lista delle API dei gruppi disponibili
+    path('authors/author-detail/<str:pk>/',views.authorDetail, name='author-detail'), # Dettagli dell'associazione (API Scopus)
     
 ]

@@ -55,20 +55,23 @@ class Affiliation(models.Model):
     def __str__(self):
         return self.name+" ("+str(self.scopusId)+")"
     
-'''
+
 class Author(models.Model):
     # IDs
-    auth_id = models.PositiveBigIntegerField(unique=True);
-    auth_eid = models.TextField(unique=True, max_length=20);
-    auth_orcid = models.PositiveBigIntegerField(unique=True);
+    scopusId = models.PositiveBigIntegerField(unique=True); # Dato questo campo con 9-s2.0-<scopusId> trovo l'eid
+    # eid = models.TextField(unique=True, max_length=20);
+    orcid = models.CharField(max_length=20, null=True, blank=True);
     # Dati anagrafici
-    name = models.TextField(max_length=50); # Nome
-    surname = models.TextField(max_length=50) # Cognome
-    full_name = models.TextField(max_length=100); # Nome completo (Cognome N.)
+    name = models.CharField(max_length=50, null=True, blank=True); # Nome
+    surname = models.CharField(max_length=50, null=True, blank=True) # Cognome
+    full_name = models.CharField(max_length=100); # Nome completo (Cognome N.)
+    # Affiliazione
+    affiliation = models.ForeignKey(Affiliation, on_delete=models.RESTRICT); # Prima di eliminare una affiliazione devo risolvere gli autori collegati ad essa (modificare, eliminare, ...)
     # Timestamps
-    creation_date = models.DateTimeField('Creation date into DB');
-    # Associazione
-    affiliation = models.ForeignKey(Affiliation, on_delete=models.RESTRICT);
+    creation = models.DateTimeField();
+    last_update = models.DateTimeField();
     
-    REQUIRED_FIELDS = ['name', 'surname', 'full_name', 'affiliation'];
-'''
+    REQUIRED_FIELDS = ['scopusId', 'full_name', 'affiliation'];
+    
+    def __str__(self):
+        return self.full_name+" ("+str(self.scopusId)+")"
