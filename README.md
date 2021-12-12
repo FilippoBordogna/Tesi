@@ -32,11 +32,9 @@ E' necessario possedere una API Key anche per le API di WoS (impossibile richied
 - [x] Login, Logout
 - [x] Recupero della password (da non loggati) via email (Simulato il flusso email tramite file per un debug più facile)
 - [x] Modifica della password (da loggati)
-- [x] CRUD Tabella Agroups
-- [x] CRUD Tabella Affiliations
-- [x] CRUD Tabella Authors
-- [ ] Mappare API già testate nella cartella TEST per successive chiamate API da parte dell'app
-- [ ] CRUD Tabella Authors2Agroups
+- [x] CRUD Tabella Agroups (API)
+- [x] CRUD Tabella Affiliations (API)
+- [x] CRUD Tabella Authors (API)
 - [ ] CRUD Tabella Stats
 - [ ] Aggiornamento dello stile del front-end
 
