@@ -1,8 +1,9 @@
+from typing import Collection
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from .forms import CustomUserChangeForm, CustomRegistrationForm
-from .models import Affiliation, Agroup, Author, Connection, CustomUser
+from .models import Affiliation, Agroup, Author, CustomUser
 
 # MODELLI INLINE
 
@@ -50,13 +51,13 @@ class CustomAgroup(admin.ModelAdmin):
     list_display = ('id', 'user', 'name', 'creation', 'last_update') # Campi da mostrare nella pagina principale
     list_filter = ('user', 'name', 'creation', 'last_update') # Campi su cui filtrare
     fieldsets = ( # Campi di modifica di un gruppo
-        ('Dati', {'fields': ('user', 'name', 'other_info')}),
+        ('Dati', {'fields': ('user', 'name', 'authors', 'other_info')}),
         ('Timestamps', {'fields': ('creation', 'last_update')}),
     )
     add_fieldsets = ( # Campi dell'aggiunta di un gruppo
         (None, {
             'classes': ('wide',),
-            'fields': ('user','name', 'creation', 'last_update', 'other_info')}
+            'fields': ('user','name', 'authors', 'other_info' 'creation', 'last_update')}
         ),
     )
     search_fields = ('id', 'name', 'creation', 'last_update',) # Campi di ricerca
@@ -99,8 +100,24 @@ class CustomAuhtor(admin.ModelAdmin):
     search_fields = ('scopusId', 'name', 'surname', 'full_name', 'creation', 'last_update') # Campi di ricerca
     ordering = ('scopusId', 'name', 'surname', 'full_name', 'affiliation', 'creation', 'last_update') # Campi di ordinamento
     
+'''class CustomCollection(admin.ModelAdmin):
+    model = Collection
+    list_display = ('id', 'author', 'group', 'creation') # Campi da mostrare nella pagina principale
+    list_filter = ('id', 'author', 'group') # Campi su cui filtrare
+    fieldsets = ( # Campi di modifica di un utente
+        ('Identificativi', {'fields': ('author', 'group')}),
+        #('Timestamps', {'fields': ('creation',)}),
+    )
+    add_fieldsets = ( # Campi dell'aggiunta di un utente
+        (None, {
+            'classes': ('wide',),
+            'fields': ('author', 'group')}
+        ),
+    )
+    search_fields = ('author', 'group') # Campi di ricerca
+    ordering = ('author', 'group') # Campi di ordinamento'''
+    
 admin.site.register(CustomUser, CustomUserAdmin) # Aggiungo la visualizzazione degli Utenti Custom
 admin.site.register(Agroup, CustomAgroup) # Aggiungo la visualizzazione dei Gruppi
 admin.site.register(Affiliation, CustomAffiliation) # Aggiungo la visualizzazione delle Affiliazioni
 admin.site.register(Author, CustomAuhtor) # Aggiungo la visualizzazione degli Autori
-admin.site.register(Connection) # Aggiungo la visualizzazione delle Connessioni

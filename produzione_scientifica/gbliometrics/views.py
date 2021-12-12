@@ -1,4 +1,3 @@
-from django.http import response
 from django.http.response import HttpResponse
 from django_registration.forms import User
 from pybliometrics import scopus
@@ -32,11 +31,13 @@ def groupApiOverview(request):
     '''
     
     api_urls = { # Lista delle API disponibili
-        'Lista': '/group-list/',
-        'Dettagli': '/group-detail/<str:pk>/',
-        'Creazione': '/group-create/',
-        'Modifica': '/group-update/<str:pk>/',
-        'Elimina': '/group-delete/<str:pk>/',
+        'Lista dei gruppi dell\'utente': '/group-list/',
+        'Dettagli di un gruppo': '/group-detail/<str:pk>/',
+        'Creazione di un gruppo': '/group-create/',
+        'Modifica di un gruppo': '/group-update/<str:pk>/',
+        'Eliminazione di un gruppo': '/group-delete/<str:pk>/',
+        'Aggiunta di un autore': '/group-add-author/<str:groupId>/<str:authorScopusId>/',
+        'Rimozione di un autore': '/group-remove-author/<str:groupId>/<str:authorId>/'
     }
      
     return Response(api_urls, status=200)
@@ -98,9 +99,9 @@ def groupCreate(request):
         return myError("Non sei loggato") # Errore
     
 @api_view(['POST']) # Accetta solo metodo POST
-def groupUpdate(request, pk): # Necessita del parametro pk
+def groupUpdate(request, pk):
     '''
-        API che modifica un gruppo associato all'utente
+        API che modifica un gruppo associato all'utente (Non ottimale per modifiche sugli autori appartenenti al gruppo)
     '''
     
     if(request.user.is_authenticated): # Utente loggato     
@@ -143,7 +144,61 @@ def groupDelete(request, pk):
         return Response({'message':"Gruppo eliminato con successo"}, status=200)
     else: # Utente NON loggato
         return myError("Non sei loggato") # Errore
+
+@api_view(['POST']) # Accetta solo metodo POST
+def groupAddAuthor(request, groupId, authorScopusId):
+    '''
+        API che aggiunge ad un gruppo un autore.
+        Se il gruppo non esiste o non è di tua proprietà genera un errore.
+    '''
     
+    if(request.user.is_authenticated): # Utente loggato
+        try:
+            group = Agroup.objects.get(user=request.user, id=groupId) # Gruppo su cui effettuare le modifiche
+        except Agroup.DoesNotExist: # Gruppo inesistente o non di proprietà dell'utente
+            return myError("Stai provando ad aggiungere un utente ad un gruppo inesistente o non di tua proprieta'") # Errore
+        
+        risposta = authorUpdate_Create(authorScopusId) # Creo o aggiorno i dati dell'autore
+        if(risposta.status_code==500):
+            return risposta
+        
+        author = Author.objects.get(scopusId=authorScopusId) # Autore da aggiungere
+        group.authors.add(author) # Aggiungo l'autore al gruppo
+
+        serializer = AgroupSerializer(group, many=False)
+        
+        return Response(serializer.data, status=200)
+    else: # Utente NON loggato
+        return myError("Non sei loggato") # Errore
+
+@api_view(['POST']) # Accetta solo metodo POST
+def groupRemoveAuthor(request, groupId, authorId):
+    '''
+        API che rimuove un autore da un gruppo.
+        Se il gruppo non esiste o non è di tua proprietà genera un errore.
+    '''
+   
+    if(request.user.is_authenticated): # Utente loggato
+        try:
+            group = Agroup.objects.get(user=request.user, id=groupId) # Gruppo su cui effettuare le modifiche
+        except Agroup.DoesNotExist: # Gruppo inesistente o non di proprietà dell'utente
+            return myError("Stai provando ad aggiungere un utente ad un gruppo inesistente o non di tua proprieta'") # Errore
+        
+        author = Author.objects.get(id=authorId) # Autore da aggiungere
+        if(group.authors.filter(id=author.id).exists()):
+            group.authors.remove(author) # Aggiungo l'autore al gruppo
+            serializer = AgroupSerializer(group, many=False)
+            
+            return Response(serializer.data, status=200)
+        else:
+            return myError("L'utente che stai cercando di rimuovere non è presente nel gruppo")
+
+        
+        
+    else: # Utente NON loggato
+        return myError("Non sei loggato") # Errore 
+    
+
 ####################################################################################
 ################################# API AFFILIAZIONI #################################
 ####################################################################################
@@ -308,6 +363,49 @@ def authorUpdate(dizionario, pk):
         return Response(serializers.data, status=200)
     else:    
         return myError(serializers.error_messages) # Errore
+    
+def authorUpdate_Create(id):
+    '''
+        Funzione che controlla la presenza nel DB dell'autore con scopusId=id
+        Se non è presente la aggiunge al DB
+        Se è presente aggiorna il record
+        Se tutto va a buon fine restituisco anche informazioni extra non presenti nel DB
+    '''
+    
+    esiste = Author.objects.filter(scopusId=id).exists() # Esistenza nel DB dell'autore
+    ar=AuthorRetrieval(author_id=id, refresh=True, view="ENHANCED");
+    au={
+            'scopusId': ar.identifier,
+            'name': ar.given_name,
+            'surname': ar.surname,
+            'full_name': ar.indexed_name,
+            'affiliation-scopusId': ar.affiliation_current[0][0],
+            'last_update': datetime.now()
+        } # Dizionario che passerò alla funzione che crea/aggiorna l'autore
+    
+    if(esiste): # Devo aggiornare l'oggetto
+        author = Author.objects.get(scopusId=id)  
+        au['creation'] = author.creation
+        risposta = authorUpdate(au, id)
+    else: # Devo creare l'oggetto
+        au['creation'] = datetime.now()
+        risposta = authorCreate(au)
+    
+    if(risposta.status_code==500):
+        return risposta
+    else:
+        # Setto i campi extra della risposta che non ho utilizzato per creare il DB
+        risposta.data["document-count"] = ar.document_count
+        risposta.data["cited-by-count"] = ar.cited_by_count # Citazioni ad Autori
+        risposta.data["citation-count"] = ar.citation_count # Citazioni a Documenti
+        risposta.data["h-index"] = ar.h_index
+        risposta.data["publication-range"] = ar.publication_range
+        risposta.data["subjects"] = ar.subject_areas
+        risposta.data["classification"] = ar.classificationgroup
+        
+        #return Response(ar._json) Ritorna troppi campi che non mi servono
+    
+        return risposta        
 
 @api_view(['GET']) # Accetta solo metodo GET
 def authorApiOverview(request):
@@ -333,56 +431,5 @@ def authorDetail(request, pk):
         N.B. PER IL MOMENTO QUESTA CHIAMATA E' DISPONIBILE ANCHE SE NON LOGGATI (IN FUTURO CHISSA')
     '''
     
-    esiste = Author.objects.filter(scopusId=pk).exists() # Se uso .get() anzichè .filter() errore
-    
-    ar=AuthorRetrieval(author_id=pk, refresh=True, view="ENHANCED");
-    au={
-            'scopusId': ar.identifier,
-            'name': ar.given_name,
-            'surname': ar.surname,
-            'full_name': ar.indexed_name,
-            'affiliation-scopusId': ar.affiliation_current[0][0],
-            'last_update': datetime.now()
-        } # Dizionario che passerò alla funzione che crea/aggiorna l'autore
-    
-    if(esiste): # Devo aggiornare l'oggetto
-        author = Author.objects.get(scopusId=pk)  
-        au['creation'] = author.creation
-        risposta = authorUpdate(au, pk)
-    else: # Devo creare l'oggetto
-        au['creation'] = datetime.now()
-        risposta = authorCreate(au)        
-    
-    if(risposta.status_code==500):
-        return risposta
-    else:
-        # Setto i campi extra della risposta che non ho utilizzato per creare il DB
-        risposta.data["document-count"] = ar.document_count
-        risposta.data["cited-by-count"] = ar.cited_by_count # Citazioni ad Autori
-        risposta.data["citation-count"] = ar.citation_count # Citazioni a Documenti
-        risposta.data["h-index"] = ar.h_index
-        risposta.data["publication-range"] = ar.publication_range
-        risposta.data["subjects"] = ar.subject_areas
-        risposta.data["classification"] = ar.classificationgroup
-        
-        #return Response(ar._json) Ritorna troppi campi che non mi servono
-        
-        return risposta
-
-####################################################################################
-###################################### API CONNESSIONI #############################
-####################################################################################
-
-@api_view(['GET']) # Accetta solo metodo GET
-def connectionApiOverview(request):
-    '''
-        API che ritorna la lista di API delle connessioni che si possono interrogare
-    '''
-    
-    api_urls = { # Lista delle API disponibili
-        'Lista degli autori in un gruppo': '/connection-list/<str:groupId>/',
-        'Aggiungi autore da un gruppo': '/connection-add/<str:groupId>/<str:authorId>/',
-        'Elimina autore da un gruppo': '/connection-delete/<str:groupId>/<str:authorId>/'
-    }
-     
-    return Response(api_urls, status=200)
+    risposta = authorUpdate_Create(pk)   
+    return risposta
