@@ -1,10 +1,13 @@
+from datetime import datetime
 from enum import unique
+import os
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import ugettext_lazy
 
 from .managers import CustomUserManager
 from django.conf import settings
+from django.dispatch import receiver
 
 
 class CustomUser(AbstractUser):
@@ -79,3 +82,29 @@ class Agroup(models.Model):
     
     class Meta:
         unique_together = ('user','name') # La coppia di camoi deve essere univoca
+        
+class Snapshot(models.Model):
+    def user_directory_path(instance, title): # Funzione che crea il percorso ed il nome del file json
+        filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S.json")
+        return 'snapshots/user_{0}/{1}'.format(instance.user.id, filename)
+    
+    user =  models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE) # Utente proprietario
+    title = models.CharField(max_length=50) # Titolo dello Snapshot  
+    creation = models.DateTimeField(default=datetime.now()) # Data di creazione
+    informations = models.FileField(upload_to=user_directory_path) # File contenente i dati
+    
+    def __str__(self):
+        #return self.creation.strftime("%Y-%m-%d_%H-%M-%S@")+self.user.username+"@"+self.title # Nome elemento nella vista dell'admin
+        return self.informations.path
+
+# Operazioni post Evento
+@receiver(models.signals.post_delete, sender=Snapshot)
+def delete_file(sender, instance, *args, **kwargs):
+    '''
+        Quando viene eliminato uno Snapshot elimina il file contente lo Snapshot eliminato
+    '''
+
+    if (instance.informations): # campo non null
+        path = instance.informations.path # Percorso del file
+        if(os.path.isfile(path)): # Il percorso porta ad un file
+            os.remove(path) # Elimino il file

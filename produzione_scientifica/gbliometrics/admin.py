@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
 from .forms import CustomUserChangeForm, CustomRegistrationForm
-from .models import Affiliation, Agroup, Author, CustomUser
+from .models import Affiliation, Agroup, Author, CustomUser, Snapshot
 
 # MODELLI INLINE
 
@@ -100,24 +100,25 @@ class CustomAuhtor(admin.ModelAdmin):
     search_fields = ('scopusId', 'name', 'surname', 'full_name', 'creation', 'last_update') # Campi di ricerca
     ordering = ('scopusId', 'name', 'surname', 'full_name', 'affiliation', 'creation', 'last_update') # Campi di ordinamento
     
-'''class CustomCollection(admin.ModelAdmin):
-    model = Collection
-    list_display = ('id', 'author', 'group', 'creation') # Campi da mostrare nella pagina principale
-    list_filter = ('id', 'author', 'group') # Campi su cui filtrare
+class CustomSnapshot(admin.ModelAdmin):
+    mdoel = Snapshot
+    list_display = ('id', 'user', 'title', 'creation') # Campi da mostrare nella pagina principale
+    list_filter = ('user', 'title', 'creation') # Campi su cui filtrare
     fieldsets = ( # Campi di modifica di un utente
-        ('Identificativi', {'fields': ('author', 'group')}),
-        #('Timestamps', {'fields': ('creation',)}),
+        ('Dati', {'fields': ('user', 'title', 'creation')}),
+        ('Caricamento del file', {'fields': ('informations',)}),
     )
     add_fieldsets = ( # Campi dell'aggiunta di un utente
         (None, {
             'classes': ('wide',),
-            'fields': ('author', 'group')}
+            'fields': ('user', 'title', 'creation', 'informations')}
         ),
     )
-    search_fields = ('author', 'group') # Campi di ricerca
-    ordering = ('author', 'group') # Campi di ordinamento'''
+    search_fields = ('user', 'title', 'creation') # Campi di ricerca
+    ordering = ('user', 'title', 'creation') # Campi di ordinamento
     
 admin.site.register(CustomUser, CustomUserAdmin) # Aggiungo la visualizzazione degli Utenti Custom
 admin.site.register(Agroup, CustomAgroup) # Aggiungo la visualizzazione dei Gruppi
 admin.site.register(Affiliation, CustomAffiliation) # Aggiungo la visualizzazione delle Affiliazioni
 admin.site.register(Author, CustomAuhtor) # Aggiungo la visualizzazione degli Autori
+admin.site.register(Snapshot, CustomSnapshot) # Aggiungo la visualizzazione degli Snapshots

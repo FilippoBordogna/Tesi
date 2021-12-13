@@ -1,18 +1,21 @@
+import os
 from django.http.response import HttpResponse
 from django_registration.forms import User
 from pybliometrics import scopus
 from pybliometrics.scopus.utils.create_config import create_config # Modello User Django
-from gbliometrics.models import Agroup, Affiliation, Author # Modelli DB
+from gbliometrics.models import Agroup, Affiliation, Author, Snapshot # Modelli DB
 from datetime import datetime # Libreria Temporale
 
 from rest_framework.decorators import api_view # Decoratore che permette di specificare i metodi HTTP accettati
 from rest_framework.response import Response # Risposta JSON
-from .serializers import AgroupSerializer, AffiliationSerializer, AuthorSerializer # Serializzatori (Object->JSON)
+from .serializers import AgroupSerializer, AffiliationSerializer, AuthorSerializer, SnapshotSerializer # Serializzatori (Object->JSON)
 
 from pybliometrics.scopus import AffiliationRetrieval # Ricerca affiliazioni dato l'id
 from pybliometrics.scopus import AuthorRetrieval # Ricerca autore dato l'id
 
-import pandas as pd
+from django.core.files.base import ContentFile
+
+import json
 
 def myError(message):
     '''
@@ -433,3 +436,76 @@ def authorDetail(request, pk):
     
     risposta = authorUpdate_Create(pk)   
     return risposta
+
+####################################################################################
+################################### API SNAPSHOT ###################################
+####################################################################################
+
+@api_view(['GET']) # Accetta solo metodo GET
+def snapshotApiOverview(request):
+    '''
+        API che ritorna la lista di API degli snapshots che si possono interrogare
+    '''
+    
+    api_urls = { # Lista delle API disponibili
+        'Lista degli snapshot dell\'utente': '/snapshot-list/',
+        'Creazione dello snapshot del gruppo': '/snapshot-create/<str:groupId>/<str:title>/'
+    }
+     
+    return Response(api_urls, status=200)
+
+@api_view(['GET']) # Accetta solo metodo GET
+def snapshotList(request):
+    '''
+        API che mostra gli snapshot dell'utente
+    '''
+    
+    if(request.user.is_authenticated): # Utente loggato
+        snapshots = Snapshot.objects.filter(user=request.user)
+        serializer = SnapshotSerializer(snapshots, many=True)
+        
+        return Response(serializer.data, status=200) # Ritorno i dati di interesse trasformati in JSON
+    else: # Utente NON loggato
+        return myError("Non sei loggato") # Errore
+    
+@api_view(['POST']) # Accetta solo metodo GET
+def snapshotCreate(request, groupId, title):
+    '''
+        API che crea gli snapshot dell'utente
+    '''
+    
+    if(request.user.is_authenticated): # Utente loggato
+        try:
+            group = Agroup.objects.get(user=request.user, id=groupId) # Gruppo di cui mi interessano i dettagli
+        except Agroup.DoesNotExist: # Gruppo inesistente o non di proprietà dell'utente
+            return myError("Stai provando ad accedere ad informazioni su un gruppo inesistente o non di tua proprieta'") # Errore
+        
+        contenuto = {
+                        "id": 5,
+                        "scopusId": 6603694127,
+                        "name": "Stefano",
+                        "surname": "Paraboschi",
+                        "full_name": "Paraboschi S.",
+                        "creation": "2021-12-10T05:16:42.896818+01:00",
+                        "last_update": "2021-12-13T02:01:33.000669+01:00",
+                        "affiliation": 1,
+                        "document-count": 140,
+                        "cited-by-count": 3902,
+                        "citation-count": 5391,
+                        "h-index": 35,
+                        "publication-range": [
+                            1993,
+                            2021
+                        ]
+                    }
+        contenuto_byte = json.dumps(contenuto, indent=2).encode('utf-8')
+        #snapshot = Snapshot(user=request.user, title=title, creation=datetime.now())
+        #snapshot.save();
+        snapshot = Snapshot.objects.get(id=10)
+        #snapshot.informations.save(title, ContentFile(contenuto_byte))
+        
+        f = json.load(snapshot.informations)       
+        return Response(f)
+        
+    else: # Utente NON loggato
+        return myError("Non sei loggato") # Errore

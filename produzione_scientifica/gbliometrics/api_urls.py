@@ -24,5 +24,10 @@ urlpatterns = [ # Url appartenenti all'app gbliometrics
     
     # API DEGLI AUTORI (ELSEVIER + MIA APP)
     path('authors/', views.authorApiOverview, name='author-overview'), # Lista delle API dei gruppi disponibili
-    path('authors/author-detail/<str:pk>/', views.authorDetail, name='author-detail'), # Dettagli dell'associazione (API Scopus)  
+    path('authors/author-detail/<str:pk>/', views.authorDetail, name='author-detail'), # Dettagli dell'associazione (API Scopus) 
+    
+    # API DEGLI SNAPSHOT (ELSEVIER + MIA APP)
+    path('snapshots/', views.snapshotApiOverview, name='snapshot-api-overview'), # Lista delle API degli snapshot
+    path('snapshots/snapshot-list/', views.snapshotList, name='snapshot-list'), # Lista degli snapshot dell'utente
+    path('snapshots/snapshot-create/<str:groupId>/<str:title>/', views.snapshotCreate, name='snapshot-create'), # Creazione dello snapshot del gruppo specificato dall'utente
 ]

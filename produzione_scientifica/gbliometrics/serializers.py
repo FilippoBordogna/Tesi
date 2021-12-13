@@ -1,5 +1,6 @@
+from django.db.models import fields
 from rest_framework import serializers
-from .models import Affiliation, Agroup, Author
+from .models import Affiliation, Agroup, Author, Snapshot
 
 class AgroupSerializer(serializers.ModelSerializer):
     '''
@@ -27,3 +28,13 @@ class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
         fields = '__all__'
+        
+class SnapshotSerializer(serializers.ModelSerializer):
+    '''
+        Classe che serializza la classe Snapshot
+    '''
+    
+    class Meta:
+        model = Snapshot
+        fields = '__all__'
+        
