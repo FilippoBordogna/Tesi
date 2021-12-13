@@ -1,0 +1,18 @@
+{
+  "id": 5,
+  "scopusId": 6603694127,
+  "name": "Stefano",
+  "surname": "Paraboschi",
+  "full_name": "Paraboschi S.",
+  "creation": "2021-12-10T05:16:42.896818+01:00",
+  "last_update": "2021-12-13T02:01:33.000669+01:00",
+  "affiliation": 1,
+  "document-count": 140,
+  "cited-by-count": 3902,
+  "citation-count": 5391,
+  "h-index": 35,
+  "publication-range": [
+    1993,
+    2021
+  ]
+}
