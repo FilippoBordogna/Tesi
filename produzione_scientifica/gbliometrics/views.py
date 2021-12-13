@@ -29,121 +29,135 @@ def myError(message):
 @api_view(['GET']) # Accetta solo metodo GET
 def groupApiOverview(request):
     '''
-        API che ritorna la lista di API dei gruppi che si possono interrogare
+        API che ritorna la lista di API dei gruppi che si possono interrogare.
     '''
     
     api_urls = { # Lista delle API disponibili
         'Lista dei gruppi dell\'utente': '/group-list/',
-        'Dettagli di un gruppo': '/group-detail/<str:pk>/',
+        'Dettagli di un gruppo': '/group-detail/<str:groupId>/',
         'Creazione di un gruppo': '/group-create/',
-        'Modifica di un gruppo': '/group-update/<str:pk>/',
-        'Eliminazione di un gruppo': '/group-delete/<str:pk>/',
+        'Modifica di un gruppo': '/group-update/<str:groupId>/',
+        'Eliminazione di un gruppo': '/group-delete/<str:groupId>/',
         'Aggiunta di un autore': '/group-add-author/<str:groupId>/<str:authorScopusId>/',
         'Rimozione di un autore': '/group-remove-author/<str:groupId>/<str:authorId>/'
     }
      
-    return Response(api_urls, status=200)
+    return Response(api_urls, status=200) # Successo
 
 @api_view(['GET']) # Accetta solo metodo GET
 def groupList(request):
     '''
-        API che mostra i gruppi creati dall'utente
+        API che mostra i gruppi creati dall'utente.
+        Se l'utente non è loggato lancio un errore.
     '''
     
     if(request.user.is_authenticated): # Utente loggato
         groups = Agroup.objects.filter(user=request.user) # Gruppi appartenenti all'utente
-        serializer = AgroupSerializer(groups, many=True)
-        
-        return Response(serializer.data, status=200) # Ritorno i dati di interesse trasformati in JSON
+        serializer = AgroupSerializer(groups, many=True) # Conversione Agroup->Dizionario
+
+        return Response(serializer.data, status=200) # Successo
     else: # Utente NON loggato
         return myError("Non sei loggato") # Errore
 
 @api_view(['GET']) # Accetta solo metodo GET
-def groupDetail(request, pk): # Necessita del parametro pk
+def groupDetail(request, groupId):
     '''
-        API che mostra i dettagli di un gruppo
+        API che mostra i dettagli di un gruppo specificato dall'utente.
+        Se l'utente non è loggato lancio un errore.
+        Se il gruppo specificato non è di proprietà dell'utente o non esiste lancio un errore.
     '''
     
     if(request.user.is_authenticated): # Utente loggato
         try:
-            group = Agroup.objects.get(user=request.user, id=pk) # Gruppo di cui mi interessano i dettagli
+            group = Agroup.objects.get(user=request.user, id=groupId) # Gruppo di cui mi interessano i dettagli
         except Agroup.DoesNotExist: # Gruppo inesistente o non di proprietà dell'utente
             return myError("Stai provando ad accedere ad informazioni su un gruppo inesistente o non di tua proprieta'") # Errore
         
-        serializer = AgroupSerializer(group, many=False)
+        serializer = AgroupSerializer(group, many=False) # Conversione Agroup->Dizionario
         
-        return Response(serializer.data, status=200)
+        return Response(serializer.data, status=200) # Successo
     else: # Utente NON loggato
         return myError("Non sei loggato") # Errore
     
 @api_view(['POST']) # Accetta solo metodo POST
 def groupCreate(request):
     '''
-        API che crea un gruppo associato all'utente
+        API che crea un gruppo associato all'utente.
+        Se l'utente non è loggato lancio un errore.
+        Se esiste già un gruppo di proprietà dell'utente con lo stesso nome lancio un errore.
     '''
     
     if(request.user.is_authenticated): # Utente loggato
-        # I campi user, data di creazione e data di ultima modifica settati per evitare modifiche che favoriscono inconsistenza
+        # Sovrascrivo i campi user, data di creazione e data di ultima modifica settati per evitare modifiche che favoriscono inconsistenza
         request.data['user'] = request.user.id
         request.data['creation'] = datetime.now()
         request.data['last_update'] = datetime.now()
         
         if(Agroup.objects.filter(user=request.user, name=request.data['name']).exists()): # Elemento con uguali campi user e name già presente
-            return myError("Il gruppo che stai inserendo esiste già") # Errore
+            return myError("E' già presente un gruppo associato al tuo utente con lo stesso nome") # Errore
 
         else: # Non esiste un elemento con uguali campi user e name
-            serializers = AgroupSerializer(data=request.data) # Trasformo il JSON passatomi in oggetto Agroup
+            serializers = AgroupSerializer(data=request.data) # Conversione JSON->Agroup
             if(serializers.is_valid()): # Oggetto creato correttamente
                 serializers.save(); # Salvo l'oggetto nel DB
-            
-            return Response(serializers.data, status=200) # Ritorno il JSON con le opportune modifiche (vedi request.data poco sopra)
+                      
+                return Response(serializers.data, status=200) # Successo
+            else:
+                return myError(serializers.error_messages)
     else: # Utente NON loggato
         return myError("Non sei loggato") # Errore
     
 @api_view(['POST']) # Accetta solo metodo POST
-def groupUpdate(request, pk):
+def groupUpdate(request, groupId):
     '''
-        API che modifica un gruppo associato all'utente (Non ottimale per modifiche sugli autori appartenenti al gruppo)
+        API che modifica un gruppo associato all'utente (Non ottimale per modifiche sugli autori appartenenti al gruppo).
+        Se l'utente non è loggato lancio un errore.
+        Se il gruppo specificato non è di proprietà dell'utente o non esiste lancio un errore.
+        Se esiste già un gruppo di proprietà dell'utente con lo stesso nome specificato come modifica lancio un errore.
     '''
     
     if(request.user.is_authenticated): # Utente loggato     
         try:
-            group = Agroup.objects.get(user=request.user, id=pk) # Gruppo su cui effettuare le modifiche
+            group = Agroup.objects.get(user=request.user, id=groupId) # Gruppo su cui effettuare le modifiche
         except Agroup.DoesNotExist: # Gruppo inesistente o non di proprietà dell'utente
-            return myError("Stai provando ad accedere ad informazioni su un gruppo inesistente o non di tua proprieta'") # Errore
+            return myError("Stai provando modificare i dati di un gruppo inesistente o non di tua proprieta'") # Errore
         
-        # I campi user, data di creazione e data di ultima modifica settati per evitare modifiche che favoriscono inconsistenza
+        # Sovrascrivo i campi id, user, data di creazione e data di ultima modifica per evitare modifiche che favoriscono inconsistenza
         request.data['id'] = group.id
         request.data['user'] = request.user.id
         request.data['last_update'] = datetime.now()
         request.data['creation'] = group.creation
         
-        if(Agroup.objects.filter(user=request.user, name=request.data['name'], ).exclude(id=pk).exists()): # Elemento con uguali campi user e name già presente (con id diverso)
-            return myError("E' già presente un gruppo con lo stesso nome associato al tuo utente") # Errore
+        if(Agroup.objects.filter(user=request.user, name=request.data['name'], ).exclude(id=groupId).exists()): # Elemento con uguali campi user e name già presente (con id diverso)
+            return myError("E' già presente un gruppo associato al tuo utente con lo stesso nome") # Errore
         
-        serializers = AgroupSerializer(instance=group, data=request.data) # Creo un istanza dell'oggetto con i campi modificati
+        serializers = AgroupSerializer(instance=group, data=request.data) # Apporto all'istanza dell'oggetto Agroup le modifiche specificate
         if(serializers.is_valid()): # Formato corretto
-            serializers.save(); # Salvo le modifiche all'oggetto nel DB 
-        
-        return Response(serializers.data, status=200) 
+            serializers.save(); # Salvo le modifiche all'oggetto nel DB
+            
+            return Response(serializers.data, status=200) # Successo
+        else:
+           return myError(serializers.error_messages) # Errore
     else: # Utente NON loggato
         return myError("Non sei loggato") # Errore
     
 @api_view(['DELETE']) # Accetta solo metodo DELETE
-def groupDelete(request, pk):
+def groupDelete(request, groupId):
     '''
-        API che elimina un gruppo associato all'utente
+        API che elimina un gruppo associato all'utente.
+        Se l'utente non è loggato lancio un errore.
+        Se il gruppo specificato non è di proprietà dell'utente o non esiste lancio un errore.
     '''
     
     if(request.user.is_authenticated): # Utente loggato 
         try:
-            group = Agroup.objects.get(user=request.user, id=pk) # Gruppo da eliminare
+            group = Agroup.objects.get(user=request.user, id=groupId) # Gruppo da eliminare
         except Agroup.DoesNotExist: # Gruppo inesistente o non di proprietà dell'utente
-            return myError("Stai provando ad accedere ad informazioni su un gruppo inesistente o non di tua proprieta'") # Errore
+            return myError("Stai provando ad eliminare un gruppo inesistente o non di tua proprieta'") # Errore
         
         group.delete(); # Eliminazione del campo nel DB (non necessita conferma con .save())
         
-        return Response({'message':"Gruppo eliminato con successo"}, status=200)
+        return Response({'message':"Gruppo eliminato con successo"}, status=200) # Successo
     else: # Utente NON loggato
         return myError("Non sei loggato") # Errore
 
@@ -151,25 +165,26 @@ def groupDelete(request, pk):
 def groupAddAuthor(request, groupId, authorScopusId):
     '''
         API che aggiunge ad un gruppo un autore.
-        Se il gruppo non esiste o non è di tua proprietà genera un errore.
+        Se l'utente non è loggato lancio un errore.
+        Se il gruppo non esiste o non è di tua proprietà lancio un errore.
     '''
     
     if(request.user.is_authenticated): # Utente loggato
         try:
             group = Agroup.objects.get(user=request.user, id=groupId) # Gruppo su cui effettuare le modifiche
         except Agroup.DoesNotExist: # Gruppo inesistente o non di proprietà dell'utente
-            return myError("Stai provando ad aggiungere un utente ad un gruppo inesistente o non di tua proprieta'") # Errore
+            return myError("Stai provando ad aggiungere un autore ad un gruppo inesistente o non di tua proprieta'") # Errore
         
         risposta = authorUpdate_Create(authorScopusId) # Creo o aggiorno i dati dell'autore
-        if(risposta.status_code==500):
-            return risposta
+        if(risposta.status_code==500): # Errore nel processo di creazione / aggiornamento
+            return risposta # Errore
         
         author = Author.objects.get(scopusId=authorScopusId) # Autore da aggiungere
         group.authors.add(author) # Aggiungo l'autore al gruppo
 
-        serializer = AgroupSerializer(group, many=False)
+        serializer = AgroupSerializer(group, many=False) # Conversione Agroup->Dizionario
         
-        return Response(serializer.data, status=200)
+        return Response(serializer.data, status=200) # Successo
     else: # Utente NON loggato
         return myError("Non sei loggato") # Errore
 
@@ -177,7 +192,8 @@ def groupAddAuthor(request, groupId, authorScopusId):
 def groupRemoveAuthor(request, groupId, authorId):
     '''
         API che rimuove un autore da un gruppo.
-        Se il gruppo non esiste o non è di tua proprietà genera un errore.
+        Se il gruppo non esiste o non è di tua proprietà lancio un errore.
+        Se l'autore non è presente lancio un errore.
     '''
    
     if(request.user.is_authenticated): # Utente loggato
@@ -186,17 +202,15 @@ def groupRemoveAuthor(request, groupId, authorId):
         except Agroup.DoesNotExist: # Gruppo inesistente o non di proprietà dell'utente
             return myError("Stai provando ad aggiungere un utente ad un gruppo inesistente o non di tua proprieta'") # Errore
         
-        author = Author.objects.get(id=authorId) # Autore da aggiungere
-        if(group.authors.filter(id=author.id).exists()):
-            group.authors.remove(author) # Aggiungo l'autore al gruppo
-            serializer = AgroupSerializer(group, many=False)
+        
+        if(group.authors.filter(id=authorId).exists()): # L'autore esiste
+            author = Author.objects.get(id=authorId) # Autore da eliminare
+            group.authors.remove(author) # Rimuovo l'autore dal gruppo
+            serializer = AgroupSerializer(group, many=False) # Conversione Agroup->Dizionario
             
-            return Response(serializer.data, status=200)
+            return Response(serializer.data, status=200) # Successo
         else:
-            return myError("L'utente che stai cercando di rimuovere non è presente nel gruppo")
-
-        
-        
+            return myError("L'utente che stai cercando di rimuovere non è presente nel gruppo") # Errore        
     else: # Utente NON loggato
         return myError("Non sei loggato") # Errore 
     
@@ -212,51 +226,48 @@ def affiliationCreate(dizionario):
         - Altrimenti restituisco un errore
     '''
     
-    # Il controllo sull'eventuale esistenza (prima della chiamata) nel DB del record da inserire lo lascio alla funzione chiamante
-    serializers = AffiliationSerializer(data=dizionario) # Trasformo il JSON passatomi in oggetto Affiliation
+    serializers = AffiliationSerializer(data=dizionario) # Conversione JSON->Affiliation
     
     if(serializers.is_valid()): # Formato corretto
         serializers.save(); # Salvo l'oggetto nel DB
-        return Response(serializers.data, status=200)
+        return Response(serializers.data, status=200) # Successo
     else:
         return myError(serializers.error_messages) # Errore 
     
-def affiliationUpdate(dizionario, pk):
+def affiliationUpdate(dizionario, affiliationId):
     '''
         Funzione che dato un dizionario modifica un oggetto Affiliazione
         - Se la modifica va a buon fine Restituisco i dati inseriti nel DB
         - Altrimenti restituisco un errore
     '''
     
-    # Il controllo sull'eventuale esistenza nel DB di un record con gli stessi campi chiave la lascio alla funzione chiamante
-    
-    affiliation =  Affiliation.objects.get(scopusId=pk) # Affiliazione su cui effettuare le modifiche
-    serializers = AffiliationSerializer(instance=affiliation, data=dizionario) # Creo un istanza dell'oggetto con i campi modificati
+    affiliation =  Affiliation.objects.get(scopusId=affiliationId) # Affiliazione su cui effettuare le modifiche
+    serializers = AffiliationSerializer(instance=affiliation, data=dizionario) # Apporto all'istanza dell'oggetto Affiliation le modifiche specificate
         
     if(serializers.is_valid()): # Formato corretto
         serializers.save(); # Salvo l'oggetto nel DB
         
-        return Response(serializers.data, status=200)
+        return Response(serializers.data, status=200) # Successo
     else:    
         return myError(serializers.error_messages) # Errore
     
 def affiliationUpdate_Create(id):
     '''
-        Funzione che controlla la presenza nel DB della affiliazione con scopusId=id
-        Se non è presente la aggiunge al DB
-        Se è presente aggiorna il record
+        Funzione che controlla la presenza nel DB della affiliazione con scopusId=id:
+        - Se non è presente la aggiunge al DB.
+        - Se è presente aggiorna il record.
+        Se non esiste l'affiliazione lancio un errore.
     '''
     
     esiste = Affiliation.objects.filter(scopusId=id).exists() # Presenza nel DB dell'affiliazione
     
     try:
-        ar=AffiliationRetrieval(aff_id=id, refresh=True, view="STANDARD");
+        ar=AffiliationRetrieval(aff_id=id, refresh=True, view="STANDARD") # API di Elsevier-Scopus per ricevere informazioni sull'affiliazione
     except:
-        return myError("Non esiste un Affiliazione con id = "+str(id))
+        return myError("Non esiste un Affiliazione con id = "+str(id)) # Errore
     
-    af={
+    af={ # Dizionario contenete i dati per creare / modificare l'oggetto Affiliation
                 'scopusId': ar.eid.split('-')[2],
-                # 'ScopusId': pk # Preferisco prenderlo da Scopus (perchè potrebbe essere cambiato per qualche motivo)
                 'name': ar.affiliation_name,
                 'address': ar.address,
                 'city': ar.city,
@@ -269,14 +280,14 @@ def affiliationUpdate_Create(id):
     
     if(not esiste): # Se non esiste, creo l'oggetto Affiliazione nel DB        
         af['creation'] = datetime.now()
-        risposta = affiliationCreate(af)
+        risposta = affiliationCreate(af) # Creo l'affiliazione
         
     else: # Se esiste Aggiorno
         affiliation = Affiliation.objects.get(scopusId=id)
         af['creation'] = affiliation.creation
-        risposta = affiliationUpdate(af, id)
+        risposta = affiliationUpdate(af, id) # Aggiorno i dati dell'affiliazione
         
-    return risposta
+    return risposta # Errore o Successo
     
 @api_view(['GET']) # Accetta solo metodo GET
 def affiliationApiOverview(request):
@@ -285,38 +296,36 @@ def affiliationApiOverview(request):
     '''
     
     api_urls = { # Lista delle API disponibili
-        'Dettagli affiliazione (da DB se possibile)': '/affiliation-detail/<str:pk>/',
-        'Dettagli affiliazione (da Scopus)': '/affiliation-detail/<str:pk>/refresh/'
+        'Dettagli affiliazione (da DB se possibile)': '/affiliation-detail/<str:affiliationId>/',
+        'Dettagli affiliazione (da Scopus con conseguente aggiornamento del DB)': '/affiliation-detail/<str:affiliationId>/refresh/'
     }
      
-    return Response(api_urls, status=200)
+    return Response(api_urls, status=200) # Successo
 
 @api_view(['GET']) # Accetta solo metodo GET
-def affiliationDetail(request, pk, refresh):
+def affiliationDetail(request, affiliationId, refresh):
     '''
         API che ritorna i dettagli di una affiliazione.
-        Se refresh = False restituisco i dati dal DB
+        Se refresh = False cerco di restituire i dati presenti nel DB
             - Se l'oggetto non è presente interrogo le API di Elsevier
                 - Creo l'oggetto con le informazioni ricevute
-            - Ritorno i dettagli in formato JSON
         Se refresh = True prendo i dati aggiornati da Elsevier
             - Se l'oggetto non è presente nel DB lo creo
             - Se l'oggetto è presente lo aggiorno
-            - Ritorno i dettagli in formato JSON
+        Ritorno i dettagli in formato JSON
         N.B. PER IL MOMENTO QUESTA CHIAMATA E' DISPONIBILE ANCHE SE NON LOGGATI (IN FUTURO CHISSA')
     '''
     
-    esiste = Affiliation.objects.filter(scopusId=pk).exists() # Se uso .get() anzichè .filter() errore
-    if(esiste):
-        affiliation = Affiliation.objects.get(scopusId=pk) # Oggetto Affiliation di cui mi interessano i dettagli
+    esiste = Affiliation.objects.filter(scopusId=affiliationId).exists() # Se uso .get() anzichè .filter() errore
     
     if(not(refresh) and esiste): # Ho i dati e non devo aggiornare: Prendo i dati dal DB
-        serializer = AffiliationSerializer(affiliation, many=False)
+        affiliation = Affiliation.objects.get(scopusId=affiliationId) # Affiliazione di cui ci interessano le informazioni
+        serializer = AffiliationSerializer(affiliation, many=False) # Conversione Affiliation->Dizionario
         
-        return Response(serializer.data, status=200)
-    else:
-        response = affiliationUpdate_Create(pk) # Creo o aggiorno il record dell'affiliazione
-        return response
+        return Response(serializer.data, status=200) # Successo
+    else: # Non ho i dati oppure li devo aggiornare
+        response = affiliationUpdate_Create(affiliationId) # Creo o aggiorno il record dell'affiliazione
+        return response # Errore o Successo
     
 ####################################################################################
 #################################### API AUTORI ####################################
@@ -329,72 +338,72 @@ def authorCreate(dizionario):
         - Altrimenti restituisco un errore
     '''
     
-    # Il controllo sull'eventuale esistenza (prima della chiamata) nel DB del record da inserire lo lascio alla funzione chiamante
-    risposta = affiliationUpdate_Create(id=dizionario['affiliation-scopusId'])
-    if(risposta.status_code==500):
-        return risposta
+    risposta = affiliationUpdate_Create(id=dizionario['affiliation-scopusId']) # Creo o aggiorno l'associazione a cui appartiene l'autore
+    if(risposta.status_code==500): # Errore nel processo di creazione / aggiornamento
+        return risposta # Errore
     
-    dizionario['affiliation'] = risposta.data["id"] # La risposta mi dà (tra le altre cose) l'id della affiliazione appena creata/aggiornata che userò come chiave esterna
+    dizionario['affiliation'] = risposta.data["id"] # Aggiorno la chiave esterna che collega un autore all'associazione di appartenenza
     
-    serializers = AuthorSerializer(data=dizionario) # Trasformo il JSON passatomi in oggetto Author
+    serializers = AuthorSerializer(data=dizionario) # Conversione JSON->Author
     if(serializers.is_valid()): # Formato corretto
         serializers.save(); # Salvo l'oggetto nel DB
         
-        return Response(serializers.data, status=200)
+        return Response(serializers.data, status=200) # Successo
     else:
         return myError(serializers.error_messages) # Errore
     
-def authorUpdate(dizionario, pk):
+def authorUpdate(dizionario, auhtorId):
     '''
         API che dato un dizionario modifica un oggetto Autore
         - Se la modifica va a buon fine Restituisco i dati inseriti nel DB
         - Altrimenti restituisco un errore
     '''
     
-    # Il controllo sull'eventuale esistenza nel DB di un record con gli stessi campi chiave la lascio alla funzione chiamante
+    risposta = affiliationUpdate_Create(id=dizionario['affiliation-scopusId']) # Creo o aggiorno l'associazione a cui appartiene l'autore
+    if(risposta.status_code==500): # Errore nel processo di creazione / aggiornamento
+        return risposta # Errore
     
-    affiliation = Affiliation.objects.get(scopusId=dizionario['affiliation-scopusId']) 
-    dizionario['affiliation'] = affiliation.id
-      
-    author =  Author.objects.get(scopusId=pk)
-    serializers = AuthorSerializer(instance=author, data=dizionario) # Creo un istanza dell'oggetto con i campi modificati
+    dizionario['affiliation'] = risposta.data["id"] # Aggiorno la chiave esterna che collega un autore all'associazione di appartenenza
+    
+    author =  Author.objects.get(scopusId=auhtorId) # Autore da modificare (Che esiste)
+    serializers = AuthorSerializer(instance=author, data=dizionario) # Apporto all'istanza dell'oggetto Author le modifiche specificate
         
     if(serializers.is_valid()): # Formato corretto
         serializers.save(); # Salvo l'oggetto nel DB
         
-        return Response(serializers.data, status=200)
+        return Response(serializers.data, status=200) # Successo
     else:    
         return myError(serializers.error_messages) # Errore
     
 def authorUpdate_Create(id):
     '''
         Funzione che controlla la presenza nel DB dell'autore con scopusId=id
-        Se non è presente la aggiunge al DB
-        Se è presente aggiorna il record
-        Se tutto va a buon fine restituisco anche informazioni extra non presenti nel DB
+        - Se non è presente la aggiunge al DB
+        - Se è presente aggiorna il record
+        Se tutto va a buon fine restituisco anche informazioni extra non presenti nel DB.
     '''
     
     esiste = Author.objects.filter(scopusId=id).exists() # Esistenza nel DB dell'autore
-    ar=AuthorRetrieval(author_id=id, refresh=True, view="ENHANCED");
-    au={
+    ar=AuthorRetrieval(author_id=id, refresh=True, view="ENHANCED") # API di Elsevier-Scopus per ricevere informazioni sull'autore
+    au={ # Dizionario contenente i dati per creare / aggiornare l'autore
             'scopusId': ar.identifier,
             'name': ar.given_name,
             'surname': ar.surname,
             'full_name': ar.indexed_name,
-            'affiliation-scopusId': ar.affiliation_current[0][0],
+            'affiliation-scopusId': ar.affiliation_current[0][0], # id Scopus dell'affiliazione (mi serve per linkare un autore all'affiliazione di appartenenza)
             'last_update': datetime.now()
-        } # Dizionario che passerò alla funzione che crea/aggiorna l'autore
+        }
     
     if(esiste): # Devo aggiornare l'oggetto
-        author = Author.objects.get(scopusId=id)  
+        author = Author.objects.get(scopusId=id) # Autore da modificare
         au['creation'] = author.creation
-        risposta = authorUpdate(au, id)
+        risposta = authorUpdate(au, id) # Modifica dell'autore
     else: # Devo creare l'oggetto
         au['creation'] = datetime.now()
-        risposta = authorCreate(au)
+        risposta = authorCreate(au) # Creazione dell'autore
     
-    if(risposta.status_code==500):
-        return risposta
+    if(risposta.status_code==500): # Errori nel processo di creazione / aggiornamento dell'autore
+        return risposta # Errore
     else:
         # Setto i campi extra della risposta che non ho utilizzato per creare il DB
         risposta.data["document-count"] = ar.document_count
@@ -407,7 +416,7 @@ def authorUpdate_Create(id):
         
         #return Response(ar._json) Ritorna troppi campi che non mi servono
     
-        return risposta        
+        return risposta # Successo   
 
 @api_view(['GET']) # Accetta solo metodo GET
 def authorApiOverview(request):
@@ -416,25 +425,23 @@ def authorApiOverview(request):
     '''
     
     api_urls = { # Lista delle API disponibili
-        'Dettagli autore (da Scopus) dato scopusId': '/author-detail/<str:pk>/'
+        'Dettagli autore (da Scopus) dato scopusId': '/author-detail/<str:auhtorId>/'
     }
      
-    return Response(api_urls, status=200)
+    return Response(api_urls, status=200) # Successo
 
 @api_view(['GET']) # Accetta solo metodo GET
-def authorDetail(request, pk):
+def authorDetail(request, auhtorId):
     '''
         API che ritorna i dettagli di un autore.
         Se l'oggetto non è presente nel DB lo aggiungo.
-        Se l'oggetto è presente nel DB
-            - Se i dati differiscono da quelli nel DB aggiorno
-            - Se i dati sono uguali non aggiorno
-        In ogni caso ritornerò i dati di Scopus (+ campi del DB)
+        Se l'oggetto è presente nel DB aggiorno i dati
+        In ogni caso ritornerò i dati di Scopus (di cui i campi del DB sono un sottoinsieme)
         N.B. PER IL MOMENTO QUESTA CHIAMATA E' DISPONIBILE ANCHE SE NON LOGGATI (IN FUTURO CHISSA')
     '''
     
-    risposta = authorUpdate_Create(pk)   
-    return risposta
+    risposta = authorUpdate_Create(auhtorId) # Creo / Aggiorno un autore
+    return risposta # Errore o Successo
 
 ####################################################################################
 ################################### API SNAPSHOT ###################################
@@ -451,26 +458,29 @@ def snapshotApiOverview(request):
         'Creazione dello snapshot del gruppo': '/snapshot-create/<str:groupId>/<str:title>/'
     }
      
-    return Response(api_urls, status=200)
+    return Response(api_urls, status=200) # Successo
 
 @api_view(['GET']) # Accetta solo metodo GET
 def snapshotList(request):
     '''
-        API che mostra gli snapshot dell'utente
+        API che mostra gli snapshot dell'utente.
+        Se l'utente non è loggato lancio un errore.
     '''
     
     if(request.user.is_authenticated): # Utente loggato
-        snapshots = Snapshot.objects.filter(user=request.user)
-        serializer = SnapshotSerializer(snapshots, many=True)
+        snapshots = Snapshot.objects.filter(user=request.user) # Snapshots da mostrare
+        serializer = SnapshotSerializer(snapshots, many=True) # Conversione Snapshot->Dizionario
         
-        return Response(serializer.data, status=200) # Ritorno i dati di interesse trasformati in JSON
+        return Response(serializer.data, status=200) # Successo
     else: # Utente NON loggato
         return myError("Non sei loggato") # Errore
     
 @api_view(['POST']) # Accetta solo metodo POST
 def snapshotCreate(request, groupId, title):
     '''
-        API che crea lo snapshot di un gruppo specificato dall'utente
+        API che crea lo snapshot di un gruppo specificato dall'utente.
+        Se l'utente non è loggato lancio un errore.
+        Se il gruppo specificato non è di proprietà dell'utente o non esiste lancio un errore.
     '''
     
     if(request.user.is_authenticated): # Utente loggato
@@ -484,7 +494,7 @@ def snapshotCreate(request, groupId, title):
         tot_cited_by_count = 0 # Numero di citazioni agli autori del gruppo
         tot_citation_count = 0 # Numero di citazioni a documenti prodotti dagli autori del gruppo
         tot_h_index = 0 # Indice di produttività degli autori del gruppo
-        dati_singoli=[]
+        # dati_singoli=[]
         
         for author in group.authors.all(): # Ciclo fra gli autori del gruppo
             risposta = authorUpdate_Create(author.scopusId) # Aggiorno i dati di un autore
@@ -492,27 +502,26 @@ def snapshotCreate(request, groupId, title):
             tot_cited_by_count += risposta.data["cited-by-count"]
             tot_citation_count += risposta.data["citation-count"] 
             tot_h_index += risposta.data["h-index"]
-            #dati_singoli.append(risposta.data)
+            # dati_singoli.append(risposta.data)
        
-        contenuto = {
+        contenuto = { # Dizionario che diventerà il contenuto del file .json
                         "groupAuthors": AuthorSerializer(group.authors.all(), many=True).data,
                         "tot_document_count": tot_document_count,
                         "tot_cited_by_count": tot_cited_by_count,
                         "tot_citation_count": tot_citation_count,
                         "tot_h_index": tot_h_index,
                         "timestamp": datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-                        #"singoli": dati_singoli
+                        # "singoli": dati_singoli
                     }
         
-        
-        contenuto_byte = json.dumps(contenuto, indent=2).encode('utf-8')
-        file = ContentFile(contenuto_byte)
-        file.name = title
+        contenuto_byte = json.dumps(contenuto, indent=2).encode('utf-8') # Conversione Dizionario->Binario
+        file = ContentFile(contenuto_byte) # Creazione del file
+        file.name = title # Titolo del file
         snapshot = Snapshot(user=request.user, title=title, creation=datetime.now()) # Creazione dello snapshot
         snapshot.save() # Salvataggio dello snapshot
-        snapshot.informations.save(title, file) # Aggiunta allo snapshot del file
+        snapshot.informations.save(title, file) # Aggiunta del file .json allo snapshot
                
-        return Response(contenuto, status=200)
+        return Response(contenuto, status=200) # Successo
         
     else: # Utente NON loggato
         return myError("Non sei loggato") # Errore
@@ -520,7 +529,9 @@ def snapshotCreate(request, groupId, title):
 @api_view(['DELETE']) # Accetta solo metodo GET 
 def snapshotDelete(request, snapshotId):
     '''
-        API che elimina uno snapshot specificato dall'utente
+        API che elimina lo snapshot specificato dall'utente.
+        Se l'utente non è loggato lancio un errore.
+        Se lo snapshot specificato non è di proprietà dell'utente o non esiste lancio un errore.
     '''
     
     if(request.user.is_authenticated): # Utente loggato 
@@ -531,6 +542,6 @@ def snapshotDelete(request, snapshotId):
         
         snapshot.delete(); # Eliminazione del campo nel DB (non necessita conferma con .save())
         
-        return Response({'message':"Snapshot eliminato con successo"}, status=200)
+        return Response({'message':"Snapshot eliminato con successo"}, status=200) # Successo
     else: # Utente NON loggato
         return myError("Non sei loggato") # Errore
