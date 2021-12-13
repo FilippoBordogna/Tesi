@@ -85,7 +85,7 @@ class Agroup(models.Model):
         
 class Snapshot(models.Model):
     def user_directory_path(instance, title): # Funzione che crea il percorso ed il nome del file json
-        filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S.json")
+        filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")+"_"+title+".json"
         return 'snapshots/user_{0}/{1}'.format(instance.user.id, filename)
     
     user =  models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE) # Utente proprietario

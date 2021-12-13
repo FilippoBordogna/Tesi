@@ -1,8 +1,7 @@
-import os
 from django.http.response import HttpResponse
 from django_registration.forms import User
-from pybliometrics import scopus
-from pybliometrics.scopus.utils.create_config import create_config # Modello User Django
+from pybliometrics.scopus.utils.create_config import create_config
+from rest_framework.fields import JSONField # Modello User Django
 from gbliometrics.models import Agroup, Affiliation, Author, Snapshot # Modelli DB
 from datetime import datetime # Libreria Temporale
 
@@ -468,10 +467,10 @@ def snapshotList(request):
     else: # Utente NON loggato
         return myError("Non sei loggato") # Errore
     
-@api_view(['POST']) # Accetta solo metodo GET
+@api_view(['POST']) # Accetta solo metodo POST
 def snapshotCreate(request, groupId, title):
     '''
-        API che crea gli snapshot dell'utente
+        API che crea lo snapshot di un gruppo specificato dall'utente
     '''
     
     if(request.user.is_authenticated): # Utente loggato
@@ -479,33 +478,59 @@ def snapshotCreate(request, groupId, title):
             group = Agroup.objects.get(user=request.user, id=groupId) # Gruppo di cui mi interessano i dettagli
         except Agroup.DoesNotExist: # Gruppo inesistente o non di proprietà dell'utente
             return myError("Stai provando ad accedere ad informazioni su un gruppo inesistente o non di tua proprieta'") # Errore
+
+        # Contatori globali
+        tot_document_count = 0 # Numero di documenti prodotti dagli autori del gruppo
+        tot_cited_by_count = 0 # Numero di citazioni agli autori del gruppo
+        tot_citation_count = 0 # Numero di citazioni a documenti prodotti dagli autori del gruppo
+        tot_h_index = 0 # Indice di produttività degli autori del gruppo
+        dati_singoli=[]
         
+        for author in group.authors.all(): # Ciclo fra gli autori del gruppo
+            risposta = authorUpdate_Create(author.scopusId) # Aggiorno i dati di un autore
+            tot_document_count += risposta.data["document-count"] 
+            tot_cited_by_count += risposta.data["cited-by-count"]
+            tot_citation_count += risposta.data["citation-count"] 
+            tot_h_index += risposta.data["h-index"]
+            #dati_singoli.append(risposta.data)
+       
         contenuto = {
-                        "id": 5,
-                        "scopusId": 6603694127,
-                        "name": "Stefano",
-                        "surname": "Paraboschi",
-                        "full_name": "Paraboschi S.",
-                        "creation": "2021-12-10T05:16:42.896818+01:00",
-                        "last_update": "2021-12-13T02:01:33.000669+01:00",
-                        "affiliation": 1,
-                        "document-count": 140,
-                        "cited-by-count": 3902,
-                        "citation-count": 5391,
-                        "h-index": 35,
-                        "publication-range": [
-                            1993,
-                            2021
-                        ]
+                        "groupAuthors": AuthorSerializer(group.authors.all(), many=True).data,
+                        "tot_document_count": tot_document_count,
+                        "tot_cited_by_count": tot_cited_by_count,
+                        "tot_citation_count": tot_citation_count,
+                        "tot_h_index": tot_h_index,
+                        "timestamp": datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+                        #"singoli": dati_singoli
                     }
+        
+        
         contenuto_byte = json.dumps(contenuto, indent=2).encode('utf-8')
-        #snapshot = Snapshot(user=request.user, title=title, creation=datetime.now())
-        #snapshot.save();
-        snapshot = Snapshot.objects.get(id=10)
-        #snapshot.informations.save(title, ContentFile(contenuto_byte))
+        file = ContentFile(contenuto_byte)
+        file.name = title
+        snapshot = Snapshot(user=request.user, title=title, creation=datetime.now()) # Creazione dello snapshot
+        snapshot.save() # Salvataggio dello snapshot
+        snapshot.informations.save(title, file) # Aggiunta allo snapshot del file
+               
+        return Response(contenuto, status=200)
         
-        f = json.load(snapshot.informations)       
-        return Response(f)
+    else: # Utente NON loggato
+        return myError("Non sei loggato") # Errore
+    
+@api_view(['DELETE']) # Accetta solo metodo GET 
+def snapshotDelete(request, snapshotId):
+    '''
+        API che elimina uno snapshot specificato dall'utente
+    '''
+    
+    if(request.user.is_authenticated): # Utente loggato 
+        try:
+            snapshot = Snapshot.objects.get(user=request.user, id=snapshotId) # Gruppo da eliminare
+        except Snapshot.DoesNotExist: # Gruppo inesistente o non di proprietà dell'utente
+            return myError("Stai provando ad eliminare uno snapshot inesistente o non di tua proprieta'") # Errore
         
+        snapshot.delete(); # Eliminazione del campo nel DB (non necessita conferma con .save())
+        
+        return Response({'message':"Snapshot eliminato con successo"}, status=200)
     else: # Utente NON loggato
         return myError("Non sei loggato") # Errore
