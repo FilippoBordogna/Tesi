@@ -39,7 +39,12 @@ E' necessario possedere una API Key anche per le API di WoS (impossibile richied
 - [ ] Aggiornamento dello stile del front-end
 
 ## STRUTTURA del PROGETTO:
-- Nella cartella [produzione_scientifica](produzione_scientifica) è presente il progetto Django vero e proprio.
+- Nella cartella [produzione_scientifica](produzione_scientifica) è presente il progetto Django vero e proprio suddiviso in
+ - [produzione_scientifica/gbliometrics](Backend)
+ - [produzione_scientifica/frontend](Frontend)
+ - [produzione_scientifica/sent_emails](Cartella contente le simulazioni di email per creare account o recuperare password)
+ - [produzione_scientifica/snapshots](Snapshots: File su cui sono salvati gli stati temporali di un gruppo di autori)
+ - [produzione_scientifica/templates](Templates)
 - Nella cartella [TEST](TEST) sono presenti le prove preliminari effettuate tramite client Python.
 
 ## GUIDE seguite:
