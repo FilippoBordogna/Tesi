@@ -35,7 +35,7 @@ E' necessario possedere una API Key anche per le API di WoS (impossibile richied
 - [x] CRUD Tabella Agroups (API)
 - [x] CRUD Tabella Affiliations (API)
 - [x] CRUD Tabella Authors (API)
-- [ ] CRUD Tabella Stats
+- [x] CRUD Tabella Snapshot (API)
 - [ ] Aggiornamento dello stile del front-end
 
 ## STRUTTURA del PROGETTO:
