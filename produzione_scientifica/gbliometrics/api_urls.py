@@ -29,6 +29,7 @@ urlpatterns = [ # Url appartenenti all'app gbliometrics
     # API DEGLI SNAPSHOT (ELSEVIER + MIA APP)
     path('snapshots/', views.snapshotApiOverview, name='snapshot-api-overview'), # Lista delle API degli snapshot
     path('snapshots/snapshot-list/', views.snapshotList, name='snapshot-list'), # Lista degli snapshot dell'utente
-    path('snapshots/snapshot-create/<str:groupId>/<str:title>/', views.snapshotCreate, name='snapshot-create'), # Creazione dello snapshot del gruppo specificato dall'utente
+    path('snapshots/snapshot-create/<str:groupId>/', views.snapshotCreate, name='snapshot-create'), # Creazione dello snapshot del gruppo specificato dall'utente
+    path('snapshots/snapshot-save/<str:title>/', views.snapshotSave, name='snapshot-save'), # Salvataggio di uno snapshot dato come contenuto della POST
     path('snapshots/snapshot-delete/<str:snapshotId>/', views.snapshotDelete, name='snapshot-delete'), # Eliminazione dello snapshot specificato dall'utente
 ]

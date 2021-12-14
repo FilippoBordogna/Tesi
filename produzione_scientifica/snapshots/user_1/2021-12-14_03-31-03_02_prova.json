@@ -7,7 +7,7 @@
       "surname": "Paraboschi",
       "full_name": "Paraboschi S.",
       "creation": "2021-12-10T05:16:42.896818+01:00",
-      "last_update": "2021-12-13T20:38:32.739072+01:00",
+      "last_update": "2021-12-14T03:30:36.320759+01:00",
       "affiliation": 1
     },
     {
@@ -17,7 +17,7 @@
       "surname": "Bacis",
       "full_name": "Bacis E.",
       "creation": "2021-12-10T06:00:20.109440+01:00",
-      "last_update": "2021-12-13T20:38:33.947491+01:00",
+      "last_update": "2021-12-14T03:30:37.225044+01:00",
       "affiliation": 1
     },
     {
@@ -27,7 +27,7 @@
       "surname": "Re",
       "full_name": "Re V.",
       "creation": "2021-12-10T06:01:54.287104+01:00",
-      "last_update": "2021-12-13T20:38:35.180559+01:00",
+      "last_update": "2021-12-14T03:30:38.221141+01:00",
       "affiliation": 1
     }
   ],
@@ -35,5 +35,5 @@
   "tot_cited_by_count": 11778,
   "tot_citation_count": 16926,
   "tot_h_index": 86,
-  "timestamp": "2021-12-13_20-38-35"
+  "timestamp": "2021-12-14_03-30-38"
 }

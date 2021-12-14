@@ -455,7 +455,8 @@ def snapshotApiOverview(request):
     
     api_urls = { # Lista delle API disponibili
         'Lista degli snapshot dell\'utente': '/snapshot-list/',
-        'Creazione dello snapshot del gruppo': '/snapshot-create/<str:groupId>/<str:title>/'
+        'Creazione dello snapshot del gruppo': '/snapshot-create/<str:groupId>/<str:title>/',
+        'Salvataggio di uno snapshot': 'snapshot-save/<str:title>/'
     }
      
     return Response(api_urls, status=200) # Successo
@@ -476,9 +477,9 @@ def snapshotList(request):
         return myError("Non sei loggato") # Errore
     
 @api_view(['POST']) # Accetta solo metodo POST
-def snapshotCreate(request, groupId, title):
+def snapshotCreate(request, groupId):
     '''
-        API che crea lo snapshot di un gruppo specificato dall'utente.
+        API che crea e restituisce il dizionario contenente lo snapshot di un gruppo specificato dall'utente.
         Se l'utente non è loggato lancio un errore.
         Se il gruppo specificato non è di proprietà dell'utente o non esiste lancio un errore.
     '''
@@ -513,20 +514,29 @@ def snapshotCreate(request, groupId, title):
                         "timestamp": datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
                         # "singoli": dati_singoli
                     }
-        
-        contenuto_byte = json.dumps(contenuto, indent=2).encode('utf-8') # Conversione Dizionario->Binario
+        return Response(contenuto, status=200) # Successo
+    else: # Utente NON loggato
+        return myError("Non sei loggato") # Errore
+    
+@api_view(['POST']) # Accetta solo metodo POST 
+def snapshotSave(request, title):
+    '''
+        API che salva su file uno snapshot per operazioni di confronto future.
+        Se l'utente non è loggato lancio un errore.
+    '''
+    
+    if(request.user.is_authenticated): # Utente loggato
+        contenuto_byte = json.dumps(request.data, indent=2).encode('utf-8') # Conversione Dizionario->Binario
         file = ContentFile(contenuto_byte) # Creazione del file
         file.name = title # Titolo del file
         snapshot = Snapshot(user=request.user, title=title, creation=datetime.now()) # Creazione dello snapshot
         snapshot.save() # Salvataggio dello snapshot
         snapshot.informations.save(title, file) # Aggiunta del file .json allo snapshot
-               
-        return Response(contenuto, status=200) # Successo
-        
+        return Response({'message':"Snapshot salvato con successo"}, status=200)
     else: # Utente NON loggato
         return myError("Non sei loggato") # Errore
     
-@api_view(['DELETE']) # Accetta solo metodo GET 
+@api_view(['DELETE']) # Accetta solo metodo DELETE 
 def snapshotDelete(request, snapshotId):
     '''
         API che elimina lo snapshot specificato dall'utente.
