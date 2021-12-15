@@ -1,0 +1,15 @@
+{% extends 'base.html' %} <!-- Estensione del template di base -->
+
+{% block title %}Home{% endblock %}
+  
+{% block content %}
+  {% if user.is_authenticated %} <!-- Utente autenticato -->
+    <p>Ciao {{ user.username }}!</p>
+    <p><a href="{% url 'password_change' %}">Clicca qui per cambiare la tua password</a></p>
+    {% if user.is_superuser %}
+      <a href="{% url 'admin:index' %}">Apri pannello di amministrazione</a>
+    {% endif %}
+  {% else %} <!-- Utente non autenticato -->
+    <p>Non sei loggato</p>
+  {% endif %}
+{% endblock %}
