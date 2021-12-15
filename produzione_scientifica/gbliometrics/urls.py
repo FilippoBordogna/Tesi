@@ -6,6 +6,6 @@ app_name = "gbliometrics" # Namespace per evitare futuri conflitti
 
 # URL
 urlpatterns = [ # Url appartenenti all'app gbliometrics
-    path('', TemplateView.as_view(template_name='home.html'), name = 'home'), # Pagina principale
+    #path('user/', TemplateView.as_view(template_name='home.html'), name = 'home'), # Pagina principale
     path('api/', include('gbliometrics.api_urls'))
 ]
