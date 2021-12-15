@@ -425,13 +425,13 @@ def authorApiOverview(request):
     '''
     
     api_urls = { # Lista delle API disponibili
-        'Dettagli autore (da Scopus) dato scopusId': '/author-detail/<str:auhtorId>/'
+        'Dettagli autore (da Scopus) dato scopusId': '/author-detail/<str:auhtorScopusId>/'
     }
      
     return Response(api_urls, status=200) # Successo
 
 @api_view(['GET']) # Accetta solo metodo GET
-def authorDetail(request, auhtorId):
+def authorDetail(request, auhtorScopusId):
     '''
         API che ritorna i dettagli di un autore.
         Se l'oggetto non è presente nel DB lo aggiungo.
@@ -440,7 +440,7 @@ def authorDetail(request, auhtorId):
         N.B. PER IL MOMENTO QUESTA CHIAMATA E' DISPONIBILE ANCHE SE NON LOGGATI (IN FUTURO CHISSA')
     '''
     
-    risposta = authorUpdate_Create(auhtorId) # Creo / Aggiorno un autore
+    risposta = authorUpdate_Create(auhtorScopusId) # Creo / Aggiorno un autore
     return risposta # Errore o Successo
 
 ####################################################################################
@@ -455,8 +455,9 @@ def snapshotApiOverview(request):
     
     api_urls = { # Lista delle API disponibili
         'Lista degli snapshot dell\'utente': '/snapshot-list/',
-        'Creazione dello snapshot del gruppo': '/snapshot-create/<str:groupId>/<str:title>/',
-        'Salvataggio di uno snapshot': 'snapshot-save/<str:title>/'
+        'Creazione dello snapshot del gruppo': '/snapshot-get/<str:groupId>/',
+        'Salvataggio di uno snapshot': 'snapshot-save/<str:title>/',
+        'Eliminazione di uno snapshot salvato': 'snapshot-delete/<str:snapshotId>/'
     }
      
     return Response(api_urls, status=200) # Successo
@@ -476,8 +477,8 @@ def snapshotList(request):
     else: # Utente NON loggato
         return myError("Non sei loggato") # Errore
     
-@api_view(['POST']) # Accetta solo metodo POST
-def snapshotCreate(request, groupId):
+@api_view(['GET']) # Accetta solo metodo GET
+def snapshotGet(request, groupId):
     '''
         API che crea e restituisce il dizionario contenente lo snapshot di un gruppo specificato dall'utente.
         Se l'utente non è loggato lancio un errore.
@@ -532,7 +533,7 @@ def snapshotSave(request, title):
         snapshot = Snapshot(user=request.user, title=title, creation=datetime.now()) # Creazione dello snapshot
         snapshot.save() # Salvataggio dello snapshot
         snapshot.informations.save(title, file) # Aggiunta del file .json allo snapshot
-        return Response({'message':"Snapshot salvato con successo"}, status=200)
+        return Response({'message':"Snapshot salvato con successo", 'id': snapshot.id}, status=200)
     else: # Utente NON loggato
         return myError("Non sei loggato") # Errore
     
