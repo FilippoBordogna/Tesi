@@ -24,7 +24,7 @@ APIKey = ... (Obbligatorio)
 InstToken = ... (Opzionale)
 ```
   
-E' necessario possedere una API Key anche per le API di WoS (impossibile richiederla come singolo ma solo come organizzazione es. Università).
+<!-- E' necessario possedere una API Key anche per le API di WoS (impossibile richiederla come singolo ma solo come organizzazione es. Università). -->
 
 ## FUNZIONALITA':
 - [x] Implementazione della classe utente custom (mail come id ed username unico a differenza del modello Django di default)
@@ -39,12 +39,11 @@ E' necessario possedere una API Key anche per le API di WoS (impossibile richied
 - [ ] Aggiornamento dello stile del front-end
 
 ## STRUTTURA del PROGETTO:
-- Nella cartella [produzione_scientifica](produzione_scientifica) è presente il progetto Django vero e proprio suddiviso in
- - [produzione_scientifica/gbliometrics](Backend)
- - [produzione_scientifica/frontend](Frontend)
- - [produzione_scientifica/sent_emails](Cartella contente le simulazioni di email per creare account o recuperare password)
- - [produzione_scientifica/snapshots](Snapshots: File su cui sono salvati gli stati temporali di un gruppo di autori)
- - [produzione_scientifica/templates](Templates)
+- Nella cartella [produzione_scientifica](produzione_scientifica) è presente il progetto Django vero e proprio suddiviso in cartelle:
+ 	- [Backend: Modelli e Migrazioni del DB e API](produzione_scientifica/gbliometrics)
+ 	- [Frontend: Templates](produzione_scientifica/frontend)
+ 	- [Snapshots: File su cui sono salvati gli stati temporali di un gruppo di autori](produzione_scientifica/snapshots)
+ 	- [Templates: Modelli HTML per la gestione degli utenti](produzione_scientifica/templates)
 - Nella cartella [TEST](TEST) sono presenti le prove preliminari effettuate tramite client Python.
 
 ## GUIDE seguite:
