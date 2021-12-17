@@ -2,25 +2,22 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>GBs - {% block title %}{% endblock %}</title> <!-- Titolo -->
+        <title>GBs - {% block title %}<!-- Quando estenderò il template aggiungerò in questo blocco il titolo -->{% endblock %}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script>
+            {% block script %}
+                // Quando estenderò il template aggiungerò in questo blocco gli script 
+            {% endblock script %}
+        </script>
     </head>
     <body>
-        <p id="links"> <!-- Link 'Navbar' -->
-            <a href="{% url 'frontend:home' %}">Home</a>
-            <span style="float:right">
-                {% block links %}
-                    {% if user.is_authenticated %} <!-- Utente autenticato -->
-                        <a href="{% url 'logout' %}">Logout</a></t>
-                    {% else %} <!-- Utente non autenticato -->
-                        <a href="{% url 'login' %}">Log In</a></t>
-                        <a href="{% url 'registration_register' %}">Registrati</a>
-                    {% endif %}     
-                {% endblock %}
-            </span>
-        </p>
+        {% include 'components/navbar.html' %} <!-- Includo la navbar -->
         <main>
-        {% block content %}
-        {% endblock %}
+            {% block content %}
+                <!-- Quando estenderò il template Aggiungerò qui del contenuto -->
+            {% endblock %}
         </main>
     </body>
 </html>
