@@ -69,7 +69,7 @@ class Author(models.Model):
 class Agroup(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE) # Utente che ha creato il gruppo
     name = models.CharField(max_length=50) # Nome del gruppo
-    authors = models.ManyToManyField(Author) # Autori appartenenti al gruppo
+    authors = models.ManyToManyField(Author, null=True, blank=True) # Autori appartenenti al gruppo
     other_info = models.TextField(max_length=200, null=True, blank=True) # Annotazioni Extra
     creation = models.DateTimeField() # Data di creazione
     last_update = models.DateTimeField() # Ultima modifica

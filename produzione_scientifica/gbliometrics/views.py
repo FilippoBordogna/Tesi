@@ -1,7 +1,7 @@
 from django.http.response import HttpResponse
 from django_registration.forms import User
 from pybliometrics.scopus.utils.create_config import create_config
-from rest_framework.fields import JSONField # Modello User Django
+from rest_framework.fields import JSONField, NullBooleanField # Modello User Django
 from gbliometrics.models import Agroup, Affiliation, Author, Snapshot # Modelli DB
 from datetime import datetime # Libreria Temporale
 
@@ -52,9 +52,8 @@ def groupList(request):
     '''
     
     if(request.user.is_authenticated): # Utente loggato
-        groups = Agroup.objects.filter(user=request.user) # Gruppi appartenenti all'utente
+        groups = Agroup.objects.filter(user=request.user).order_by('-last_update') # Gruppi appartenenti all'utente
         serializer = AgroupSerializer(groups, many=True) # Conversione Agroup->Dizionario
-
         return Response(serializer.data, status=200) # Successo
     else: # Utente NON loggato
         return myError("Non sei loggato") # Errore
@@ -84,6 +83,7 @@ def groupCreate(request):
     '''
         API che crea un gruppo associato all'utente.
         Se l'utente non è loggato lancio un errore.
+        Non è possibile aggiungere gli autori al gruppo da qui. (Usare group-add-author).
         Se esiste già un gruppo di proprietà dell'utente con lo stesso nome lancio un errore.
     '''
     
@@ -92,6 +92,7 @@ def groupCreate(request):
         request.data['user'] = request.user.id
         request.data['creation'] = datetime.now()
         request.data['last_update'] = datetime.now()
+        request.data['authors'] = []
         
         if(Agroup.objects.filter(user=request.user, name=request.data['name']).exists()): # Elemento con uguali campi user e name già presente
             return myError("E' già presente un gruppo associato al tuo utente con lo stesso nome") # Errore
@@ -113,6 +114,7 @@ def groupUpdate(request, groupId):
         API che modifica un gruppo associato all'utente (Non ottimale per modifiche sugli autori appartenenti al gruppo).
         Se l'utente non è loggato lancio un errore.
         Se il gruppo specificato non è di proprietà dell'utente o non esiste lancio un errore.
+        Non è possibile modificare gli autori al gruppo da qui. (Usare group-add-author).
         Se esiste già un gruppo di proprietà dell'utente con lo stesso nome specificato come modifica lancio un errore.
     '''
     
@@ -127,6 +129,7 @@ def groupUpdate(request, groupId):
         request.data['user'] = request.user.id
         request.data['last_update'] = datetime.now()
         request.data['creation'] = group.creation
+        request.data['authors'] = group.authors
         
         if(Agroup.objects.filter(user=request.user, name=request.data['name'], ).exclude(id=groupId).exists()): # Elemento con uguali campi user e name già presente (con id diverso)
             return myError("E' già presente un gruppo associato al tuo utente con lo stesso nome") # Errore
