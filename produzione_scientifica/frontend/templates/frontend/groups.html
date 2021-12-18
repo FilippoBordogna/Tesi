@@ -12,6 +12,7 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
         <style type="text/css">
+
             body{
               background: rgb(54,217,182);
               background: linear-gradient(90deg, rgba(54,217,182,1) 0%, rgba(32,152,126,1) 43%, rgba(0,212,255,1) 100%);
@@ -71,13 +72,13 @@
         </style>
     </head>
 
-    <body onload=" buildAuthorList();">
-        {% include 'components/navbar.html'%}
+    <body onload="buildAuthorList();"> <!-- Al caricamento del body creo la lista autori -->
+        {% include 'components/navbar.html'%} <!-- includo la navbar -->
 
         <div class="container">
             <div id="groups-container">
                 <div id="form-wrapper">
-                    <form id="form">
+                    <form id="form"> <!-- Form tramite la quale creo / modifico un gruppo -->
                         <div class="flex-wrapper">
                             <div style="flex: 6">
                                 <input id="name" class="form-control" type="text" name="name" placeholder="Nome del Gruppo">
@@ -89,19 +90,17 @@
                         </div>
                     </form>
                 </div>
-    
                 <div id="group-wrapper">
-                
+                    <!-- Tramite la funzione buildAuthorList() popolerò questo div con i gruppi -->
                 </div>	
             </div>
-    
         </div>
     </body>
 </html>
 
 <script>
 
-    function getCookie(name) {
+    function getCookie(name) { // Dato il nome del cookie mi restituisce il valore
         var cookieValue = null;
         if (document.cookie && document.cookie !== '') {
             var cookies = document.cookie.split(';');
@@ -116,20 +115,21 @@
         }
         return cookieValue;
     }
-    var csrftoken = getCookie('csrftoken');
 
-    function buildAuthorList(){
+    var csrftoken = getCookie('csrftoken'); // Valore del Token CSFR per effettuare le chiamate API con metodo diverso dalla GET
+
+    function buildAuthorList(){ // Populo il div chiamato group-wrapper con i gruppi creati dall'utente
         var wrapper = document.getElementById('group-wrapper');
         wrapper.innerHTML="";
-        var url = "{% url 'api:group-list' %}";
+        var url = "{% url 'api:group-list' %}"; // URL della API che restituisce la lista dei gruppi
 
-        fetch(url)
-        .then((resp) => resp.json())
-        .then(function(data){
-            console.log('Gruppi:', data);
+        fetch(url) // Chiamata
+        .then((resp) => resp.json()) // Conversione in JSON della risposta
+        .then(function(data){ // Funzione che lavora coi dati della risposta convertiti
+            console.log('Gruppi:', data); // Scrittura di debug
        
             var lista = data;
-            for(var i in lista){
+            for(var i in lista){ // Ciclo fra i gruppi
                 var item = `
                             <div id="group-${lista[i].id}" class="task-wrapper flex-wrapper">
                                 <div style="flex:7">
@@ -142,34 +142,35 @@
                                     <button class="btn btn-sm btn-outline-dark delete">-</button>
                                 </div>
                             </div>
-                        `;
-                wrapper.innerHTML += item;
+                        `; // Creazione dell'elemento contenente nome del gruppo e bottoni per la modifica / eliminazione
+                wrapper.innerHTML += item; // Aggiunta dell'elemento al div
             }
         })
     }
 
+    // Sovrascrivo il comportamento successivo al submit della form chiamata form-wrapper
     var form = document.getElementById('form-wrapper')
-    form.addEventListener('submit', function(e){
-        e.preventDefault()
-        console.log('Form submitted')
-        var url = '{% url 'api:group-create' %}'
-        var name = document.getElementById('name').value
-        var other_info = document.getElementById('other-info').value
+    form.addEventListener('submit', function(e){ // Aggiungo il listener sull'evento di submit
+        e.preventDefault() // Evito che effettui il submit di default
+        console.log('Form submitted') // Scrittura di debug
+        var url = '{% url 'api:group-create' %}' // URL dell'API che crea un gruppo dati nome('name') e altre informazioni('other_info')
+        var name = document.getElementById('name').value // valore del campo name
+        var other_info = document.getElementById('other-info').value // valore del campo other_info
         
-        fetch(url, {
-            method:'POST',
+        fetch(url, { // Chiamata
+            method:'POST', // Metodo
             headers:{
-                'Content-type':'application/json',
-                'X-CSRFToken':csrftoken,
+                'Content-type':'application/json', // Indico che passerò un json
+                'X-CSRFToken':csrftoken // Inserisco il token CSFR
             },
-            body:JSON.stringify({
+            body:JSON.stringify({ // Corpo della richiesta dove passo i paramentri
                                     "name":name,
                                     "other_info":other_info
                                 })
         }
-        ).then(function(response){
-            buildAuthorList();
-            document.getElementById('form').reset()
+        ).then(function(response){ // Funzione che lavora con i dati ricevuti in risposta
+            buildAuthorList(); // Ricreo la lista degli autori
+            document.getElementById('form').reset() // Svuoto il contenuto della form
         })
     })
 </script>
