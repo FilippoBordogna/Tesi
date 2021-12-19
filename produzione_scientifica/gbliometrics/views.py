@@ -129,7 +129,7 @@ def groupUpdate(request, groupId):
         request.data['user'] = request.user.id
         request.data['last_update'] = datetime.now()
         request.data['creation'] = group.creation
-        request.data['authors'] = group.authors
+        request.data['authors'] = group.authors.all()
         
         if(Agroup.objects.filter(user=request.user, name=request.data['name'], ).exclude(id=groupId).exists()): # Elemento con uguali campi user e name già presente (con id diverso)
             return myError("E' già presente un gruppo associato al tuo utente con lo stesso nome") # Errore
@@ -140,7 +140,7 @@ def groupUpdate(request, groupId):
             
             return Response(serializers.data, status=200) # Successo
         else:
-           return myError(serializers.error_messages) # Errore
+           return myError(serializers.errors) # Errore
     else: # Utente NON loggato
         return myError("Non sei loggato") # Errore
     
