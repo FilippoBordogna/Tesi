@@ -98,14 +98,13 @@
     </body>
 </html>
 
-<script>
-
+<script type="text/javascript">
     function getCookie(name) { // Dato il nome del cookie mi restituisce il valore
-        var cookieValue = null;
+        var cookieValue = null
         if (document.cookie && document.cookie !== '') {
-            var cookies = document.cookie.split(';');
+            var cookies = document.cookie.split(';')
             for (var i = 0; i < cookies.length; i++) {
-                var cookie = cookies[i].trim();
+                var cookie = cookies[i].trim()
                 // Does this cookie string begin with the name we want?
                 if (cookie.substring(0, name.length + 1) === (name + '=')) {
                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
@@ -117,23 +116,24 @@
     }
 
     var csrftoken = getCookie('csrftoken'); // Valore del Token CSFR per effettuare le chiamate API con metodo diverso dalla GET
+    var activeGroup = null
 
     function buildAuthorList(){ // Populo il div chiamato group-wrapper con i gruppi creati dall'utente
         var wrapper = document.getElementById('group-wrapper');
-        wrapper.innerHTML="";
+        wrapper.innerHTML=""
         var url = "{% url 'api:group-list' %}"; // URL della API che restituisce la lista dei gruppi
 
         fetch(url) // Chiamata
         .then((resp) => resp.json()) // Conversione in JSON della risposta
         .then(function(data){ // Funzione che lavora coi dati della risposta convertiti
-            console.log('Gruppi:', data); // Scrittura di debug
+            console.log('Gruppi:', data) // Scrittura di debug
        
-            var lista = data;
+            var lista = data
             for(var i in lista){ // Ciclo fra i gruppi
                 var item = `
                             <div id="group-${lista[i].id}" class="task-wrapper flex-wrapper">
                                 <div style="flex:7">
-                                    ${lista[i].name}
+                                    <span class="name">${lista[i].name}</span>
                                 </div>
                                 <div style="flex:2">
                                     <button class="btn btn-sm btn-outline-info edit">Modifica </button>
@@ -142,8 +142,31 @@
                                     <button class="btn btn-sm btn-outline-dark delete">-</button>
                                 </div>
                             </div>
-                        `; // Creazione dell'elemento contenente nome del gruppo e bottoni per la modifica / eliminazione
+                        ` // Creazione dell'elemento contenente nome del gruppo e bottoni per la modifica / eliminazione
                 wrapper.innerHTML += item; // Aggiunta dell'elemento al div
+            }
+            for(var i in lista){ // Ciclo fra i gruppi
+                var editBtn = document.getElementsByClassName('edit')[i]
+                var deleteBtn = document.getElementsByClassName('delete')[i]
+                var name = document.getElementsByClassName('name')[i]
+
+                editBtn.addEventListener('click', (function(group){ // Aggiungo il listener sull'evento di click del bottone Edit
+                    return function(){
+                        editGroup(group)
+                    }
+                })(lista[i]))
+
+                deleteBtn.addEventListener('click', (function(group){ // Aggiungo il listener sull'evento di click del bottone Delete
+                    return function(){
+                        deleteGroup(group)
+                    }
+                })(lista[i]))
+
+                name.addEventListener('click', (function(group){ // Aggiungo il listener sull'evento di click del testo contenente il nome
+                    return function(){
+                        redirectGroupDetail(group)
+                    }
+                })(lista[i]))
             }
         })
     }
@@ -153,7 +176,13 @@
     form.addEventListener('submit', function(e){ // Aggiungo il listener sull'evento di submit
         e.preventDefault() // Evito che effettui il submit di default
         console.log('Form submitted') // Scrittura di debug
-        var url = '{% url 'api:group-create' %}' // URL dell'API che crea un gruppo dati nome('name') e altre informazioni('other_info')
+        var url = '{% url 'api:group-create' %}' // URL dell'API che crea un gruppo
+        if(activeGroup != null) { // E' un update (NON una create)
+            var url = '{% url 'api:group-update' "replace_id" %}' // Creo la URL con groupId replace_id
+            url = url.replace('replace_id', activeGroup.id) // sostituisco replace_id con l'id del group
+            console.log("URL: ", url)
+            activeGroup = null
+        }
         var name = document.getElementById('name').value // valore del campo name
         var other_info = document.getElementById('other-info').value // valore del campo other_info
         
@@ -171,6 +200,38 @@
         ).then(function(response){ // Funzione che lavora con i dati ricevuti in risposta
             buildAuthorList(); // Ricreo la lista degli autori
             document.getElementById('form').reset() // Svuoto il contenuto della form
+            
         })
     })
+
+    function editGroup(group) {
+        console.log("Update Cliccato: ", group) // Scrittura di debug
+        activeGroup = group
+        document.getElementById('name').value = group.name
+        document.getElementById('other-info').value = group.other_info
+    }
+
+    function deleteGroup(group){
+        console.log('Eliminazione Cliccata: ', group)
+        var url = '{% url 'api:group-delete' "replace_id" %}' // Creo la URL con groupId replace_id
+        url = url.replace('replace_id', group.id) // sostituisco replace_id con l'id del group
+        console.log("URL: ", url)
+        fetch(url,{
+            method: 'DELETE',
+            headers: {
+                'Content-type':'application/json', // Indico che passerò un json
+                'X-CSRFToken':csrftoken // Inserisco il token CSFR
+            }
+        }).then((response)=>{
+            buildAuthorList()
+        })
+    }
+
+    function redirectGroupDetail(group){
+        var url = '{% url 'api:group-detail' "replace_id" %}' // Creo la URL con groupId replace_id
+        url = url.replace('replace_id', group.id) // sostituisco replace_id con l'id del group
+        console.log("URL: ", url)
+        location.replace(url)
+    }
+
 </script>
