@@ -1,237 +1,178 @@
-<!DOCTYPE html>
-<html lang="it">
-    <head>
-        <title>Lista dei Gruppi</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">-->
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-        <link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+{% extends 'base.html' %} <!-- estendo il file base.html (Scheletro) -->
 
-        <style type="text/css">
+{% block title %}Lista dei Gruppi{% endblock title %} <!-- estensione titolo -->
 
-            body{
-              background: rgb(54,217,182);
-              background: linear-gradient(90deg, rgba(54,217,182,1) 0%, rgba(32,152,126,1) 43%, rgba(0,212,255,1) 100%);
-            }
-    
-    
-            h1, h2, h3, h4, h5, p, span, strike{
-              font-family: 'Montserrat', sans-serif;
-    
-            }
-    
-    
-            #groups-container{
-              max-width:600px;
-              margin:0 auto;
-              box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
-              background-color: #fff;
-              
-              margin-top:100px;
-              margin-bottom:100px;
-    
-              justify-content: space-around;
-              align-items: flex-start;
-    
-            }
-    
-            #form-wrapper{
-              position: -webkit-sticky;
-              position: sticky;
-              top: 0rem;
-              border-bottom: 1px solid  #e9e9e9;
-              background-color: #fff;
-              box-shadow: 0 3px 8px rgba(0,0,0,0.25);
-               padding:40px;
-            }
-    
-            #submit{
-              background-color: #36d9b6;
-              border-radius: 0;
-              border:0;
-              color: #fff;
-            }
-    
-            .flex-wrapper{
-                display: flex;
-            }
-    
-            .task-wrapper{
-                  margin:5px;
-                  padding: 5px;
-                  padding:20px;
-                  cursor: pointer;
-                  border-bottom: 1px solid  #e9e9e9;
-                  color: #686868;
-                }
-    
-        </style>
-    </head>
+{% block onload %}
+    {% if user.is_authenticated %} 
+       onload="buildAuthorList();"
+    {% endif %}
+{% endblock onload %} <!-- Estensione funzione onload -->
 
-    <body onload="buildAuthorList();"> <!-- Al caricamento del body creo la lista autori -->
-        {% include 'components/navbar.html'%} <!-- includo la navbar -->
 
-        <div class="container">
-            <div id="groups-container">
-                <div id="form-wrapper">
-                    <form id="form"> <!-- Form tramite la quale creo / modifico un gruppo -->
-                        <div class="flex-wrapper">
-                            <div style="flex: 6">
-                                <input id="name" class="form-control" type="text" name="name" placeholder="Nome del Gruppo">
-                                <textarea id="other-info" class="form-control" name="other-info" placeholder="Informazioni aggiuntive"  maxlength="200"></textarea>
-                            </div>
-                            <div style="flex: 1">
-                                <input id="submit" class="btn" type="submit" >
-                            </div>
+{% block content %} <!-- Estensione contenuto del body -->
+    {% if user.is_authenticated %}
+        <div id="items-container">
+            <div id="form-wrapper">
+                <form id="form"> <!-- Form tramite la quale creo / modifico un gruppo -->
+                    <div class="flex-wrapper">
+                        <div style="flex: 6">
+                            <input id="name" class="form-control" type="text" name="name" placeholder="Nome del Gruppo">
+                            <textarea id="other-info" class="form-control" name="other-info" placeholder="Informazioni aggiuntive"  maxlength="200"></textarea>
                         </div>
-                    </form>
-                </div>
-                <div id="group-wrapper">
-                    <!-- Tramite la funzione buildAuthorList() popolerò questo div con i gruppi -->
-                </div>	
+                        <div style="flex: 1">
+                            <input id="submit" class="btn" type="submit">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div id="group-wrapper">
+                <!-- Tramite la funzione buildAuthorList() popolerò questo div con i gruppi -->
+            </div>	
+        </div>
+    {% else %}
+        <div id="items-container" align="center">
+            <div id="form-wrapper">
+                <p>Solo quando sarai loggato potrai gestire i tuoi gruppi.</p>
             </div>
         </div>
-    </body>
-</html>
+    {% endif %}
+{% endblock content %}
 
-<script type="text/javascript">
-    function getCookie(name) { // Dato il nome del cookie mi restituisce il valore
-        var cookieValue = null
-        if (document.cookie && document.cookie !== '') {
-            var cookies = document.cookie.split(';')
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = cookies[i].trim()
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
+{% block other %} <!-- Estensione -->
+    <script type="text/javascript">
+        function getCookie(name) { // Dato il nome del cookie mi restituisce il valore
+            var cookieValue = null
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';')
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim()
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
                 }
             }
+            return cookieValue;
         }
-        return cookieValue;
-    }
 
-    var csrftoken = getCookie('csrftoken'); // Valore del Token CSFR per effettuare le chiamate API con metodo diverso dalla GET
-    var activeGroup = null
+        var csrftoken = getCookie('csrftoken'); // Valore del Token CSFR per effettuare le chiamate API con metodo diverso dalla GET
+        var activeGroup = null
 
-    function buildAuthorList(){ // Populo il div chiamato group-wrapper con i gruppi creati dall'utente
-        var wrapper = document.getElementById('group-wrapper');
-        wrapper.innerHTML=""
-        var url = "{% url 'api:group-list' %}"; // URL della API che restituisce la lista dei gruppi
+        function buildAuthorList(){ // Populo il div chiamato group-wrapper con i gruppi creati dall'utente
+            var wrapper = document.getElementById('group-wrapper');
+            wrapper.innerHTML=""
+            var url = "{% url 'api:group-list' %}"; // URL della API che restituisce la lista dei gruppi
 
-        fetch(url) // Chiamata
-        .then((resp) => resp.json()) // Conversione in JSON della risposta
-        .then(function(data){ // Funzione che lavora coi dati della risposta convertiti
-            console.log('Gruppi:', data) // Scrittura di debug
-       
-            var lista = data
-            for(var i in lista){ // Ciclo fra i gruppi
-                var item = `
-                            <div id="group-${lista[i].id}" class="task-wrapper flex-wrapper">
-                                <div style="flex:7">
-                                    <span class="name">${lista[i].name}</span>
-                                </div>
-                                <div style="flex:2">
-                                    <button class="btn btn-sm btn-outline-info edit">Modifica </button>
-                                </div>
-                                <div style="flex:2">
-                                    <button class="btn btn-sm btn-outline-dark delete">-</button>
-                                </div>
-                            </div>
-                        ` // Creazione dell'elemento contenente nome del gruppo e bottoni per la modifica / eliminazione
-                wrapper.innerHTML += item; // Aggiunta dell'elemento al div
-            }
-            for(var i in lista){ // Ciclo fra i gruppi
-                var editBtn = document.getElementsByClassName('edit')[i]
-                var deleteBtn = document.getElementsByClassName('delete')[i]
-                var name = document.getElementsByClassName('name')[i]
-
-                editBtn.addEventListener('click', (function(group){ // Aggiungo il listener sull'evento di click del bottone Edit
-                    return function(){
-                        editGroup(group)
-                    }
-                })(lista[i]))
-
-                deleteBtn.addEventListener('click', (function(group){ // Aggiungo il listener sull'evento di click del bottone Delete
-                    return function(){
-                        deleteGroup(group)
-                    }
-                })(lista[i]))
-
-                name.addEventListener('click', (function(group){ // Aggiungo il listener sull'evento di click del testo contenente il nome
-                    return function(){
-                        redirectGroupDetail(group)
-                    }
-                })(lista[i]))
-            }
-        })
-    }
-
-    // Sovrascrivo il comportamento successivo al submit della form chiamata form-wrapper
-    var form = document.getElementById('form-wrapper')
-    form.addEventListener('submit', function(e){ // Aggiungo il listener sull'evento di submit
-        e.preventDefault() // Evito che effettui il submit di default
-        console.log('Form submitted') // Scrittura di debug
-        var url = '{% url 'api:group-create' %}' // URL dell'API che crea un gruppo
-        if(activeGroup != null) { // E' un update (NON una create)
-            var url = '{% url 'api:group-update' "replace_id" %}' // Creo la URL con groupId replace_id
-            url = url.replace('replace_id', activeGroup.id) // sostituisco replace_id con l'id del group
-            console.log("URL: ", url)
-            activeGroup = null
-        }
-        var name = document.getElementById('name').value // valore del campo name
-        var other_info = document.getElementById('other-info').value // valore del campo other_info
+            fetch(url) // Chiamata
+            .then((resp) => resp.json()) // Conversione in JSON della risposta
+            .then(function(data){ // Funzione che lavora coi dati della risposta convertiti
+                console.log('Gruppi:', data) // Scrittura di debug
         
-        fetch(url, { // Chiamata
-            method:'POST', // Metodo
-            headers:{
-                'Content-type':'application/json', // Indico che passerò un json
-                'X-CSRFToken':csrftoken // Inserisco il token CSFR
-            },
-            body:JSON.stringify({ // Corpo della richiesta dove passo i paramentri
-                                    "name":name,
-                                    "other_info":other_info
-                                })
+                var lista = data
+                for(var i in lista){ // Ciclo fra i gruppi
+                    var item = `
+                                <div id="group-${lista[i].id}" class="task-wrapper flex-wrapper">
+                                    <div style="flex:7">
+                                        <span class="name">${lista[i].name}</span>
+                                    </div>
+                                    <div style="flex:2">
+                                        <button class="btn btn-sm btn-outline-info edit">Modifica </button>
+                                    </div>
+                                    <div style="flex:2">
+                                        <button class="btn btn-sm btn-outline-dark delete">-</button>
+                                    </div>
+                                </div>
+                            ` // Creazione dell'elemento contenente nome del gruppo e bottoni per la modifica / eliminazione
+                    wrapper.innerHTML += item; // Aggiunta dell'elemento al div
+                }
+                for(var i in lista){ // Ciclo fra i gruppi
+                    var editBtn = document.getElementsByClassName('edit')[i]
+                    var deleteBtn = document.getElementsByClassName('delete')[i]
+                    var name = document.getElementsByClassName('name')[i]
+
+                    editBtn.addEventListener('click', (function(group){ // Aggiungo il listener sull'evento di click del bottone Edit
+                        return function(){
+                            editGroup(group)
+                        }
+                    })(lista[i]))
+
+                    deleteBtn.addEventListener('click', (function(group){ // Aggiungo il listener sull'evento di click del bottone Delete
+                        return function(){
+                            deleteGroup(group)
+                        }
+                    })(lista[i]))
+
+                    name.addEventListener('click', (function(group){ // Aggiungo il listener sull'evento di click del testo contenente il nome
+                        return function(){
+                            redirectGroupDetail(group)
+                        }
+                    })(lista[i]))
+                }
+            })
         }
-        ).then(function(response){ // Funzione che lavora con i dati ricevuti in risposta
-            buildAuthorList(); // Ricreo la lista degli autori
-            document.getElementById('form').reset() // Svuoto il contenuto della form
-            
-        })
-    })
 
-    function editGroup(group) {
-        console.log("Update Cliccato: ", group) // Scrittura di debug
-        activeGroup = group
-        document.getElementById('name').value = group.name
-        document.getElementById('other-info').value = group.other_info
-    }
-
-    function deleteGroup(group){
-        console.log('Eliminazione Cliccata: ', group)
-        var url = '{% url 'api:group-delete' "replace_id" %}' // Creo la URL con groupId replace_id
-        url = url.replace('replace_id', group.id) // sostituisco replace_id con l'id del group
-        console.log("URL: ", url)
-        fetch(url,{
-            method: 'DELETE',
-            headers: {
-                'Content-type':'application/json', // Indico che passerò un json
-                'X-CSRFToken':csrftoken // Inserisco il token CSFR
+        // Sovrascrivo il comportamento successivo al submit della form chiamata form-wrapper
+        var form = document.getElementById('form-wrapper')
+        form.addEventListener('submit', function(e){ // Aggiungo il listener sull'evento di submit
+            e.preventDefault() // Evito che effettui il submit di default
+            console.log('Form submitted') // Scrittura di debug
+            var url = '{% url 'api:group-create' %}' // URL dell'API che crea un gruppo
+            if(activeGroup != null) { // E' un update (NON una create)
+                var url = '{% url 'api:group-update' "replace_id" %}' // Creo la URL con groupId replace_id
+                url = url.replace('replace_id', activeGroup.id) // sostituisco replace_id con l'id del group
+                console.log("URL: ", url)
+                activeGroup = null
             }
-        }).then((response)=>{
-            buildAuthorList()
+            var name = document.getElementById('name').value // valore del campo name
+            var other_info = document.getElementById('other-info').value // valore del campo other_info
+            
+            fetch(url, { // Chiamata
+                method:'POST', // Metodo
+                headers:{
+                    'Content-type':'application/json', // Indico che passerò un json
+                    'X-CSRFToken':csrftoken // Inserisco il token CSFR
+                },
+                body:JSON.stringify({ // Corpo della richiesta dove passo i paramentri
+                                        "name":name,
+                                        "other_info":other_info
+                                    })
+            }
+            ).then(function(response){ // Funzione che lavora con i dati ricevuti in risposta
+                buildAuthorList(); // Ricreo la lista degli autori
+                document.getElementById('form').reset() // Svuoto il contenuto della form
+                
+            })
         })
-    }
 
-    function redirectGroupDetail(group){
-        var url = '{% url 'api:group-detail' "replace_id" %}' // Creo la URL con groupId replace_id
-        url = url.replace('replace_id', group.id) // sostituisco replace_id con l'id del group
-        console.log("URL: ", url)
-        location.replace(url)
-    }
+        function editGroup(group) {
+            console.log("Update Cliccato: ", group) // Scrittura di debug
+            activeGroup = group
+            document.getElementById('name').value = group.name
+            document.getElementById('other-info').value = group.other_info
+        }
 
-</script>
+        function deleteGroup(group){
+            console.log('Eliminazione Cliccata: ', group)
+            var url = '{% url 'api:group-delete' "replace_id" %}' // Creo la URL con groupId replace_id
+            url = url.replace('replace_id', group.id) // sostituisco replace_id con l'id del group
+            console.log("URL: ", url)
+            fetch(url,{
+                method: 'DELETE',
+                headers: {
+                    'Content-type':'application/json', // Indico che passerò un json
+                    'X-CSRFToken':csrftoken // Inserisco il token CSFR
+                }
+            }).then((response)=>{
+                buildAuthorList()
+            })
+        }
+
+        function redirectGroupDetail(group){
+            var url = '{% url 'api:group-detail' "replace_id" %}' // Creo la URL con groupId replace_id
+            url = url.replace('replace_id', group.id) // sostituisco replace_id con l'id del group
+            console.log("URL: ", url)
+            location.replace(url)
+        }
+    </script>
+{% endblock other %}

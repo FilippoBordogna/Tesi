@@ -4,8 +4,24 @@
   
 {% block content %}
   {% if user.is_authenticated %} <!-- Utente autenticato -->
-    <p>Ciao {{ user.username }}</p>
+    <div id="items-container">
+      <div id="form-wrapper">
+        <h2>Ciao <b>{{ user.username }}</b></h2>
+        <p>Riprendi da dove hai lasciato:</p>
+        <p><a href="{% url 'frontend:group-list' %}">Gestisci i tuoi gruppi</a></p>
+        <p><a href="#">Cerca autori</a></p>
+        {% if user.is_superuser %}
+          <p><a href="{% url 'admin:index' %}">Apri pannello di amministrazione</a></p>
+        {% endif %}
+      </div>
+    </div>
   {% else %} <!-- Utente non autenticato -->
-    <p>Non sei loggato</p>
+    <div id="items-container">
+      <div id="form-wrapper">
+          <p>Solo quando sarai loggato potrai gestire i tuoi gruppi.</p>
+          <p><a href="{% url 'login' %}">Effettua il Login</a></p>
+          <p><a href="{% url 'registration_register' %}">Registrati gratuitamente</a></p>
+      </div>
+    </div>
   {% endif %}
 {% endblock %}
