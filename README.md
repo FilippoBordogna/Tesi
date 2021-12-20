@@ -36,13 +36,13 @@ InstToken = ... (Opzionale)
 - [x] CRUD Tabella Affiliations (API)
 - [x] CRUD Tabella Authors (API)
 - [x] CRUD Tabella Snapshot (API)
+- [x] Pagina Home (FRONTEND)
+- [x] Restyling delle pagine di login, creazione account e modifica / reset della password
 - [x] Pagina dei Gruppi (FRONTEND)
-- [ ] Pagina Home (FRONTEND)
 - [ ] Pagina dei dettagli dei gruppi (FRONTEND)
 - [ ] Pagina dei dettagli degli autori (FRONTEND)
 - [ ] Pagina di ricerca degli autori (FRONTEND)
 - [ ] Pagina dei dettagli delle affiliazioni (FRONTEND)
-- [ ] Restyling delle pagine di login, creazione account e modifica / reset della password
 
 ## STRUTTURA del PROGETTO:
 - Nella cartella [produzione_scientifica](produzione_scientifica) è presente il progetto Django vero e proprio suddiviso in cartelle:
