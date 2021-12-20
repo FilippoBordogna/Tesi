@@ -4,15 +4,23 @@
 
 {% block content %}
     {% if not user.is_authenticated %} <!-- utente non autenticato -->
-        <h2>Login</h2>
-        <form method="post"> <!-- form di registrazione -->
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Accedi</button>
-        </form>
-        <p><a href="{% url 'password_reset' %}">Hai dimenticato la password?</a></p>
+        <div id="items-container">
+            <div id="form-wrapper">
+                <h2>Login</h2>
+                <form method="post"> <!-- form di registrazione -->
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit">Accedi</button>
+                </form>
+                <p><a href="{% url 'password_reset' %}">Hai dimenticato la password?</a></p>
+            </div>
+        </div>
     {% else %} <!-- Utente autenticato -->
-        <p>Sei già loggato</p>
-        <p><a href="{% url 'frontend:home' %}">Torna alla home</a></p>
+        <div id="items-container">
+            <div id="form-wrapper">
+                <p>Hai già effettuato il login</p>
+                <p><a href="{% url 'frontend:home' %}">Torna alla home</a></p>
+            </div>
+        </div>        
     {% endif %}
 {% endblock %}
