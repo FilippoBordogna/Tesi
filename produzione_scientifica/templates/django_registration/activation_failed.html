@@ -3,7 +3,11 @@
 {% block title %}Attivazione fallita{% endblock %} <!-- Titolo -->
 
 {% block content %}
-  <h1>OPS!!! Qualcosa è andato storto.</h1>
-  <h2>Messaggio di Errore:</h2>
-  <p>{{activation_error.message}}</p> <!-- Mostro messaggio d'errore -->
+  <div id="items-container">
+    <div id="form-wrapper">
+      <h2>OPS!!! Qualcosa è andato storto.</h2>
+      <h2>Messaggio di Errore:</h2>
+      <p>{{activation_error.message}}</p> <!-- Mostro messaggio d'errore -->
+    </div>
+  </div>
 {% endblock %}

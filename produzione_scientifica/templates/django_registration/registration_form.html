@@ -4,13 +4,23 @@
 
 {% block content %}
     {% if not user.is_authenticated %} <!-- utente non autenticato -->
-        <h2>Registrazione</h2>
-        <form method="post"> <!-- form di registrazione -->
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Registrati</button>
-        </form>
+        <div id="items-container">
+            <div id="form-wrapper">
+                <h2>Registrazione</h2>
+                <form method="post"> <!-- form di registrazione -->
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit">Registrati</button>
+                </form>
+            </div>
+        </div>
     {% else %} <!-- Utente autenticato -->
-        <p>Sei loggato. Per creare un nuovo utente devi prima effettuare il Logout</p>
+        <div id="items-container">
+            <div id="form-wrapper">
+                <p>Sei loggato. Per creare un nuovo utente devi prima effettuare il Logout</p>
+                <p><a href="{% url 'logout' %}">Torna alla home</a></p>
+            </div>
+        </div>
+        
     {% endif %}
 {% endblock %}
