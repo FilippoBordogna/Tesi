@@ -18,9 +18,7 @@
   {% else %} <!-- Utente non autenticato -->
     <div id="items-container">
       <div id="form-wrapper">
-          <p>Solo quando sarai loggato potrai gestire i tuoi gruppi.</p>
-          <p><a href="{% url 'login' %}">Effettua il Login</a></p>
-          <p><a href="{% url 'registration_register' %}">Registrati gratuitamente</a></p>
+        {% include 'components/not_logged.html' %} <!-- Link login e registrazione -->
       </div>
     </div>
   {% endif %}

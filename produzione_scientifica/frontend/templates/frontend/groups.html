@@ -30,11 +30,7 @@
             </div>	
         </div>
     {% else %}
-        <div id="items-container" align="center">
-            <div id="form-wrapper">
-                <p>Solo quando sarai loggato potrai gestire i tuoi gruppi.</p>
-            </div>
-        </div>
+        {% include 'components/not_logged.html' %} <!-- Link login e registrazione -->
     {% endif %}
 {% endblock content %}
 
