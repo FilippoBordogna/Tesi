@@ -39,10 +39,10 @@ InstToken = ... (Opzionale)
 - [x] Pagina Home (FRONTEND)
 - [x] Restyling delle pagine di login, creazione account e modifica / reset della password
 - [x] Pagina dei Gruppi (FRONTEND)
-- [ ] Pagina dei dettagli dei gruppi (FRONTEND)
+- [x] Pagina dei dettagli dei gruppi (Lista autori nel gruppo) (FRONTEND)
 - [ ] Pagina dei dettagli degli autori (FRONTEND)
 - [ ] Pagina di ricerca degli autori (FRONTEND)
-- [ ] Pagina dei dettagli delle affiliazioni (FRONTEND)
+- [ ] Pagina dei dettagli delle affiliazioni(?) (FRONTEND)
 
 ## STRUTTURA del PROGETTO:
 - Nella cartella [produzione_scientifica](produzione_scientifica) è presente il progetto Django vero e proprio suddiviso in cartelle:
