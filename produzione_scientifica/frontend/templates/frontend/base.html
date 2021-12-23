@@ -9,7 +9,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-        <title>GBs - {% block title %}{% endblock title %}</title> <!-- estensione del titolo -->
+        <title>GBs - {{section}} {% block title %}{% endblock title %}</title> <!-- estensione del titolo -->
 
         <style type="text/css">
             body{
@@ -76,12 +76,30 @@
                 color:#20c997;
             }
 
+            table {
+                font-family: arial, sans-serif;
+                border-collapse: collapse;
+                width: 100%;
+            }
+              
+            td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+            }
+            
+            tr:nth-child(even) {
+            background-color: #dddddd;
+            }
+
             {% block style %}{% endblock style %} /*estensione dello stile*/
         </style> 
     </head>
     <body {% block onload %}{% endblock onload %}> <!-- Estensione onload -->
         <main>
-            {% include 'components/navbar.html' %} <!-- Includo la navbar -->
+            {% block navbar %}
+                    {% include 'components/navbar.html' with section=section %} <!-- Includo la navbar -->
+            {% endblock navbar %}
             
             <div class="container">
                 {% block content %}{% endblock content %} <!-- Estensione del contenuto del body -->
