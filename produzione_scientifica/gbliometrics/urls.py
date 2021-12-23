@@ -23,7 +23,8 @@ urlpatterns = [ # Url appartenenti all'app gbliometrics
     
     # API DEGLI AUTORI (ELSEVIER + MIA APP)
     path('authors/', views.authorApiOverview, name='author-overview'), # Lista delle API dei gruppi disponibili
-    path('authors/author-detail/<str:auhtorScopusId>/', views.authorDetail, name='author-detail'), # Dettagli dell'associazione (API Scopus) 
+    path('authors/author-detail/<str:auhtorScopusId>/', views.authorDetail, name='author-detail'), # Dettagli dell'associazione (API Scopus)
+    path('authors/author-detail-DB/<str:authorId>/', views.authorDetailDB, name='author-detail-db'), # Dettagli dell'associazione (DB) 
     
     # API DEGLI SNAPSHOT (ELSEVIER + MIA APP)
     path('snapshots/', views.snapshotApiOverview, name='snapshot-api-overview'), # Lista delle API degli snapshot
