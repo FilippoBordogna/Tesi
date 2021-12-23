@@ -428,7 +428,8 @@ def authorApiOverview(request):
     '''
     
     api_urls = { # Lista delle API disponibili
-        'Dettagli autore (da Scopus) dato scopusId': '/author-detail/<str:auhtorScopusId>/'
+        'Dettagli autore (da Scopus) dato scopusId': '/author-detail/<str:auhtorScopusId>/',
+        'Dettagli autore (da DB) dato authorId': '/authors/author-detail-DB/<str:authorId>/'
     }
      
     return Response(api_urls, status=200) # Successo
@@ -445,6 +446,23 @@ def authorDetail(request, auhtorScopusId):
     
     risposta = authorUpdate_Create(auhtorScopusId) # Creo / Aggiorno un autore
     return risposta # Errore o Successo
+
+@api_view(['GET']) # Accetta solo metodo GET
+def authorDetailDB(request, authorId):
+    '''
+        API che ritorna i dettagli presi dal DB di un autore.
+        Se l'oggetto non è presente nel DB lancio un errore.
+        N.B. PER IL MOMENTO QUESTA CHIAMATA E' DISPONIBILE ANCHE SE NON LOGGATI (IN FUTURO CHISSA')
+    '''
+
+    try:
+        author = Author.objects.get(id=authorId) # Autore di cui ci interessano i dettagli
+    except Author.DoesNotExist:
+        return myError("Non esiste un autore con id = "+authorId) # Errore
+    
+    serializer = AuthorSerializer(author, many=False) # Conversione Snapshot->Dizionario
+        
+    return Response(serializer.data, status=200) # Successo
 
 ####################################################################################
 ################################### API SNAPSHOT ###################################
