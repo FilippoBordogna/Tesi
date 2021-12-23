@@ -4,7 +4,7 @@
 
 {% block onload %}
     {% if user.is_authenticated %} 
-       onload="buildAuthorList();"
+       onload="buildGroupList();"
     {% endif %}
 {% endblock onload %} <!-- Estensione funzione onload -->
 
@@ -25,8 +25,8 @@
                     </div>
                 </form>
             </div>
-            <div id="group-wrapper">
-                <!-- Tramite la funzione buildAuthorList() popolerò questo div con i gruppi -->
+            <div id="item-wrapper">
+                <!-- Tramite la funzione buildGroupList() popolerò questo div con i gruppi -->
             </div>	
         </div>
     {% else %}
@@ -55,8 +55,8 @@
         var csrftoken = getCookie('csrftoken'); // Valore del Token CSFR per effettuare le chiamate API con metodo diverso dalla GET
         var activeGroup = null
 
-        function buildAuthorList(){ // Populo il div chiamato group-wrapper con i gruppi creati dall'utente
-            var wrapper = document.getElementById('group-wrapper');
+        function buildGroupList(){ // Populo il div chiamato item-wrapper con i gruppi creati dall'utente
+            var wrapper = document.getElementById('item-wrapper');
             wrapper.innerHTML=""
             var url = "{% url 'api:group-list' %}"; // URL della API che restituisce la lista dei gruppi
 
@@ -135,7 +135,7 @@
                                     })
             }
             ).then(function(response){ // Funzione che lavora con i dati ricevuti in risposta
-                buildAuthorList(); // Ricreo la lista degli autori
+                buildGroupList(); // Ricreo la lista degli autori
                 document.getElementById('form').reset() // Svuoto il contenuto della form
                 
             })
@@ -160,12 +160,14 @@
                     'X-CSRFToken':csrftoken // Inserisco il token CSFR
                 }
             }).then((response)=>{
-                buildAuthorList()
+                element = document.getElementById("group-"+group.id)
+                element.remove()
+                //buildGroupList()
             })
         }
 
         function redirectGroupDetail(group){
-            var url = '{% url 'api:group-detail' "replace_id" %}' // Creo la URL con groupId replace_id
+            var url = '{% url 'frontend:author-list' "replace_id" %}' // Creo la URL con groupId replace_id
             url = url.replace('replace_id', group.id) // sostituisco replace_id con l'id del group
             console.log("URL: ", url)
             location.replace(url)
