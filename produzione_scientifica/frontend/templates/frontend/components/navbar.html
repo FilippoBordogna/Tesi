@@ -1,23 +1,23 @@
 <nav class="navbar navbar-expand-sm bg-primary navbar-dark fixed-top">
     <a class="navbar-brand" href="{% url 'frontend:home' %}">GBliometrics</a>
-    <ul class="navbar-nav">
-        {% if request.path == "/groups" %}
-            <li class="nav-item active">
-        {% else %}
-            <li class="nav-item">
-        {% endif %}
-            <a class="nav-link" href="{% url 'frontend:group-list' %}">I miei Gruppi</a>
-        </li>
-        {% if request.path == "/authors" %}
-            <li class="nav-item active">
-        {% else %}
-            <li class="nav-item">
-        {% endif %}
-            <a class="nav-link" href="#">Autori</a>
-        </li>
-    </ul>
     
     {% if user.is_authenticated %}
+        <ul class="navbar-nav">
+            {% if "/groups/" in request.path %}
+                <li class="nav-item active">
+            {% else %}
+                <li class="nav-item">
+            {% endif %}
+                <a class="nav-link" href="{% url 'frontend:group-list' %}">I miei Gruppi</a>
+            </li>
+            {% if request.path == "/authors" %}
+                <li class="nav-item active">
+            {% else %}
+                <li class="nav-item">
+            {% endif %}
+                <a class="nav-link" href="#">Cerca Autori</a>
+            </li>
+        </ul>
         <ul class="navbar-nav ml-auto">
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
