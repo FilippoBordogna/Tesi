@@ -1,0 +1,126 @@
+{% extends 'base.html' %} <!-- estendo il file base.html (Scheletro) -->
+
+{% block title %}Lista degli Utenti{% endblock title %} <!-- estensione titolo -->
+
+{% block style %}
+    .mytd {
+        cursor: pointer;
+        color: #17a2b8;
+    }
+
+    .mytd:hover{
+        color: #20c997
+    }
+{% endblock style %}
+
+{% block onload %}
+    {% if user.is_authenticated %} 
+       onload="buildAuthorList();"
+    {% endif %}
+{% endblock onload %} <!-- Estensione funzione onload -->
+
+
+{% block content %} <!-- Estensione contenuto del body -->
+    {% if user.is_authenticated %}
+        <div id="items-container">
+            <div id="form-wrapper">
+                <h2>Autori</h2>
+            </div>
+            <div id="item-wrapper">
+                <table id="item-table">
+                    <tr>
+                        <th>Id</th>
+                        <th>Nominativo</th>
+                        <th>Rimuovi</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        {% include 'components/not_logged.html' %} <!-- Link login e registrazione -->
+    {% endif %}
+{% endblock content %}
+
+{% block other %} <!-- Estensione -->
+    <script type="text/javascript">
+        function getCookie(name) { // Dato il nome del cookie mi restituisce il valore
+            var cookieValue = null
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';')
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim()
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        var csrftoken = getCookie('csrftoken'); // Valore del Token CSFR per effettuare le chiamate API con metodo diverso dalla GET
+
+        function buildAuthorList(){ // Populo il div chiamato item-wrapper con i gruppi creati dall'utenteS
+            var url = '{% url 'api:group-detail' "replace_id" %}'; // URL della API che restituisce i dettagli del gruppo
+            var url = url.replace("replace_id",{{groupId}})
+
+            fetch(url) // Chiamata
+            .then((resp) => resp.json()) // Conversione in JSON della risposta
+            .then(function(data){ // Funzione che lavora coi dati della risposta convertiti
+                console.log('Autori:', data) // Scrittura di debug
+                var form_wrapper = document.getElementById("form-wrapper")
+                form_wrapper.innerHTML = "<h2>Autori del gruppo "+data.name+"</h2>"
+                var lista = data.authors.sort()
+
+                for(var i in lista){ // Ciclo fra gli autori
+                    var author_url = '{% url 'api:author-detail-db' "replace_id" %}'
+                    var author_url = author_url.replace("replace_id", lista[i])
+                    console.log("ID AUTORE: "+author_url)
+                    
+                    fetch(author_url)
+                    .then((resp) => resp.json())
+                    .then(function(details){
+                        table = document.getElementById("item-table")
+                        var row = table.insertRow(1)
+                        row.id = "author-"+details.id
+                        var id = row.insertCell(0)
+                        id.innerHTML = details.scopusId
+                        var full_name = row.insertCell(1)
+                        full_name.innerHTML = details.surname+" "+details.name
+                        full_name.className = "mytd"
+                        full_name.onclick = function(){redirectAuthorDetail(details.scopusId)}
+                        var button = row.insertCell(2)
+                        button.innerHTML = `<button class="btn btn-sm btn-outline-dark delete" onclick="deleteAuthor(${details.id})">-</button> `
+                    })
+                }
+            })
+        }
+
+        function deleteAuthor(author){
+            console.log('Eliminazione Cliccata: ', author)
+            var url = '{% url 'api:group-remove-author' "replace_id" "replace_id2" %}' // Creo la URL con groupId replace_id
+            url = url.replace('replace_id', {{groupId}}) // sostituisco replace_id con l'id del group
+            url = url.replace('replace_id2', author) // sostituisco replace_id con l'id dell'autore
+            console.log("URL: ", url)
+            fetch(url,{
+                method: 'POST',
+                headers: {
+                    'Content-type':'application/json', // Indico che passerò un json
+                    'X-CSRFToken':csrftoken // Inserisco il token CSFR
+                }
+            }).then((response)=>{
+                row = document.getElementById("author-"+author)
+                row.parentNode.removeChild(row)
+                //buildAuthorList()
+            })
+        }
+
+        function redirectAuthorDetail(authorScopusId){
+            var url = '{% url 'api:author-detail' "replace_id" %}' // Creo la URL con groupId replace_id
+            url = url.replace('replace_id', authorScopusId) // sostituisco replace_id con l'id del group
+            console.log("URL: ", url)
+            location.replace(url)
+        }
+    </script>
+{% endblock other %}
