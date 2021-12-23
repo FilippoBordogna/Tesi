@@ -16,10 +16,6 @@
       </div>
     </div>
   {% else %} <!-- Utente non autenticato -->
-    <div id="items-container">
-      <div id="form-wrapper">
         {% include 'components/not_logged.html' %} <!-- Link login e registrazione -->
-      </div>
-    </div>
   {% endif %}
 {% endblock %}
