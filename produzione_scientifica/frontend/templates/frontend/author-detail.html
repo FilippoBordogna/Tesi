@@ -134,7 +134,7 @@
         }
 
         function redirectAuthorAffiliation(affiliationScopusId){
-            var url = '{% url 'api:affiliation-detail' "replace_id" %}' // Creo la URL con groupId replace_id
+            var url = '{% url 'frontend:affiliation-detail' "replace_id" %}' // Creo la URL con groupId replace_id
             url = url.replace('replace_id', affiliationScopusId) // sostituisco replace_id con l'id del group
             url += "?authorScopusId={{auhtorScopusId}}"
             console.log("URL: ", url) // Scrittura di debug
