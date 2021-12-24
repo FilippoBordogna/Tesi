@@ -341,7 +341,7 @@ def authorCreate(dizionario):
         - Altrimenti restituisco un errore
     '''
     
-    risposta = affiliationUpdate_Create(id=dizionario['affiliation-scopusId']) # Creo o aggiorno l'associazione a cui appartiene l'autore
+    risposta = affiliationUpdate_Create(id=dizionario['affiliation_scopusId']) # Creo o aggiorno l'associazione a cui appartiene l'autore
     if(risposta.status_code==500): # Errore nel processo di creazione / aggiornamento
         return risposta # Errore
     
@@ -362,7 +362,7 @@ def authorUpdate(dizionario, auhtorId):
         - Altrimenti restituisco un errore
     '''
     
-    risposta = affiliationUpdate_Create(id=dizionario['affiliation-scopusId']) # Creo o aggiorno l'associazione a cui appartiene l'autore
+    risposta = affiliationUpdate_Create(id=dizionario['affiliation_scopusId']) # Creo o aggiorno l'associazione a cui appartiene l'autore
     if(risposta.status_code==500): # Errore nel processo di creazione / aggiornamento
         return risposta # Errore
     
@@ -393,7 +393,7 @@ def authorUpdate_Create(id):
             'name': ar.given_name,
             'surname': ar.surname,
             'full_name': ar.indexed_name,
-            'affiliation-scopusId': ar.affiliation_current[0][0], # id Scopus dell'affiliazione (mi serve per linkare un autore all'affiliazione di appartenenza)
+            'affiliation_scopusId': ar.affiliation_current[0][0], # id Scopus dell'affiliazione (mi serve per linkare un autore all'affiliazione di appartenenza)
             'last_update': datetime.now()
         }
     
@@ -409,13 +409,13 @@ def authorUpdate_Create(id):
         return risposta # Errore
     else:
         # Setto i campi extra della risposta che non ho utilizzato per creare il DB
-        risposta.data["affiliation-name"] = ar.affiliation_current[0][5] # nome dell'affiliazione
-        risposta.data["affiliation-scopus-id"] = ar.affiliation_current[0][0]
-        risposta.data["document-count"] = ar.document_count
-        risposta.data["cited-by-count"] = ar.cited_by_count # Citazioni ad Autori
-        risposta.data["citation-count"] = ar.citation_count # Citazioni a Documenti
-        risposta.data["h-index"] = ar.h_index
-        risposta.data["publication-range"] = ar.publication_range
+        risposta.data["affiliation_name"] = ar.affiliation_current[0][5] # nome dell'affiliazione
+        risposta.data["affiliation_scopusId"] = ar.affiliation_current[0][0]
+        risposta.data["document_count"] = ar.document_count
+        risposta.data["cited_by_count"] = ar.cited_by_count # Citazioni ad Autori
+        risposta.data["citation_count"] = ar.citation_count # Citazioni a Documenti
+        risposta.data["h_index"] = ar.h_index
+        risposta.data["publication_range"] = ar.publication_range
         risposta.data["subjects"] = ar.subject_areas
         risposta.data["classification"] = ar.classificationgroup
         
