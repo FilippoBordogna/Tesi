@@ -1,0 +1,142 @@
+{% extends 'base.html' %} <!-- estendo il file base.html (Scheletro) -->
+
+{% block title %}Dettagli dell'autore{% endblock title %} <!-- estensione titolo -->
+
+{% block style %}
+{% endblock style %}
+
+{% block onload %}
+    onload="buildAuthorDetails();"
+{% endblock onload %} <!-- Estensione funzione onload -->
+
+
+{% block content %} <!-- Estensione contenuto del body -->
+    {% if user.is_authenticated %}
+        <div id="items-container">
+            <div id="form-wrapper">
+                <span>Caricamento dei dettagli dell'autore in corso...</span>
+            </div>
+            <div id="item-wrapper">
+                <table id="item-table"> <!-- Tabella che conterrà gli autori-->
+                    <tr>
+                        <th>Dettagli</th>
+                        <th>-</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        {% include 'components/not_logged.html' %} <!-- Link login e registrazione -->
+    {% endif %}
+{% endblock content %}
+
+{% block other %} <!-- Estensione -->
+    <script type="text/javascript">
+
+        function buildAuthorDetails(){ // Populo il div chiamato item-wrapper con i gruppi creati dall'utenteS
+            var url = '{% url 'api:author-detail' "replace_id" %}'; // URL della API che restituisce i dettagli dell'autore
+            var url = url.replace("replace_id",{{auhtorScopusId}}) // sostituisco replace_id con lo scopusId dell'autore 
+            console.log('URL: ',url)
+
+            fetch(url) // Chiamata
+            .then((resp) => resp.json()) // Conversione in JSON della risposta
+            .then(function(data){ // Funzione che lavora coi dati della risposta convertiti
+                console.log('Dettagli:', data) // Scrittura di debug
+                var form_wrapper = document.getElementById("form-wrapper")
+                form_wrapper.innerHTML = "<h2>"+data.name+" "+data.surname+"</h2>" // Nome utente
+                var table =  document.getElementById("item-table")
+                
+                var row = table.insertRow(1) // Inserisco 1 riga in posizione 1
+                row.id = "scopusId" // id riga
+                var title = row.insertCell(0) // inserisco una cella in posizione 0
+                title.innerHTML = "ScopusId" // Titolo
+                var scopusId = row.insertCell(1) // inserisco una cella in posizione 1
+                scopusId.innerHTML = data.scopusId // valore del campo
+
+                var row = table.insertRow(2) 
+                row.id = "full-name"
+                var title = row.insertCell(0)
+                title.innerHTML = "Nominativo"
+                var full_name = row.insertCell(1) 
+                full_name.innerHTML = data.surname + " " + data.name
+
+                var row = table.insertRow(3)
+                row.id = "affiliation"
+                var title = row.insertCell(0)
+                title.innerHTML = "Affiliazione"
+                var affiliation = row.insertCell(1)
+                affiliation.className = "link-td" // Assegno la classe al td (servirà per il .css)
+                affiliation.onclick = function(){redirectAuthorAffiliation(data.affiliation_scopusId)} // Aggiungo la proprietà onclick
+                affiliation.innerHTML = data.affiliation_name
+
+                var row = table.insertRow(4)
+                row.id = "document-count"
+                var title = row.insertCell(0)
+                title.innerHTML = "N° documenti"
+                var doc_count = row.insertCell(1) 
+                doc_count.innerHTML = data.document_count
+
+                var row = table.insertRow(5)
+                row.id = "cited-by-count"
+                var title = row.insertCell(0)
+                title.innerHTML = "N° citazioni"
+                var cited_by_count = row.insertCell(1) 
+                cited_by_count.innerHTML = data.cited_by_count
+
+                var row = table.insertRow(6)
+                row.id = "citation-count"
+                var title = row.insertCell(0)
+                title.innerHTML = "N° citazioni a documenti"
+                var citation_count = row.insertCell(1) 
+                citation_count.innerHTML = data.citation_count
+
+                var row = table.insertRow(7)
+                row.id = "h-index"
+                var title = row.insertCell(0)
+                title.innerHTML = "Indice di produttività H"
+                var h_index = row.insertCell(1) 
+                h_index.innerHTML = data.h_index
+
+                var row = table.insertRow(8)
+                row.id = "publication-range"
+                var title = row.insertCell(0)
+                title.innerHTML = "Range di pubblicazione"
+                var publication_range = row.insertCell(1) 
+                publication_range.innerHTML = data.publication_range[0]+"-"+data.publication_range[1]
+
+                // Riga vuota per separare
+                var row = table.insertRow(9)
+                var title = row.insertCell(0)
+                title.innerHTML = ""
+                var subjects = row.insertCell(1) 
+                subjects.innerHTML = ""
+
+                var row = table.insertRow(10)
+                row.id = "subjects"
+                row.style.fontWeight = "bold"
+                var title = row.insertCell(0)
+                title.innerHTML = "Materie d'interesse"
+                var subjects = row.insertCell(1) 
+                subjects.innerHTML = "N° documenti scritti"
+                
+                subjects_list = data.subjects
+                for (var i in subjects_list){
+                    j = parseInt(i)
+                    var row = table.insertRow(11+j)
+                    row.id = "subject-"+subjects_list[j][2]
+                    var title = row.insertCell(0)
+                    title.innerHTML = subjects_list[j][0] 
+                    var ndoc = row.insertCell(1) 
+                    ndoc.innerHTML = data.classification[j][1] 
+                }
+            })
+        }
+
+        function redirectAuthorAffiliation(affiliationScopusId){
+            var url = '{% url 'api:affiliation-detail' "replace_id" %}' // Creo la URL con groupId replace_id
+            url = url.replace('replace_id', affiliationScopusId) // sostituisco replace_id con l'id del group
+            console.log("URL: ", url) // Scrittura di debug
+            location.replace(url) // Redirezione
+        }
+    </script>
+{% endblock other %}
