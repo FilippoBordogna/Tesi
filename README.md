@@ -26,7 +26,7 @@ InstToken = ... (Opzionale)
   
 <!-- E' necessario possedere una API Key anche per le API di WoS (impossibile richiederla come singolo ma solo come organizzazione es. Università). -->
 
-## FUNZIONALITA':
+## TASKS':
 - [x] Implementazione della classe utente custom (mail come id ed username unico a differenza del modello Django di default)
 - [x] Registrazione in 2 passi (form + mail di conferma) (Simulato il flusso email tramite file per un debug più facile)
 - [x] Login, Logout
@@ -40,9 +40,12 @@ InstToken = ... (Opzionale)
 - [x] Restyling delle pagine di login, creazione account e modifica / reset della password
 - [x] Pagina dei Gruppi (FRONTEND)
 - [x] Pagina dei dettagli dei gruppi (Lista autori nel gruppo) (FRONTEND)
-- [ ] Pagina dei dettagli degli autori (FRONTEND)
+- [x] Pagina dei dettagli degli autori (FRONTEND)
+- [ ] Pagina dei dettagli delle affiliazioni(FRONTEND)
 - [ ] Pagina di ricerca degli autori (FRONTEND)
-- [ ] Pagina dei dettagli delle affiliazioni(?) (FRONTEND)
+- [ ] Inserimento nelle pagine in cui serve del tasto indietro
+- [ ] Aggiungere alla pagina dei dettagli degli autori una sezione contenente l'elenco dei documenti scritti
+
 
 ## STRUTTURA del PROGETTO:
 - Nella cartella [produzione_scientifica](produzione_scientifica) è presente il progetto Django vero e proprio suddiviso in cartelle:
