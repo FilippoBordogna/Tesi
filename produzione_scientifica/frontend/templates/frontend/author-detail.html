@@ -44,7 +44,7 @@
             .then(function(data){ // Funzione che lavora coi dati della risposta convertiti
                 console.log('Dettagli:', data) // Scrittura di debug
                 var form_wrapper = document.getElementById("form-wrapper")
-                form_wrapper.innerHTML = "<h2>"+data.name+" "+data.surname+"</h2>" // Nome utente
+                form_wrapper.innerHTML = "<h2>"+data.surname+" "+data.name+"</h2>" // Nome utente
                 var table =  document.getElementById("item-table")
                 
                 var row = table.insertRow(1) // Inserisco 1 riga in posizione 1
@@ -57,9 +57,9 @@
                 var row = table.insertRow(2) 
                 row.id = "full-name"
                 var title = row.insertCell(0)
-                title.innerHTML = "Nominativo"
+                title.innerHTML = "Nome completo"
                 var full_name = row.insertCell(1) 
-                full_name.innerHTML = data.surname + " " + data.name
+                full_name.innerHTML = data.full_name
 
                 var row = table.insertRow(3)
                 row.id = "affiliation"
