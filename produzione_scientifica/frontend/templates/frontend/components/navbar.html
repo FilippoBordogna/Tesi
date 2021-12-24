@@ -3,19 +3,19 @@
     
     {% if user.is_authenticated %}
         <ul class="navbar-nav">
-            {% if "/groups/" in request.path %}
+            {% if "groups" in request.path %}
                 <li class="nav-item active">
             {% else %}
                 <li class="nav-item">
             {% endif %}
                 <a class="nav-link" href="{% url 'frontend:group-list' %}">I miei Gruppi</a>
             </li>
-            {% if request.path == "/authors" %}
+            {% if "author" in request.path and not "groups" in request.path %}
                 <li class="nav-item active">
             {% else %}
                 <li class="nav-item">
             {% endif %}
-                <a class="nav-link" href="#">Cerca Autori</a>
+                <a class="nav-link" href="#">Autori</a>
             </li>
         </ul>
         <ul class="navbar-nav ml-auto">
