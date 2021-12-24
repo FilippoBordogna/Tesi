@@ -41,9 +41,8 @@ InstToken = ... (Opzionale)
 - [x] Pagina dei Gruppi (FRONTEND)
 - [x] Pagina dei dettagli dei gruppi (Lista autori nel gruppo) (FRONTEND)
 - [x] Pagina dei dettagli degli autori (FRONTEND)
-- [ ] Pagina dei dettagli delle affiliazioni(FRONTEND)
+- [x] Pagina dei dettagli delle affiliazioni(FRONTEND)
 - [ ] Pagina di ricerca degli autori (FRONTEND)
-- [ ] Inserimento nelle pagine in cui serve del tasto indietro
 - [ ] Aggiungere alla pagina dei dettagli degli autori una sezione contenente l'elenco dei documenti scritti
 
 
