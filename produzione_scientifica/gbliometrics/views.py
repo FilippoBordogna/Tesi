@@ -299,14 +299,14 @@ def affiliationApiOverview(request):
     '''
     
     api_urls = { # Lista delle API disponibili
-        'Dettagli affiliazione (da DB se possibile)': '/affiliation-detail/<str:affiliationId>/',
-        'Dettagli affiliazione (da Scopus con conseguente aggiornamento del DB)': '/affiliation-detail/<str:affiliationId>/refresh/'
+        'Dettagli affiliazione (da DB se possibile)': '/affiliation-detail/<str:affiliationScopusId>/',
+        'Dettagli affiliazione (da Scopus con conseguente aggiornamento del DB)': '/affiliation-detail/<str:affiliationScopusId>/refresh/'
     }
      
     return Response(api_urls, status=200) # Successo
 
 @api_view(['GET']) # Accetta solo metodo GET
-def affiliationDetail(request, affiliationId, refresh):
+def affiliationDetail(request, affiliationScopusId, refresh):
     '''
         API che ritorna i dettagli di una affiliazione.
         Se refresh = False cerco di restituire i dati presenti nel DB
@@ -319,15 +319,15 @@ def affiliationDetail(request, affiliationId, refresh):
         N.B. PER IL MOMENTO QUESTA CHIAMATA E' DISPONIBILE ANCHE SE NON LOGGATI (IN FUTURO CHISSA')
     '''
     
-    esiste = Affiliation.objects.filter(scopusId=affiliationId).exists() # Se uso .get() anzichè .filter() errore
+    esiste = Affiliation.objects.filter(scopusId=affiliationScopusId).exists() # Se uso .get() anzichè .filter() errore
     
     if(not(refresh) and esiste): # Ho i dati e non devo aggiornare: Prendo i dati dal DB
-        affiliation = Affiliation.objects.get(scopusId=affiliationId) # Affiliazione di cui ci interessano le informazioni
+        affiliation = Affiliation.objects.get(scopusId=affiliationScopusId) # Affiliazione di cui ci interessano le informazioni
         serializer = AffiliationSerializer(affiliation, many=False) # Conversione Affiliation->Dizionario
         
         return Response(serializer.data, status=200) # Successo
     else: # Non ho i dati oppure li devo aggiornare
-        response = affiliationUpdate_Create(affiliationId) # Creo o aggiorno il record dell'affiliazione
+        response = affiliationUpdate_Create(affiliationScopusId) # Creo o aggiorno il record dell'affiliazione
         return response # Errore o Successo
     
 ####################################################################################
