@@ -1,0 +1,91 @@
+{% extends 'base.html' %} <!-- estendo il file base.html (Scheletro) -->
+
+{% block title %}Dettagli dell'affiliazione{% endblock title %} <!-- estensione titolo -->
+
+{% block style %}
+{% endblock style %}
+
+{% block onload %}
+    onload="buildAffiliationDetails();"
+{% endblock onload %} <!-- Estensione funzione onload -->
+
+
+{% block content %} <!-- Estensione contenuto del body -->
+    {% if user.is_authenticated %}
+        <div id="items-container">
+            <div id="form-wrapper">
+                <span>Caricamento dei dettagli dell'affiliazione in corso...</span>
+            </div>
+            <div id="item-wrapper">
+                <table id="item-table"> <!-- Tabella che conterrà gli autori-->
+                    <tr>
+                        <th>Dettagli</th>
+                        <th>-</th>
+                    </tr>
+                </table>
+                <div onclick='redirectAuthorDetails()' class='task-wrapper link-td'>Torna all'autore</div>
+            </div>
+        </div>
+    {% else %}
+        {% include 'components/not_logged.html' %} <!-- Link login e registrazione -->
+    {% endif %}
+{% endblock content %}
+
+{% block other %} <!-- Estensione -->
+    <script type="text/javascript">
+
+        function buildAffiliationDetails(){ // Populo il div chiamato item-wrapper con i gruppi creati dall'utenteS
+            var url = '{% url 'api:affiliation-detail-refresh' "replace_id" %}'; // URL della API che restituisce i dettagli dell'affiliazione
+            var url = url.replace("replace_id",{{affiliationScopusId}}) // sostituisco replace_id con lo scopusId dell'autore 
+            console.log('URL: ',url)
+            
+            fetch(url) // Chiamata
+            .then((resp) => resp.json()) // Conversione in JSON della risposta
+            .then(function(data){ // Funzione che lavora coi dati della risposta convertiti
+                console.log('Dettagli:', data) // Scrittura di debug
+                var form_wrapper = document.getElementById("form-wrapper")
+                form_wrapper.innerHTML = "<h2>"+data.name+"</h2>" // Nome utente
+                var table =  document.getElementById("item-table")
+                
+                var row = table.insertRow(1) // Inserisco 1 riga in posizione 1
+                row.id = "scopusId" // id riga
+                var title = row.insertCell(0) // inserisco una cella in posizione 0
+                title.innerHTML = "ScopusId" // Titolo
+                var scopusId = row.insertCell(1) // inserisco una cella in posizione 1
+                scopusId.innerHTML = data.scopusId // valore del campo
+
+                var row = table.insertRow(2) 
+                row.id = "address"
+                var title = row.insertCell(0)
+                title.innerHTML = "Indirizzo"
+                var address = row.insertCell(1) 
+                address.innerHTML = data.address+", "+data.city+"("+data.state+"), "+data.country
+
+                var row = table.insertRow(3)
+                row.id = "postal-code"
+                var title = row.insertCell(0)
+                title.innerHTML = "Codice Postale"
+                var postal_code = row.insertCell(1)
+                postal_code.innerHTML = data.postal_code
+
+                var row = table.insertRow(4)
+                row.id = "url"
+                var title = row.insertCell(0)
+                title.innerHTML = "Sito"
+                var aff_url = row.insertCell(1)
+                aff_url.className = "link-td"
+                aff_url.onclick = function(){window.open(data.url)} // Aggiungo la proprietà onclick
+                aff_url.innerHTML = data.url
+            })
+        }
+
+        function redirectAuthorDetails(){
+            var url = '{% url 'frontend:author-detail' "replace_id" %}' // Creo la URL con groupId replace_id
+            authorScopusId = window.location.href.split('?')[1].split('&')[0].split('=')[1]
+            url = url.replace('replace_id', authorScopusId) // sostituisco replace_id con l'id del group
+            url += "?groupId="+window.location.href.split('?')[1].split('&')[1].split('=')[1] // Aggiungo il parametro
+            console.log("URL: ", url)
+            location.replace(url)
+        }
+    </script>
+{% endblock other %}
