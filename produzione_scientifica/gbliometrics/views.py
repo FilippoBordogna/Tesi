@@ -410,6 +410,7 @@ def authorUpdate_Create(id):
     else:
         # Setto i campi extra della risposta che non ho utilizzato per creare il DB
         risposta.data["affiliation-name"] = ar.affiliation_current[0][5] # nome dell'affiliazione
+        risposta.data["affiliation-scopus-id"] = ar.affiliation_current[0][0]
         risposta.data["document-count"] = ar.document_count
         risposta.data["cited-by-count"] = ar.cited_by_count # Citazioni ad Autori
         risposta.data["citation-count"] = ar.citation_count # Citazioni a Documenti
