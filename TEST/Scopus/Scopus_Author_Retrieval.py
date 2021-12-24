@@ -6,7 +6,7 @@ from pybliometrics.scopus.utils import config
 # print("My API-Key: "+config['Authentication']['APIKey']+"\nMy Token: "+config['Authentication']['InstToken'])
 
 ### AuthorRetrieval(author_id, refresh=False, view='ENHANCED')
-ar=AuthorRetrieval(author_id="7101791122", refresh=False, view="ENHANCED");
+ar=AuthorRetrieval(author_id="6603694127", refresh=False, view="ENHANCED");
 
 for numero in range(5):
     print("******************************************************************************************************************************************************");
