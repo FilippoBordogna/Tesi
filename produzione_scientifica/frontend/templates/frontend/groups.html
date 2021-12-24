@@ -26,6 +26,7 @@
                 </form>
             </div>
             <div id="item-wrapper">
+                Caricamento dei gruppi in corso...
                 <!-- Tramite la funzione buildGroupList() popolerò questo div con i gruppi -->
             </div>	
         </div>
@@ -78,7 +79,7 @@
                         var item = `
                                     <div id="group-${lista[i].id}" class="task-wrapper flex-wrapper">
                                         <div style="flex:7">
-                                            <span class="name">${lista[i].name}</span>
+                                            <span class="name link-td">${lista[i].name}</span>
                                         </div>
                                         <div style="flex:2">
                                             <button class="btn btn-sm btn-outline-info edit">Modifica </button>

@@ -23,6 +23,7 @@
                         <th>-</th>
                     </tr>
                 </table>
+                <div onclick='redirectAuthorGroup()' class='task-wrapper link-td'>Indietro</div>
             </div>
         </div>
     {% else %}
@@ -37,7 +38,7 @@
             var url = '{% url 'api:author-detail' "replace_id" %}'; // URL della API che restituisce i dettagli dell'autore
             var url = url.replace("replace_id",{{auhtorScopusId}}) // sostituisco replace_id con lo scopusId dell'autore 
             console.log('URL: ',url)
-
+            
             fetch(url) // Chiamata
             .then((resp) => resp.json()) // Conversione in JSON della risposta
             .then(function(data){ // Funzione che lavora coi dati della risposta convertiti
@@ -135,8 +136,17 @@
         function redirectAuthorAffiliation(affiliationScopusId){
             var url = '{% url 'api:affiliation-detail' "replace_id" %}' // Creo la URL con groupId replace_id
             url = url.replace('replace_id', affiliationScopusId) // sostituisco replace_id con l'id del group
+            url += "?authorScopusId={{auhtorScopusId}}"
             console.log("URL: ", url) // Scrittura di debug
             location.replace(url) // Redirezione
+        }
+
+        function redirectAuthorGroup(){
+            var url = '{% url 'frontend:author-list' "replace_id" %}' // Creo la URL con groupId replace_id
+            groupId = window.location.href.split('?')[1].split('=')[1]
+            url = url.replace('replace_id', groupId) // sostituisco replace_id con l'id del group
+            console.log("URL: ", url)
+            location.replace(url)
         }
     </script>
 {% endblock other %}
