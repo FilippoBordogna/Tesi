@@ -2,17 +2,6 @@
 
 {% block title %}Lista degli Utenti{% endblock title %} <!-- estensione titolo -->
 
-{% block style %}
-    .mytd {
-        cursor: pointer;
-        color: #17a2b8;
-    }
-
-    .mytd:hover{
-        color: #20c997
-    }
-{% endblock style %}
-
 {% block onload %}
     {% if user.is_authenticated %} 
        onload="buildAuthorList();"
@@ -24,7 +13,7 @@
     {% if user.is_authenticated %}
         <div id="items-container">
             <div id="form-wrapper">
-                <h2>Autori</h2>
+                <h2>Caricamento Autori...</h2>
             </div>
             <div id="item-wrapper">
                 <table id="item-table"> <!-- Tabella che conterrà gli autori-->
@@ -95,7 +84,7 @@
                             id.innerHTML = details.scopusId
                             var full_name = row.insertCell(1) // Inserisco 1 cella in posizione 1
                             full_name.innerHTML = details.surname+" "+details.name
-                            full_name.className = "mytd" // Assegno la classe al td (servirà per il .css)
+                            full_name.className = "link-td" // Assegno la classe al td (servirà per il .css)
                             full_name.onclick = function(){redirectAuthorDetail(details.scopusId)} // Aggiungo la proprietà onclick
                             var button = row.insertCell(2) // Inserisco 1 cella in posizione 2
                             button.innerHTML = `<button class="btn btn-sm btn-outline-dark delete" onclick="deleteAuthor(${details.id})">-</button> ` // Bottone di rimozione
