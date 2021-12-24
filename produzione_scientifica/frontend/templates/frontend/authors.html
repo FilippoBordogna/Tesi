@@ -124,7 +124,7 @@
         }
 
         function redirectAuthorDetail(authorScopusId){
-            var url = '{% url 'api:author-detail' "replace_id" %}' // Creo la URL con groupId replace_id
+            var url = '{% url 'frontend:author-detail' "replace_id" %}' // Creo la URL con groupId replace_id
             url = url.replace('replace_id', authorScopusId) // sostituisco replace_id con l'id del group
             console.log("URL: ", url) // Scrittura di debug
             location.replace(url) // Redirezione
