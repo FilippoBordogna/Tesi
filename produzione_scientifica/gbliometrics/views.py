@@ -523,10 +523,10 @@ def snapshotGet(request, groupId):
         
         for author in group.authors.all(): # Ciclo fra gli autori del gruppo
             risposta = authorUpdate_Create(author.scopusId) # Aggiorno i dati di un autore
-            tot_document_count += risposta.data["document-count"] 
-            tot_cited_by_count += risposta.data["cited-by-count"]
-            tot_citation_count += risposta.data["citation-count"] 
-            tot_h_index += risposta.data["h-index"]
+            tot_document_count += risposta.data["document_count"] 
+            tot_cited_by_count += risposta.data["cited_by_count"]
+            tot_citation_count += risposta.data["citation_count"] 
+            tot_h_index += risposta.data["h_index"]
             # dati_singoli.append(risposta.data)
        
         contenuto = { # Dizionario che diventerà il contenuto del file .json
