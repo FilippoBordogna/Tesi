@@ -181,7 +181,7 @@
             var url = '{% url 'frontend:author-list' "replace_id" %}' // Creo la URL con groupId replace_id
             url = url.replace('replace_id', group.id) // sostituisco replace_id con l'id del group
             console.log("URL: ", url)
-            location.replace(url)
+            window.open(url, "_self") // Apertura della pagina nella stessa tab
         }
     </script>
 {% endblock other %}

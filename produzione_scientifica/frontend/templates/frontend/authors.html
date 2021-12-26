@@ -90,7 +90,8 @@
                             button.innerHTML = `<button class="btn btn-sm btn-outline-dark delete" onclick="deleteAuthor(${details.id})">-</button> ` // Bottone di rimozione
                         })
                     }
-                    document.getElementById("item-wrapper").innerHTML += "<div onclick='redirectGroups()' class='task-wrapper link-td'>Torna ai tuoi gruppi</div>"
+                    document.getElementById("item-wrapper").innerHTML += "<div onclick='redirectGroupSnapshot()' class='task-wrapper link-td' align='right'>Visualizza le statistiche</div>"
+                    document.getElementById("item-wrapper").innerHTML += "<div onclick='history.back()' class='task-wrapper link-td'>Indietro</div>"
             })
         }
 
@@ -116,15 +117,15 @@
         function redirectAuthorDetail(authorScopusId){
             var url = '{% url 'frontend:author-detail' "replace_id" %}' // Creo la URL con groupId replace_id
             url = url.replace('replace_id', authorScopusId) // sostituisco replace_id con l'id del group
-            url += "?groupId={{groupId}}" // Aggiungo il parametro alla GET
             console.log("URL: ", url) // Scrittura di debug
-            location.replace(url) // Redirezione
+            window.open(url, "_self") // Apertura della pagina nella stessa tab
         }
 
-        function redirectGroups(){
-            var url = '{% url 'frontend:group-list' %}' // Creo la URL con groupId replace_id
+        function redirectGroupSnapshot(){
+            var url = '{% url 'frontend:snapshot' "replace_id" %}' // Creo la URL con groupId replace_id
+            url = url.replace("replace_id", {{groupId}})
             console.log("URL: ", url) // Scrittura di debug
-            location.replace(url) // Redirezione
+            window.open(url, "_self") // Apertura della pagina nella stessa tab
         }
     </script>
 {% endblock other %}

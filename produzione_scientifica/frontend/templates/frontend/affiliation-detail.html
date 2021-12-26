@@ -23,7 +23,7 @@
                         <th>-</th>
                     </tr>
                 </table>
-                <div onclick='redirectAuthorDetails()' class='task-wrapper link-td'>Torna all'autore</div>
+                <div onclick='history.back()' class='task-wrapper link-td'>Indietro</div>
             </div>
         </div>
     {% else %}
@@ -77,15 +77,6 @@
                 aff_url.onclick = function(){window.open(data.url)} // Aggiungo la proprietà onclick
                 aff_url.innerHTML = data.url
             })
-        }
-
-        function redirectAuthorDetails(){
-            var url = '{% url 'frontend:author-detail' "replace_id" %}' // Creo la URL con groupId replace_id
-            authorScopusId = window.location.href.split('?')[1].split('&')[0].split('=')[1]
-            url = url.replace('replace_id', authorScopusId) // sostituisco replace_id con l'id del group
-            url += "?groupId="+window.location.href.split('?')[1].split('&')[1].split('=')[1] // Aggiungo il parametro
-            console.log("URL: ", url)
-            location.replace(url)
         }
     </script>
 {% endblock other %}
