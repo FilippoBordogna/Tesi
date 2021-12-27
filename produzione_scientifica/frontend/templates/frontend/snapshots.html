@@ -1,0 +1,129 @@
+{% extends 'base.html' %} <!-- estendo il file base.html (Scheletro) -->
+
+{% block title %}Lista dei Gruppi{% endblock title %} <!-- estensione titolo -->
+
+{% block onload %}
+    {% if user.is_authenticated %} 
+       onload="buildSnapshotList();"
+    {% endif %}
+{% endblock onload %} <!-- Estensione funzione onload -->
+
+
+{% block content %} <!-- Estensione contenuto del body -->
+    {% if user.is_authenticated %}
+        <div id="items-container">
+            <div id="form-wrapper">
+                <div class="element-wrapper">
+                    <h2>Gestione degli Snapshot</h2>
+                </div>
+            </div>
+            <div id="item-wrapper" class="element-wrapper">
+                Caricamento degli Snapshot in corso...
+                <!-- Tramite la funzione buildGroupList() popolerò questo div con i gruppi -->
+            </div>	
+        </div>
+    {% else %}
+        {% include 'components/not_logged.html' %} <!-- Link login e registrazione -->
+    {% endif %}
+{% endblock content %}
+
+{% block other %} <!-- Estensione -->
+    <script type="text/javascript">
+        function getCookie(name) { // Dato il nome del cookie mi restituisce il valore
+            var cookieValue = null
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';')
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim()
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        var csrftoken = getCookie('csrftoken'); // Valore del Token CSFR per effettuare le chiamate API con metodo diverso dalla GET
+        var activeSnapshot = null
+
+        function buildSnapshotList(){ // Populo il div chiamato item-wrapper con i gruppi creati dall'utente
+            var wrapper = document.getElementById('item-wrapper');
+            wrapper.innerHTML=""
+            var url = "{% url 'api:snapshot-list' %}"; // URL della API che restituisce la lista dei gruppi
+
+            fetch(url) // Chiamata
+            .then((resp) => resp.json()) // Conversione in JSON della risposta
+            .then(function(data){ // Funzione che lavora coi dati della risposta convertiti
+                console.log('Snapshot:', data) // Scrittura di debug
+        
+                var lista = data
+                if(lista.length==0) // Non ci sono gruppi
+                    wrapper.innerHTML = `   
+                                                                            <div class="element-wrapper">
+                                                                                <h2>Non sono ancora presenti gruppi.</h2>
+                                                                                <span>Comincia creandone uno</span>
+                                                                            </div>
+                                                                       `
+                else {                                                        
+                    for(var i in lista){ // Ciclo fra i gruppi
+                        var item = `
+                                    <div id="snapshot-${lista[i].id}" class="element-wrapper flex-wrapper">
+                                        <div style="flex:7">
+                                            <span class="title link-td">${lista[i].title+"("+lista[i].creation.split("T")[0]+")"}</span>
+                                        </div>
+                                        <div style="flex:2">
+                                            <button class="btn btn-sm btn-outline-dark delete">Elimina</button>
+                                        </div>
+                                    </div>
+                                ` // Creazione dell'elemento contenente titolo dello snapshot e bottone per l'eliminazione
+                        wrapper.innerHTML += item; // Aggiunta dell'elemento al div
+                    }
+
+                    for(var i in lista){ // Ciclo fra i gruppi
+                        var deleteBtn = document.getElementsByClassName('delete')[i]
+                        var title = document.getElementsByClassName('title')[i]
+
+                        deleteBtn.addEventListener('click', (function(snapshot){ // Aggiungo il listener sull'evento di click del bottone Delete
+                            return function(){
+                                deleteSnapshot(snapshot)
+                            }
+                        })(lista[i]))
+
+                        title.addEventListener('click', (function(snapshot){ // Aggiungo il listener sull'evento di click del testo contenente il nome
+                            return function(){
+                                redirectSnapshotGet(snapshot)
+                            }
+                        })(lista[i]))
+                    }
+                }
+            })
+        }
+
+        function deleteSnapshot(snapshot){
+            console.log('Eliminazione Cliccata: ', snapshot)
+            var url = '{% url 'api:snapshot-delete' "replace_id" %}' // Creo la URL con groupId replace_id
+            url = url.replace('replace_id', snapshot.id) // sostituisco replace_id con l'id del group
+            console.log("URL: ", url)
+            fetch(url,{
+                method: 'DELETE',
+                headers: {
+                    'Content-type':'application/json', // Indico che passerò un json
+                    'X-CSRFToken':csrftoken // Inserisco il token CSFR
+                }
+            }).then((response)=>{
+                element = document.getElementById("snapshot-"+snapshot.id)
+                element.remove()
+                //buildSnapshotList()
+            })
+        }
+
+        function redirectSnapshotGet(snapshot){
+            var url = '{% url 'frontend:snapshot-get' "replace_id" %}' // Creo la URL con groupId replace_id
+            url = url.replace('replace_id', snapshot.id) // sostituisco replace_id con l'id del group
+            console.log("URL: ", url)
+            window.open(url, "_self") // Apertura della pagina nella stessa tab
+        }
+    </script>
+{% endblock other %}
