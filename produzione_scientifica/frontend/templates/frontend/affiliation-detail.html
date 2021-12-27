@@ -76,6 +76,20 @@
                 aff_url.className = "link-td"
                 aff_url.onclick = function(){window.open(data.url)} // Aggiungo la proprietà onclick
                 aff_url.innerHTML = data.url
+
+                var row = table.insertRow(5)
+                row.id = "document_count"
+                var title = row.insertCell(0)
+                title.innerHTML = "N° documenti"
+                var document_number = row.insertCell(1)
+                document_number.innerHTML = data.document_count
+
+                var row = table.insertRow(6)
+                row.id = "author_count"
+                var title = row.insertCell(0)
+                title.innerHTML = "N° autori"
+                var author_number = row.insertCell(1)
+                author_number.innerHTML = data.author_count
             })
         }
     </script>
