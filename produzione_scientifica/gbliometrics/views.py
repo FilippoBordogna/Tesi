@@ -278,6 +278,8 @@ def affiliationUpdate_Create(id):
                 'postal_code': ar.postal_code,
                 'country': ar.country,
                 'url': ar.org_URL,
+                'document_count': ar.document_count,
+                'author_count': ar.author_count,
                 'last_update': datetime.now(),
             }
     

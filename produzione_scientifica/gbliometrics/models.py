@@ -35,6 +35,8 @@ class Affiliation(models.Model):
     postal_code = models.CharField(max_length=50, null=True, blank=True) # Codice Postale
     country = models.CharField(max_length=50, null=True, blank=True) # Nazione
     url = models.URLField(null=True, blank=True) # Sito internet principale
+    document_count = models.IntegerField() # Numero di documenti prodotti
+    author_count = models.IntegerField() # Numero di autori appartenenti all'affiliazione
     # Campi di competenza della mia app (NO ELSEVIER)
     creation = models.DateTimeField() # Data di creazione nel mio DB
     last_update = models.DateTimeField() # Data di ultima modifica nel mio DB

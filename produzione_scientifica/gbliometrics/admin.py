@@ -19,7 +19,7 @@ class AuthorInline(admin.StackedInline): # Oggetto Inline che verrà aggiunto
     model = Author
     extra = 0
     fieldsets = ( # Campi di visualizzazione
-        ('Dati', {'fields': ('scopusId', 'orcid', 'full_name')}),
+        ('Dati', {'fields': ('scopusId', 'full_name')}),
         ('Timestamps', {'fields': ('creation', 'last_update')}),
     )
 
@@ -65,20 +65,20 @@ class CustomAgroup(admin.ModelAdmin):
     
 class CustomAffiliation(admin.ModelAdmin):
     model = Affiliation
-    list_display = ('id', 'scopusId', 'name', 'address', 'city', 'state', 'postal_code', 'country', 'url', 'creation', 'last_update') # Campi da mostrare nella pagina principale
+    list_display = ('id', 'scopusId', 'name', 'address', 'city', 'state', 'postal_code', 'country', 'url', 'document_count', 'author_count', 'creation', 'last_update') # Campi da mostrare nella pagina principale
     list_filter = ('scopusId', 'name','address', 'city', 'state', 'postal_code', 'country', 'creation', 'last_update') # Campi su cui filtrare
     fieldsets = ( # Campi di modifica di un utente
-        ('Dati', {'fields': ('scopusId', 'name', 'address', 'city', 'state', 'postal_code', 'country', 'url')}),
+        ('Dati', {'fields': ('scopusId', 'name', 'address', 'city', 'state', 'postal_code', 'country', 'url', 'document_count', 'author_count')}),
         ('Timestamps', {'fields': ('creation', 'last_update')}),
     )
     add_fieldsets = ( # Campi dell'aggiunta di un utente
         (None, {
             'classes': ('wide',),
-            'fields': ('scopusId', 'name', 'address', 'city', 'state', 'postal_code', 'country', 'url', 'creation', 'last_update')}
+            'fields': ('scopusId', 'name', 'address', 'city', 'state', 'postal_code', 'country', 'url', 'document_count', 'author_count', 'creation', 'last_update')}
         ),
     )
     search_fields = ('scopusId', 'name', 'address', 'city', 'state', 'postal_code', 'country', 'url', 'creation', 'last_update') # Campi di ricerca
-    ordering = ('scopusId', 'name', 'address', 'city', 'state', 'postal_code', 'country', 'url', 'creation', 'last_update') # Campi di ordinamento
+    ordering = ('scopusId', 'name', 'address', 'city', 'state', 'postal_code', 'country', 'url', 'document_count', 'author_count', 'creation', 'last_update') # Campi di ordinamento
     
     inlines = [AuthorInline] # Aggiungo il modulo AuthorInline dichiarato sopra
     
