@@ -12,6 +12,9 @@
 {% block content %} <!-- Estensione contenuto del body -->
     {% if user.is_authenticated %}
         <div id="items-container">
+            <div class="element-wrapper">
+                <h2>Gestione dei gruppi</h2>
+            </div>
             <div id="form-wrapper">
                 <form id="form"> <!-- Form tramite la quale creo / modifico un gruppo -->
                     <div class="flex-wrapper">
@@ -69,7 +72,7 @@
                 var lista = data
                 if(lista.length==0) // Non ci sono gruppi
                     document.getElementById("item-wrapper").innerHTML = `   
-                                                                            <div class="task-wrapper">
+                                                                            <div class="element-wrapper">
                                                                                 <h2>Non sono ancora presenti gruppi.</h2>
                                                                                 <span>Comincia creandone uno</span>
                                                                             </div>
@@ -77,7 +80,7 @@
                 else {                                                        
                     for(var i in lista){ // Ciclo fra i gruppi
                         var item = `
-                                    <div id="group-${lista[i].id}" class="task-wrapper flex-wrapper">
+                                    <div id="group-${lista[i].id}" class="element-wrapper flex-wrapper">
                                         <div style="flex:7">
                                             <span class="name link-td">${lista[i].name}</span>
                                         </div>
@@ -173,6 +176,7 @@
             }).then((response)=>{
                 element = document.getElementById("group-"+group.id)
                 element.remove()
+                document.getElementById('form').reset()
                 //buildGroupList()
             })
         }

@@ -63,7 +63,7 @@
                 var lista = data.authors.sort() // Non sembra funzionare (RICONTROLLA)
                 if (lista.length==0) // Non ci sono autori
                     document.getElementById("item-wrapper").innerHTML = `   
-                                                                            <div class="task-wrapper">
+                                                                            <div class="element-wrapper">
                                                                                 <h2>Non sono ancora presenti autori.</h2>
                                                                                 <a href="#">Comincia ad aggiungerne</a>
                                                                             </div>
@@ -90,8 +90,8 @@
                             button.innerHTML = `<button class="btn btn-sm btn-outline-dark delete" onclick="deleteAuthor(${details.id})">-</button> ` // Bottone di rimozione
                         })
                     }
-                    document.getElementById("item-wrapper").innerHTML += "<div onclick='redirectGroupSnapshot()' class='task-wrapper link-td' align='right'>Visualizza le statistiche</div>"
-                    document.getElementById("item-wrapper").innerHTML += "<div onclick='history.back()' class='task-wrapper link-td'>Indietro</div>"
+                    document.getElementById("item-wrapper").innerHTML += "<div onclick='redirectGroupSnapshot()' class='element-wrapper link-td' align='right'>Visualizza le statistiche</div>"
+                    document.getElementById("item-wrapper").innerHTML += "<div onclick='history.back()' class='element-wrapper link-td'>Indietro</div>"
             })
         }
 

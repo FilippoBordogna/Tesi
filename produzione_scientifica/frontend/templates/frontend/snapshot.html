@@ -18,9 +18,7 @@
             <div id="item-wrapper">
                 <canvas id="myChart"></canvas>
                 <p id="h-index"></p>
-            </div>
-            <div id="item-wrapper">
-                <div class='task-wrapper'>
+                <div class='element-wrapper'>
                     <p><b>Lista Autori</b></p>
                     <table id="item-table"> <!-- Tabella che conterrà gli autori-->
                         <tr>
@@ -45,7 +43,7 @@
                     </div>
                 </form>
             </div>
-            <div onclick='history.back()' class='task-wrapper link-td'>Indietro</div>
+            <div onclick='history.back()' class='element-wrapper link-td'>Indietro</div>
         </div>
     {% else %}
         {% include 'components/not_logged.html' %} <!-- Link login e registrazione -->
@@ -86,15 +84,17 @@
                 form_wrapper.innerHTML = "<h2>Statistiche del gruppo "+data.groupName+"</h2>"
                 var lista = data.groupAuthors
                 table = document.getElementById("item-table")
-                wrapper = document.getElementById("item-wrapper")
-                if (lista.length==0) // Non ci sono autori
-                    wrapper.innertHTML = `   
-                                                                            <div class="task-wrapper">
+                console.log(lista.length)
+                if (lista.length==0){ // Non ci sono autori
+                    wrapper = document.getElementById("item-wrapper")
+                    wrapper.innerHTML = `   
+                                                                            <div class="element-wrapper">
                                                                                 <h2>Non sono ancora presenti autori nel gruppo.</h2>
                                                                                 <a href="#">Comincia ad aggiungerne</a>
                                                                             </div>
                                                                         `
-                else {
+                    
+                }else {
                     for(var i in lista){ // Ciclo fra gli autori
                         console.log(i+": "+lista[i].scopusId+": "+lista[i].full_name)
                         j = parseInt(i)
@@ -141,7 +141,7 @@
                         }
                     }
                     });
-                    document.getElementById("h-index").innerHTML = "<div class='task-wrapper'><b>Indice di produttività H: "+data.tot_h_index+"</b></div>"
+                    document.getElementById("h-index").innerHTML = "<div class='element-wrapper'><b>Indice di produttività H: "+data.tot_h_index+"</b></div>"
                     document.getElementsByName("snapshot-form")[0].style.display = "block";
                 }
             })
