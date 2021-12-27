@@ -71,12 +71,12 @@
         
                 var lista = data
                 if(lista.length==0) // Non ci sono gruppi
-                    document.getElementById("item-wrapper").innerHTML = `   
-                                                                            <div class="element-wrapper">
-                                                                                <h2>Non sono ancora presenti gruppi.</h2>
-                                                                                <span>Comincia creandone uno</span>
-                                                                            </div>
-                                                                       `
+                    wrapper.innerHTML = `   
+                                            <div class="element-wrapper">
+                                                <h2>Non sono ancora presenti gruppi.</h2>
+                                                <span>Comincia creandone uno</span>
+                                            </div>
+                                        `
                 else {                                                        
                     for(var i in lista){ // Ciclo fra i gruppi
                         var item = `
@@ -88,7 +88,7 @@
                                             <button class="btn btn-sm btn-outline-info edit">Modifica </button>
                                         </div>
                                         <div style="flex:2">
-                                            <button class="btn btn-sm btn-outline-dark delete">-</button>
+                                            <button class="btn btn-sm btn-outline-dark delete">Elimina</button>
                                         </div>
                                     </div>
                                 ` // Creazione dell'elemento contenente nome del gruppo e bottoni per la modifica / eliminazione

@@ -20,7 +20,7 @@
                     <tr>
                         <th>Id</th>
                         <th>Nominativo</th>
-                        <th>Rimuovi</th>
+                        <th></th>
                     </tr>
                 </table>
             </div>
@@ -87,7 +87,7 @@
                             full_name.className = "link-td" // Assegno la classe al td (servirà per il .css)
                             full_name.onclick = function(){redirectAuthorDetail(details.scopusId)} // Aggiungo la proprietà onclick
                             var button = row.insertCell(2) // Inserisco 1 cella in posizione 2
-                            button.innerHTML = `<button class="btn btn-sm btn-outline-dark delete" onclick="deleteAuthor(${details.id})">-</button> ` // Bottone di rimozione
+                            button.innerHTML = `<button class="btn btn-sm btn-outline-dark delete" onclick="deleteAuthor(${details.id})">Rimuovi</button> ` // Bottone di rimozione
                         })
                     }
                     document.getElementById("item-wrapper").innerHTML += "<div onclick='redirectGroupSnapshot()' class='element-wrapper link-td' align='right'>Visualizza le statistiche</div>"
@@ -122,7 +122,7 @@
         }
 
         function redirectGroupSnapshot(){
-            var url = '{% url 'frontend:snapshot' "replace_id" %}' // Creo la URL con groupId replace_id
+            var url = '{% url 'frontend:snapshot-compute' "replace_id" %}' // Creo la URL con groupId replace_id
             url = url.replace("replace_id", {{groupId}})
             console.log("URL: ", url) // Scrittura di debug
             window.open(url, "_self") // Apertura della pagina nella stessa tab
