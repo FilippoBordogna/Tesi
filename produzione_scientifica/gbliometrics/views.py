@@ -530,6 +530,8 @@ def snapshotGet(request, groupId):
             # dati_singoli.append(risposta.data)
        
         contenuto = { # Dizionario che diventerà il contenuto del file .json
+                        "groupId": group.id,
+                        "groupName": group.name,
                         "groupAuthors": AuthorSerializer(group.authors.all(), many=True).data,
                         "tot_document_count": tot_document_count,
                         "tot_cited_by_count": tot_cited_by_count,
