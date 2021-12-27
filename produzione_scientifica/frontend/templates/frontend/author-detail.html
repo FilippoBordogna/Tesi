@@ -17,12 +17,23 @@
                 <span>Caricamento dei dettagli dell'autore in corso...</span>
             </div>
             <div id="item-wrapper">
-                <table id="item-table"> <!-- Tabella che conterrà gli autori-->
-                    <tr>
-                        <th>Dettagli</th>
-                        <th>-</th>
-                    </tr>
-                </table>
+                <div class='task-wrapper'>
+                    <p onclick='history.back()' class='link-td'>Indietro</p>
+                    <table id="item-table"> <!-- Tabella che conterrà i dettagli dell'autore -->
+                        <tr>
+                            <th>Dettagli</th>
+                            <th>-</th>
+                        </tr>
+                    </table>
+                </div>
+                <div class='task-wrapper'>
+                    <table id="subjects-table"> <!-- Tabella che conterrà gli autori-->
+                        <tr>
+                            <th>Materie d'interesse</th>
+                            <th>N° documenti scritti</th>
+                        </tr>
+                    </table>
+                </div>
                 <div onclick='history.back()' class='task-wrapper link-td'>Indietro</div>
             </div>
         </div>
@@ -104,26 +115,12 @@
                 title.innerHTML = "Range di pubblicazione"
                 var publication_range = row.insertCell(1) 
                 publication_range.innerHTML = data.publication_range[0]+"-"+data.publication_range[1]
-
-                // Riga vuota per separare
-                var row = table.insertRow(9)
-                var title = row.insertCell(0)
-                title.innerHTML = ""
-                var subjects = row.insertCell(1) 
-                subjects.innerHTML = ""
-
-                var row = table.insertRow(10)
-                row.id = "subjects"
-                row.style.fontWeight = "bold"
-                var title = row.insertCell(0)
-                title.innerHTML = "Materie d'interesse"
-                var subjects = row.insertCell(1) 
-                subjects.innerHTML = "N° documenti scritti"
                 
                 subjects_list = data.subjects
+                table = document.getElementById("subjects-table")
                 for (var i in subjects_list){
                     j = parseInt(i)
-                    var row = table.insertRow(11+j)
+                    var row = table.insertRow(j+1)
                     row.id = "subject-"+subjects_list[j][2]
                     var title = row.insertCell(0)
                     title.innerHTML = subjects_list[j][0] 

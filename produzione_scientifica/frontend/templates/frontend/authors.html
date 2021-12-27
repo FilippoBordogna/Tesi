@@ -60,12 +60,12 @@
                 console.log('Autori:', data) // Scrittura di debug
                 var form_wrapper = document.getElementById("form-wrapper")
                 form_wrapper.innerHTML = "<h2>Autori del gruppo "+data.name+"</h2>"
-                var lista = data.authors.sort()
+                var lista = data.authors.sort() // Non sembra funzionare (RICONTROLLA)
                 if (lista.length==0) // Non ci sono autori
                     document.getElementById("item-wrapper").innerHTML = `   
                                                                             <div class="task-wrapper">
                                                                                 <h2>Non sono ancora presenti autori.</h2>
-                                                                                <a href="{% url 'login' %}">Comincia ad aggiungere utenti</a>
+                                                                                <a href="#">Comincia ad aggiungerne</a>
                                                                             </div>
                                                                         `
                 else
