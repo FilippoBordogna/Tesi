@@ -42,8 +42,13 @@ InstToken = ... (Opzionale)
 - [x] Pagina dei dettagli dei gruppi (Lista autori nel gruppo) (FRONTEND)
 - [x] Pagina dei dettagli degli autori (FRONTEND)
 - [x] Pagina dei dettagli delle affiliazioni(FRONTEND)
+- [x] Pagina di visualizzazione delle statistiche del gruppo ed eventuale salvataggio dello snapshot (FRONTEND)
+- [ ] Pagina di confronto degli snapshot (FRONTEND)
 - [ ] Pagina di ricerca degli autori (FRONTEND)
-- [ ] Aggiungere alla pagina dei dettagli degli autori una sezione contenente l'elenco dei documenti scritti
+- [ ] Effettuare i controlli nelle chiamata AJAX laddove necessario (FRONTEND)
+- [ ] Aggiungere la possibilità di prendere i dati dei dettagli affiliazione anche dal DB (Aggiungi un parametro refresh)
+- [ ] Migliorare la grafica (FRONTEND)
+- [ ] Aggiungere alla pagina dei dettagli degli autori una sezione contenente l'elenco dei documenti scritti (FRONTEND + API)
 
 
 ## STRUTTURA del PROGETTO:
