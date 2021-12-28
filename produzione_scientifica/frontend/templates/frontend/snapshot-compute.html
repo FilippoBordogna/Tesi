@@ -155,16 +155,16 @@
             console.log(title)
             var url = '{% url 'api:snapshot-save' "replace_id" %}' // URL dell'API che crea un gruppo
             url = url.replace('replace_id', title)
-
+            //snapshot_json = JSON.parse(snapshot_json)
             fetch(url, { // Chiamata
                 method:'POST', // Metodo
                 headers:{
                     'Content-type':'application/json', // Indico che passerò un json
                     'X-CSRFToken':csrftoken // Inserisco il token CSFR
                 },
-                body:JSON.stringify({ // Corpo della richiesta dove passo i paramentri
+                body:JSON.stringify(// Corpo della richiesta dove passo i paramentri
                                         snapshot_json
-                                    })
+                                   )
             }
             ).then(function(response){ // Funzione che lavora con i dati ricevuti in risposta
                 document.getElementById("save-status").style.display = "block";
