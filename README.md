@@ -27,26 +27,32 @@ InstToken = ... (Opzionale)
 <!-- E' necessario possedere una API Key anche per le API di WoS (impossibile richiederla come singolo ma solo come organizzazione es. Università). -->
 
 ## TASKS':
-- [x] Implementazione della classe utente custom (mail come id ed username unico a differenza del modello Django di default)
-- [x] Registrazione in 2 passi (form + mail di conferma) (Simulato il flusso email tramite file per un debug più facile)
-- [x] Login, Logout
-- [x] Recupero della password (da non loggati) via email (Simulato il flusso email tramite file per un debug più facile)
-- [x] Modifica della password (da loggati)
+- [x] Implementazione della classe CustomUser (mail come id ed username unico a differenza del modello Django di default) (MODELLO)
+- [x] Implementazione della classe Affiliation (MODELLO)
+- [x] Implementazione della classe Author (MODELLO)
+- [x] Implementazione della classe Agroup (Gruppi di autori) (MODELLO)
+- [x] Implementazione della classe Snapshot (MODELLO)
 - [x] CRUD Tabella Agroups (API)
 - [x] CRUD Tabella Affiliations (API)
 - [x] CRUD Tabella Authors (API)
 - [x] CRUD Tabella Snapshot (API)
 - [x] Pagina Home (FRONTEND)
-- [x] Restyling delle pagine di login, creazione account e modifica / reset della password
+- [x] Pagina di Login (FRONTEND)
+- [x] Pagina di Creazione account in 2 passaggi (Immissione dei dati + conferma via Email(Simulata su file)) (FRONTEND)
+- [x] Pagina di modifica della password (FRONTEND)
+- [x] Pagina di reset della password in 3 passaggi (Richiesta di reset, conferma via Email(Simulata su file), Immissione dei nuovi dati) (FRONTEND)
 - [x] Pagina dei Gruppi (FRONTEND)
 - [x] Pagina dei dettagli dei gruppi (Lista autori nel gruppo) (FRONTEND)
 - [x] Pagina dei dettagli degli autori (FRONTEND)
 - [x] Pagina dei dettagli delle affiliazioni(FRONTEND)
-- [x] Pagina di visualizzazione delle statistiche del gruppo ed eventuale salvataggio dello snapshot (FRONTEND)
+- [x] Pagina di visualizzazione delle statistiche di un gruppo (computazione dei dati al momento) con eventuale salvataggio dello snapshot (FRONTEND)
+- [x] Pagina di visualizzazione di tutti gli snapshot salvati (FRONTEND)
+- [x] Pagina di visualizzazione di uno snapshot salvato in precedenza (FRONTEND)
 - [ ] Pagina di confronto degli snapshot (FRONTEND)
 - [ ] Pagina di ricerca degli autori (FRONTEND)
 - [ ] Effettuare i controlli nelle chiamata AJAX laddove necessario (FRONTEND)
-- [ ] Aggiungere la possibilità di prendere i dati dei dettagli affiliazione anche dal DB (Aggiungi un parametro refresh)
+- [ ] Aggiungere la possibilità di modificare il titolo di uno snapshot salvato (API + FRONTEND)
+- [ ] Aggiungere la possibilità di prendere i dati dei dettagli affiliazione anche dal DB (Aggiungi un parametro refresh) (FRONTEND)
 - [ ] Migliorare la grafica (FRONTEND)
 - [ ] Aggiungere alla pagina dei dettagli degli autori una sezione contenente l'elenco dei documenti scritti (FRONTEND + API)
 
@@ -75,3 +81,6 @@ InstToken = ... (Opzionale)
   - https://www.youtube.com/watch?v=TmsD8QExZ84&ab_channel=DennisIvy
 - AJAX
   - https://www.youtube.com/watch?v=hISSGMafzvU&ab_channel=DennisIvy
+- BOOTSTRAP 4
+  - https://www.w3schools.com/bootstrap4
+  - https://www.w3schools.com/js/js_graphics_chartjs.asp
