@@ -72,7 +72,7 @@
         var snapshot_json = null // contenuto dello snapshot che in caso di salvataggio passerò all'API
 
         function buildSnapshot(){ // Populo il div chiamato item-wrapper con i gruppi creati dall'utente
-            var url = '{% url 'api:snapshot-get' "replace_id" %}'; // URL della API che restituisce lo snapshot del gruppo
+            var url = '{% url 'api:snapshot-compute' "replace_id" %}'; // URL della API che restituisce lo snapshot del gruppo
             var url = url.replace("replace_id",{{groupId}}) // sostituisco replace_id con l'id dell'autore 
 
             fetch(url) // Chiamata

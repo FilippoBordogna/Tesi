@@ -503,7 +503,7 @@ def snapshotList(request):
         return myError("Non sei loggato") # Errore
     
 @api_view(['GET']) # Accetta solo metodo GET
-def snapshotGet(request, groupId):
+def snapshotCompute(request, groupId):
     '''
         API che crea e restituisce il dizionario contenente lo snapshot di un gruppo specificato dall'utente.
         Se l'utente non è loggato lancio un errore.
