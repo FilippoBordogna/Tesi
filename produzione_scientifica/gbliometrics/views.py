@@ -480,6 +480,7 @@ def snapshotApiOverview(request):
     
     api_urls = { # Lista delle API disponibili
         'Lista degli snapshot dell\'utente': '/snapshot-list/',
+        'Lettura di uno snapshot salvato': '/snapshot-get/<str:snapshotId>/',
         'Creazione dello snapshot del gruppo': '/snapshot-get/<str:groupId>/',
         'Salvataggio di uno snapshot': 'snapshot-save/<str:title>/',
         'Eliminazione di uno snapshot salvato': 'snapshot-delete/<str:snapshotId>/'
@@ -501,7 +502,20 @@ def snapshotList(request):
         return Response(serializer.data, status=200) # Successo
     else: # Utente NON loggato
         return myError("Non sei loggato") # Errore
-    
+
+@api_view(['GET']) # Accetta solo metodo GET
+def snapshotGet(request, snapshotId):
+    if(request.user.is_authenticated): # Utente loggato
+        try:
+            snapshot = Snapshot.objects.get(id=snapshotId, user=request.user) # Snapshot di cui effettuare la lettura
+        except Snapshot.DoesNotExist: # Snapshot inesistente o non di proprietà dell'utente
+            return myError("Stai provando ad accedere ad informazioni su uno snapshot inesistente o non di tua proprieta'") # Errore
+        
+        file = json.load(snapshot.informations)
+        return Response(file)
+    else: # Utente NON loggato
+        return myError("Non sei loggato") # Errore
+ 
 @api_view(['GET']) # Accetta solo metodo GET
 def snapshotCompute(request, groupId):
     '''
