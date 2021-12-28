@@ -511,8 +511,8 @@ def snapshotGet(request, snapshotId):
         except Snapshot.DoesNotExist: # Snapshot inesistente o non di proprietà dell'utente
             return myError("Stai provando ad accedere ad informazioni su uno snapshot inesistente o non di tua proprieta'") # Errore
         
-        file = json.load(snapshot.informations)
-        return Response(file)
+        file = json.load(snapshot.informations) # Lettura del file JSON
+        return Response(file, status=200)
     else: # Utente NON loggato
         return myError("Non sei loggato") # Errore
  
@@ -574,7 +574,7 @@ def snapshotSave(request, title):
         snapshot = Snapshot(user=request.user, title=title, creation=datetime.now()) # Creazione dello snapshot
         snapshot.save() # Salvataggio dello snapshot
         snapshot.informations.save(title, file) # Aggiunta del file .json allo snapshot
-        return Response({'message':"Snapshot salvato con successo", 'id': snapshot.id}, status=200)
+        return Response({'message':"Snapshot salvato con successo", 'id': snapshot.id}, status=200) # Successo
     else: # Utente NON loggato
         return myError("Non sei loggato") # Errore
     
