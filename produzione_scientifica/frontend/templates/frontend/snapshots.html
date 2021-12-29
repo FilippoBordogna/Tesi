@@ -13,14 +13,16 @@
     {% if user.is_authenticated %}
         <div id="items-container">
             <div id="form-wrapper">
-                <div class="element-wrapper">
+                <div id="heading" class="element-wrapper">
                     <h2>Gestione degli Snapshot</h2>
                 </div>
             </div>
             <div id="item-wrapper" class="element-wrapper">
                 Caricamento degli Snapshot in corso...
                 <!-- Tramite la funzione buildGroupList() popolerò questo div con i gruppi -->
-            </div>	
+            </div>
+            <div onclick='redirectSnapshotsCompare()' id="compare-snapshots" class='element-wrapper link-td' style='text-align:right; display:none'>Confronta i 2 snapshot</div>
+            <div onclick='history.back()' class='element-wrapper link-td'>Indietro</div>
         </div>
     {% else %}
         {% include 'components/not_logged.html' %} <!-- Link login e registrazione -->
@@ -63,14 +65,16 @@
                     wrapper.innerHTML = `   
                                                                             <div class="element-wrapper">
                                                                                 <h2>Non sono ancora presenti gruppi.</h2>
-                                                                                <span>Comincia creandone uno</span>
+                                                                                <span>Puoi crearne 1 dalla pagina di dettaglio di un gruppo</span>
                                                                             </div>
                                                                        `
-                else {                                                        
+                else {  
+                    document.getElementById("heading").innerHTML += "<div>Selezionando 2 snapshot avrai la possibilità di confrontarli</div>"                                                      
                     for(var i in lista){ // Ciclo fra i gruppi
                         var item = `
-                                    <div id="snapshot-${lista[i].id}" class="element-wrapper flex-wrapper">
+                                    <div class="element-wrapper flex-wrapper">
                                         <div style="flex:7">
+                                            <input type="checkbox" id="snapshot-${lista[i].id}" onclick="checkChange(${lista[i].id})" name="snapshot">
                                             <span class="title link-td">${lista[i].title+"("+lista[i].creation.split("T")[0]+")"}</span>
                                         </div>
                                         <div style="flex:2">
@@ -119,11 +123,52 @@
             })
         }
 
+        selected_snapshots = [null, null] // mi riferirò al vettore con la sigla [x/null,y/null] 
+        // Inserisco in posizione 0 ed elimino in posizione 1
+        function checkChange(snapshot){ // mi riferirò alla variabile snapshot con z
+            console.log("PRIMA: "+selected_snapshots) // Scrittua di debug
+            current = document.getElementById("snapshot-"+snapshot)
+            compare = document.getElementById("compare-snapshots")
+            if(current.checked) { // Elemento checkato
+                if(selected_snapshots[0]!=null) { // situazione [x,y]
+                    document.getElementById("snapshot-"+selected_snapshots[1]).checked = false // tolgo il check dalla variabile più "vecchia"
+                    selected_snapshots[1] = selected_snapshots[0] // Sposto da pos 0 a 1 -> [x,x]
+                    selected_snapshots[0] = snapshot // Inserisco in pos 1 -> [x,z]
+                }
+                else if(selected_snapshots[1]==null) // situazione [null, null]
+                    selected_snapshots[1] = snapshot // passo alla situazione [null, z]
+                else // situazione [null,y]
+                selected_snapshots[0] = snapshot // passo alla situazione [z,y]           
+            }
+            else {
+                if(selected_snapshots[1]==snapshot) // situazione [x,z]
+                    selected_snapshots[1]=selected_snapshots[0] // situazione [x,x]
+                // situazione [z,y] oppure [x,x]
+                selected_snapshots[0]=null // passo a situazione [null,y]
+            }
+            if(selected_snapshots[0]!=null && selected_snapshots[1]!=null) // 2 snapshot checkati
+               compare.style.display="block" // Mostro il link al confronto
+            else // 1 o 0 snapshot checkati
+                compare.style.display="none" // Nascondo il link al confronto
+            console.log("DOPO: "+selected_snapshots) // Scrittua di debug
+        }
+
         function redirectSnapshotGet(snapshot){
             var url = '{% url 'frontend:snapshot-get' "replace_id" %}' // Creo la URL con groupId replace_id
             url = url.replace('replace_id', snapshot.id) // sostituisco replace_id con l'id del group
             console.log("URL: ", url)
             window.open(url, "_self") // Apertura della pagina nella stessa tab
+        }
+
+        function redirectSnapshotsCompare(){
+            var url = '{% url 'frontend:snapshot-get' "replace_id" %}' // Creo la URL con groupId replace_id
+            url = url.replace('replace_id', selected_snapshots[0]) // sostituisco replace_id con l'id del group
+            console.log("URL: ", url)
+            window.open(url) // Apertura della pagina nella stessa tab
+            var url = '{% url 'frontend:snapshot-get' "replace_id" %}' // Creo la URL con groupId replace_id
+            url = url.replace('replace_id', selected_snapshots[1]) // sostituisco replace_id con l'id del group
+            console.log("URL: ", url)
+            window.open(url) // Apertura della pagina nella stessa tab
         }
     </script>
 {% endblock other %}
