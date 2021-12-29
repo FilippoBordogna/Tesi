@@ -17,7 +17,15 @@
             </div>
             <div id="item-wrapper">
                 <canvas id="myChart"></canvas>
-                <p id="h-index"></p>
+                <div class='element-wrapper' id="h-index">
+                    <p><b>Valori metrici</b></p>
+                    <table id="data-table"> <!-- Tabella che conterrà gli autori-->
+                        <tr>
+                            <th>Dato</th>
+                            <th>Valore</th>
+                        </tr>
+                    </table>
+                </div>
                 <div class='element-wrapper'>
                     <p><b>Lista Autori</b></p>
                     <table id="item-table"> <!-- Tabella che conterrà gli autori-->
@@ -54,11 +62,11 @@
                 if (lista.length==0){ // Non ci sono autori
                     wrapper = document.getElementById("item-wrapper")
                     wrapper.innerHTML = `   
-                                                                            <div class="element-wrapper">
-                                                                                <h2>Non sono ancora presenti autori nel gruppo.</h2>
-                                                                                <a href="#">Comincia ad aggiungerne</a>
-                                                                            </div>
-                                                                        `
+                                            <div class="element-wrapper">
+                                                <h2>Non sono ancora presenti autori nel gruppo.</h2>
+                                                <a href="#">Comincia ad aggiungerne</a>
+                                            </div>
+                                        `
                     
                 }else {
                     for(var i in lista){ // Ciclo fra gli autori
@@ -107,7 +115,31 @@
                         }
                     }
                     });
-                    document.getElementById("h-index").innerHTML = "<div class='element-wrapper'><b>Indice di produttività H: "+data.tot_h_index+"</b></div>"
+
+                    var data_table = document.getElementById("data-table")
+                    var row = data_table.insertRow(1) // Inserisco 1 riga
+                    var title = row.insertCell(0) // Inserisco 1 cella in posizione 0
+                    title.innerHTML = "Indice di produttività H".bold()
+                    var h_index = row.insertCell(1) // Inserisco 1 cella in posizione 1
+                    h_index.innerHTML = data.tot_h_index.toString().bold()
+
+                    var row = data_table.insertRow(2) // Inserisco 1 riga
+                    var title = row.insertCell(0) // Inserisco 1 cella in posizione 0
+                    title.innerHTML = "Citazioni a documenti"
+                    var doc_cit = row.insertCell(1) // Inserisco 1 cella in posizione 1
+                    doc_cit.innerHTML = data.tot_citation_count
+
+                    var row = data_table.insertRow(3) // Inserisco 1 riga
+                    var title = row.insertCell(0) // Inserisco 1 cella in posizione 0
+                    title.innerHTML = "Citazioni ad autori"
+                    var auth_cit = row.insertCell(1) // Inserisco 1 cella in posizione 1
+                    auth_cit.innerHTML = data.tot_cited_by_count
+
+                    var row = data_table.insertRow(4) // Inserisco 1 riga
+                    var title = row.insertCell(0) // Inserisco 1 cella in posizione 0
+                    title.innerHTML = "Numero di documenti prodotti"
+                    var doc_cit = row.insertCell(1) // Inserisco 1 cella in posizione 1
+                    doc_cit.innerHTML = data.tot_document_count
                 }
             })
         }
