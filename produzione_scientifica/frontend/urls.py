@@ -10,6 +10,7 @@ urlpatterns = [
     path('author-detail/<str:auhtorScopusId>/', TemplateView.as_view(template_name='author-detail.html'), name='author-detail'), # Pagine di visualizzazione dei dettagli di un autore
     path('affiliation-detail/<str:affiliationScopusId>/', TemplateView.as_view(template_name='affiliation-detail.html'), name='affiliation-detail'), # Pagina di visualizzazione dei dettagli di una affiliazione
     path('snapshot-compute/<str:groupId>/', TemplateView.as_view(template_name='snapshot-compute.html'), name="snapshot-compute"), # Pagina che computa lo snapshot di un gruppo al momento presente
-    path('snapshots/', TemplateView.as_view(template_name='snapshots.html'), name="snapshot-list"), # Pagina di visualizzazione degli snapshot salvati
+    path('snapshots/', TemplateView.as_view(template_name='snapshots.html'), name="snapshot-list"), # Pagina di visualizzazione degli snapshot salvati (con possibilità di confrontarli a 2 a 2)
     path('snapshot-get/<str:snapshotId>/', TemplateView.as_view(template_name='snapshot-get.html'), name="snapshot-get"), # Pagina che mostra uno snapshot salvato
+    path('snapshot-compare/<str:snapshotId1>/<str:snapshotId2>/', TemplateView.as_view(template_name='snapshot-compare.html'), name="snapshot-compare"), # Pagina che mostra uno snapshot salvato
 ]
