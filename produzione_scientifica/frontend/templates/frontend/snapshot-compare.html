@@ -1,0 +1,129 @@
+{% extends 'base.html' %} <!-- estendo il file base.html (Scheletro) -->
+
+{% block title %}Lettura dello snapshot{% endblock title %} <!-- estensione titolo -->
+
+{% block onload %}
+    {% if user.is_authenticated %} 
+       onload="buildSnapshot();"
+    {% endif %}
+{% endblock onload %} <!-- Estensione funzione onload -->
+
+
+{% block content %} <!-- Estensione contenuto del body -->
+    {% if user.is_authenticated %}
+        <div id="items-container">
+            <div id="form-wrapper">
+                <h2>Lettura delle statistiche ...</h2>
+            </div>
+            <div id="item-wrapper">
+                <canvas id="myChart"></canvas>
+                <p id="h-index"></p>
+                <div class='element-wrapper'>
+                    <p><b>Lista Autori</b></p>
+                    <table id="item-table"> <!-- Tabella che conterrà gli autori-->
+                        <tr>
+                            <th>Id</th>
+                            <th>Autore</th>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div onclick='history.back()' class='element-wrapper link-td'>Indietro</div>
+        </div>
+    {% else %}
+        {% include 'components/not_logged.html' %} <!-- Link login e registrazione -->
+    {% endif %}
+{% endblock content %}
+
+{% block other %} <!-- Estensione -->
+    <script type="text/javascript">
+
+        function buildSnapshot(){ // Populo il div chiamato item-wrapper con i gruppi creati dall'utente
+            var url = '{% url 'api:snapshot-get' "replace_id" %}'; // URL della API che restituisce lo snapshot del gruppo
+            var url = url.replace("replace_id",{{snapshotId1}}) // sostituisco replace_id con l'id dell'autore 
+
+            fetch(url) // Chiamata
+            .then((resp) => resp.json()) // Conversione in JSON della risposta
+            .then(function(data){ // Funzione che lavora coi dati della risposta convertiti
+                console.log('Snapshot1:', data) // Scrittura di debug
+                var url2 = '{% url 'api:snapshot-get' "replace_id" %}'; // URL della API che restituisce lo snapshot del gruppo
+                var url2 = url2.replace("replace_id",{{snapshotId2}}) // sostituisco replace_id con l'id dell'autore 
+                fetch(url) // Chiamata
+                .then((resp) => resp.json()) // Conversione in JSON della risposta
+                .then(function(data2) {
+                    console.log('Snapshot2:',data2)
+                })
+                var form_wrapper = document.getElementById("form-wrapper")
+                form_wrapper.innerHTML = "<h2>Gruppo "+data.groupName+" al "+data.timestamp.split("_")[0]+"</h2>"
+                var lista = data.groupAuthors
+                table = document.getElementById("item-table")
+                console.log(lista.length)
+                if (lista.length==0){ // Non ci sono autori
+                    wrapper = document.getElementById("item-wrapper")
+                    wrapper.innerHTML = `   
+                                                                            <div class="element-wrapper">
+                                                                                <h2>Non sono ancora presenti autori nel gruppo.</h2>
+                                                                                <a href="#">Comincia ad aggiungerne</a>
+                                                                            </div>
+                                                                        `
+                    
+                }else {
+                    for(var i in lista){ // Ciclo fra gli autori
+                        console.log(i+": "+lista[i].scopusId+": "+lista[i].full_name)
+                        j = parseInt(i)
+                        var row = table.insertRow(j+1) // Inserisco 1 riga
+                        row.id = "author-"+lista[j].id // id della riga
+                        var id = row.insertCell(0) // Inserisco 1 cella in posizione 0
+                        id.innerHTML = lista[j].scopusId
+                        var full_name = row.insertCell(1) // Inserisco 1 cella in posizione 1
+                        full_name.innerHTML = lista[j].surname+" "+lista[j].name
+                        full_name.className = "link-td full_name" // Assegno la classe al td (servirà per il .css)                      
+                    }
+
+                    for(var i in lista){ // Ciclo fra i gruppi
+                        var fn = document.getElementsByClassName('full_name')[i]
+
+                        fn.addEventListener('click', (function(scopusId){ // Aggiungo il listener sull'evento di click del bottone Edit
+                            return function(){
+                                redirectAuthorDetail(scopusId)
+                            }
+                        })(lista[i].scopusId))
+                    }
+                    // Creazione del grafico
+                    var xValues = ["Citazioni a documenti", "Citazioni ad autori", "Numero di documenti"];
+                    var yValues = [data.tot_citation_count, data.tot_cited_by_count, data.tot_document_count];
+                    var barColors = [
+                    "#b91d47",
+                    "#00aba9",
+                    "#2b5797",
+                    ];
+
+                    new Chart("myChart", {
+                    type: "pie",
+                    data: {
+                        labels: xValues,
+                        datasets: [{
+                        backgroundColor: barColors,
+                        data: yValues
+                        }]
+                    },
+                    options: {
+                        title: {
+                        display: true,
+                        text: "Statistiche metriche al " + data.timestamp.split("_")[0] 
+                        }
+                    }
+                    });
+                    document.getElementById("h-index").innerHTML = "<div class='element-wrapper'><b>Indice di produttività H: "+data.tot_h_index+"</b></div>"
+                }
+            })
+        }
+
+        function redirectAuthorDetail(authorScopusId){
+            var url = '{% url 'frontend:author-detail' "replace_id" %}' // Creo la URL con groupId replace_id
+            url = url.replace('replace_id', authorScopusId) // sostituisco replace_id con l'id del group
+            console.log("URL: ", url) // Scrittura di debug
+            window.open(url, "_self") // Apertura della pagina nella stessa tab
+        }
+    </script>
+{% endblock other %}
