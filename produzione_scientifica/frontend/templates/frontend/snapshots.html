@@ -161,14 +161,11 @@
         }
 
         function redirectSnapshotsCompare(){
-            var url = '{% url 'frontend:snapshot-get' "replace_id" %}' // Creo la URL con groupId replace_id
+            var url = '{% url 'frontend:snapshot-compare' "replace_id" "replace_id2" %}' // Creo la URL con groupId replace_id
             url = url.replace('replace_id', selected_snapshots[0]) // sostituisco replace_id con l'id del group
+            url = url.replace('replace_id2', selected_snapshots[1]) // sostituisco replace_id con l'id del group
             console.log("URL: ", url)
-            window.open(url) // Apertura della pagina nella stessa tab
-            var url = '{% url 'frontend:snapshot-get' "replace_id" %}' // Creo la URL con groupId replace_id
-            url = url.replace('replace_id', selected_snapshots[1]) // sostituisco replace_id con l'id del group
-            console.log("URL: ", url)
-            window.open(url) // Apertura della pagina nella stessa tab
+            window.open(url, "_self") // Apertura della pagina nella stessa tab
         }
     </script>
 {% endblock other %}
