@@ -48,13 +48,14 @@ InstToken = ... (Opzionale)
 - [x] Pagina di visualizzazione delle statistiche di un gruppo (computazione dei dati al momento) con eventuale salvataggio dello snapshot (FRONTEND)
 - [x] Pagina di visualizzazione di tutti gli snapshot salvati (FRONTEND)
 - [x] Pagina di visualizzazione di uno snapshot salvato in precedenza (FRONTEND)
-- [ ] Pagina di confronto degli snapshot (FRONTEND)
+- [x] Pagina di confronto degli snapshot (FRONTEND)
 - [ ] Pagina di ricerca degli autori (FRONTEND)
 - [ ] Effettuare i controlli nelle chiamata AJAX laddove necessario (FRONTEND)
 - [ ] Aggiungere la possibilità di modificare il titolo di uno snapshot salvato (API + FRONTEND)
 - [ ] Aggiungere la possibilità di prendere i dati dei dettagli affiliazione anche dal DB (Aggiungi un parametro refresh) (FRONTEND)
-- [ ] Migliorare la grafica (FRONTEND)
+- [ ] Aggiungere paginazione laddove necessario
 - [ ] Aggiungere alla pagina dei dettagli degli autori una sezione contenente l'elenco dei documenti scritti (FRONTEND + API)
+- [ ] Migliorare la grafica (FRONTEND)
 
 
 ## STRUTTURA del PROGETTO:
