@@ -38,7 +38,7 @@
 {% block other %} <!-- Estensione -->
     <script type="text/javascript">
         function buildAffiliationDetails(){ // Populo il div chiamato item-wrapper con i gruppi creati dall'utenteS
-            var url = '{% url 'api:affiliation-detail-refresh' "replace_id" %}'; // URL della API che restituisce i dettagli dell'affiliazione
+            var url = '{% url 'api:affiliation-details-refresh' "replace_id" %}'; // URL della API che restituisce i dettagli dell'affiliazione
             var url = url.replace("replace_id",{{affiliationScopusId}}) // sostituisco replace_id con lo scopusId dell'autore 
             console.log('URL: ',url)
             

@@ -62,7 +62,7 @@
         function buildGroupList(){ // Populo il div chiamato item-wrapper con i gruppi creati dall'utente
             var wrapper = document.getElementById('item-wrapper');
             wrapper.innerHTML=""
-            var url = "{% url 'api:group-list' %}"; // URL della API che restituisce la lista dei gruppi
+            var url = "{% url 'api:groups-list' %}"; // URL della API che restituisce la lista dei gruppi
 
             fetch(url) // Chiamata
             .then((resp) => resp.json()) // Conversione in JSON della risposta
@@ -182,7 +182,7 @@
         }
 
         function redirectGroupDetail(group){
-            var url = '{% url 'frontend:author-list' "replace_id" %}' // Creo la URL con groupId replace_id
+            var url = '{% url 'frontend:authors-list' "replace_id" %}' // Creo la URL con groupId replace_id
             url = url.replace('replace_id', group.id) // sostituisco replace_id con l'id del group
             console.log("URL: ", url)
             window.open(url, "_self") // Apertura della pagina nella stessa tab

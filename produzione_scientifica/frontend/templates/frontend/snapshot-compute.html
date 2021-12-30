@@ -49,7 +49,7 @@
                             </div>
                         </div>
                         <div class="flex-wrapper" style="display: none; color: green;" id="save-status">
-                            Il salvataggio è andato a buon fine. <a href="{% url 'frontend:snapshot-list' %}">Qui</a> potrai confrontare questo snapshot con altri
+                            Il salvataggio è andato a buon fine. <a href="{% url 'frontend:snapshots-list' %}">Qui</a> potrai confrontare questo snapshot con altri
                         </div>
                     </form>
                 </div>
@@ -209,7 +209,7 @@
         })
 
         function redirectAuthorDetail(authorScopusId){
-            var url = '{% url 'frontend:author-detail' "replace_id" %}' // Creo la URL con groupId replace_id
+            var url = '{% url 'frontend:author-details' "replace_id" %}' // Creo la URL con groupId replace_id
             url = url.replace('replace_id', authorScopusId) // sostituisco replace_id con l'id del group
             console.log("URL: ", url) // Scrittura di debug
             window.open(url, "_self") // Apertura della pagina nella stessa tab

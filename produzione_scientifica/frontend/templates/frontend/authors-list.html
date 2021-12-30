@@ -51,7 +51,7 @@
         var csrftoken = getCookie('csrftoken'); // Valore del Token CSFR per effettuare le chiamate API con metodo diverso dalla GET
 
         function buildAuthorList(){ // Populo il div chiamato item-wrapper con i gruppi creati dall'utente
-            var url = '{% url 'api:group-detail' "replace_id" %}'; // URL della API che restituisce i dettagli del gruppo
+            var url = '{% url 'api:group-details' "replace_id" %}'; // URL della API che restituisce i dettagli del gruppo
             var url = url.replace("replace_id",{{groupId}}) // sostituisco replace_id con l'id dell'autore 
 
             fetch(url) // Chiamata
@@ -70,7 +70,7 @@
                                                                         `
                 else {
                     for(var i in lista){ // Ciclo fra gli autori
-                        var author_url = '{% url 'api:author-detail-db' "replace_id" %}' // URL della API che restituisce i dettagli dell'utente (dal DB)
+                        var author_url = '{% url 'api:author-details-db' "replace_id" %}' // URL della API che restituisce i dettagli dell'utente (dal DB)
                         var author_url = author_url.replace("replace_id", lista[i]) // sostituisco replace_id con l'id dell'autore
                         console.log("ID AUTORE: "+author_url) // Scrittura di debug
                         
@@ -116,7 +116,7 @@
         }
 
         function redirectAuthorDetail(authorScopusId){
-            var url = '{% url 'frontend:author-detail' "replace_id" %}' // Creo la URL con groupId replace_id
+            var url = '{% url 'frontend:author-details' "replace_id" %}' // Creo la URL con groupId replace_id
             url = url.replace('replace_id', authorScopusId) // sostituisco replace_id con l'id del group
             console.log("URL: ", url) // Scrittura di debug
             window.open(url, "_self") // Apertura della pagina nella stessa tab

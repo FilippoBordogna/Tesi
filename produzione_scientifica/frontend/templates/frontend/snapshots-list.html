@@ -53,7 +53,7 @@
         function buildSnapshotList(){ // Populo il div chiamato item-wrapper con i gruppi creati dall'utente
             var wrapper = document.getElementById('item-wrapper');
             wrapper.innerHTML=""
-            var url = "{% url 'api:snapshot-list' %}"; // URL della API che restituisce la lista dei gruppi
+            var url = "{% url 'api:snapshots-list' %}"; // URL della API che restituisce la lista dei gruppi
 
             fetch(url) // Chiamata
             .then((resp) => resp.json()) // Conversione in JSON della risposta
@@ -161,7 +161,7 @@
         }
 
         function redirectSnapshotsCompare(){
-            var url = '{% url 'frontend:snapshot-compare' "replace_id" "replace_id2" %}' // Creo la URL con groupId replace_id
+            var url = '{% url 'frontend:snapshots-compare' "replace_id" "replace_id2" %}' // Creo la URL con groupId replace_id
             url = url.replace('replace_id', selected_snapshots[0]) // sostituisco replace_id con l'id del group
             url = url.replace('replace_id2', selected_snapshots[1]) // sostituisco replace_id con l'id del group
             console.log("URL: ", url)

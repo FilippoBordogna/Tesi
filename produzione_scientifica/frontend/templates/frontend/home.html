@@ -8,7 +8,7 @@
       <div id="form-wrapper">
         <h2>Ciao <b>{{ user.username }}</b></h2>
         <p>Riprendi da dove hai lasciato:</p>
-        <p><a href="{% url 'frontend:group-list' %}">Gestisci i tuoi gruppi</a></p>
+        <p><a href="{% url 'frontend:groups-list' %}">Gestisci i tuoi gruppi</a></p>
         <p><a href="#">Cerca autori</a></p>
         {% if user.is_superuser %}
           <p><a href="{% url 'admin:index' %}">Apri pannello di amministrazione</a></p>

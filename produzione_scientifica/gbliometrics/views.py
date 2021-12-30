@@ -45,7 +45,7 @@ def groupApiOverview(request):
     return Response(api_urls, status=200) # Successo
 
 @api_view(['GET']) # Accetta solo metodo GET
-def groupList(request):
+def groupsList(request):
     '''
         API che mostra i gruppi creati dall'utente.
         Se l'utente non è loggato lancio un errore.
@@ -59,7 +59,7 @@ def groupList(request):
         return myError("Non sei loggato") # Errore
 
 @api_view(['GET']) # Accetta solo metodo GET
-def groupDetail(request, groupId):
+def groupDetails(request, groupId):
     '''
         API che mostra i dettagli di un gruppo specificato dall'utente.
         Se l'utente non è loggato lancio un errore.
@@ -203,7 +203,7 @@ def groupRemoveAuthor(request, groupId, authorId):
         try:
             group = Agroup.objects.get(user=request.user, id=groupId) # Gruppo su cui effettuare le modifiche
         except Agroup.DoesNotExist: # Gruppo inesistente o non di proprietà dell'utente
-            return myError("Stai provando ad aggiungere un utente ad un gruppo inesistente o non di tua proprieta'") # Errore
+            return myError("Stai provando a rimuovere un utente ad un gruppo inesistente o non di tua proprieta'") # Errore
         
         
         if(group.authors.filter(id=authorId).exists()): # L'autore esiste
@@ -308,7 +308,7 @@ def affiliationApiOverview(request):
     return Response(api_urls, status=200) # Successo
 
 @api_view(['GET']) # Accetta solo metodo GET
-def affiliationDetail(request, affiliationScopusId, refresh):
+def affiliationDetails(request, affiliationScopusId, refresh):
     '''
         API che ritorna i dettagli di una affiliazione.
         Se refresh = False cerco di restituire i dati presenti nel DB
@@ -439,7 +439,7 @@ def authorApiOverview(request):
     return Response(api_urls, status=200) # Successo
 
 @api_view(['GET']) # Accetta solo metodo GET
-def authorDetail(request, auhtorScopusId):
+def authorDetails(request, authorScopusId):
     '''
         API che ritorna i dettagli di un autore.
         Se l'oggetto non è presente nel DB lo aggiungo.
@@ -448,13 +448,13 @@ def authorDetail(request, auhtorScopusId):
         N.B. PER IL MOMENTO QUESTA CHIAMATA E' DISPONIBILE ANCHE SE NON LOGGATI (IN FUTURO CHISSA')
     '''
     
-    risposta = authorUpdate_Create(auhtorScopusId) # Creo / Aggiorno un autore
+    risposta = authorUpdate_Create(authorScopusId) # Creo / Aggiorno un autore
     return risposta # Errore o Successo
 
 @api_view(['GET']) # Accetta solo metodo GET
-def authorDetailDB(request, authorId):
+def authorDetailsDB(request, authorId):
     '''
-        API che ritorna i dettagli presi dal DB di un autore.
+        API che ritorna i dettagli di un autore presi dal DB.
         Se l'oggetto non è presente nel DB lancio un errore.
         N.B. PER IL MOMENTO QUESTA CHIAMATA E' DISPONIBILE ANCHE SE NON LOGGATI (IN FUTURO CHISSA')
     '''
@@ -467,6 +467,8 @@ def authorDetailDB(request, authorId):
     serializer = AuthorSerializer(author, many=False) # Conversione Snapshot->Dizionario
         
     return Response(serializer.data, status=200) # Successo
+    
+    #return authorUpdate_Create(author.scopusId) Non aggiorno i dati siccome mi interessa solo il nome e l'ID
 
 ####################################################################################
 ################################### API SNAPSHOT ###################################
@@ -489,7 +491,7 @@ def snapshotApiOverview(request):
     return Response(api_urls, status=200) # Successo
 
 @api_view(['GET']) # Accetta solo metodo GET
-def snapshotList(request):
+def snapshotsList(request):
     '''
         API che mostra gli snapshot dell'utente.
         Se l'utente non è loggato lancio un errore.

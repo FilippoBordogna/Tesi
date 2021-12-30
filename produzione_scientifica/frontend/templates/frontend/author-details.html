@@ -16,7 +16,7 @@
     {% if user.is_authenticated %}
         <div id="items-container">
             <div id="form-wrapper">
-                <h2>Caricamento dei dettagli dell'autore in corso...</h2>
+                <h2>Caricamento dei dettagli autore in corso...</h2>
             </div>
             <div id="item-wrapper">
                 <div class='element-wrapper'>
@@ -48,7 +48,7 @@
     <script type="text/javascript">
 
         function buildAuthorDetails(){ // Populo il div chiamato item-wrapper con i gruppi creati dall'utenteS
-            var url = '{% url 'api:author-detail' "replace_id" %}'; // URL della API che restituisce i dettagli dell'autore
+            var url = '{% url 'api:author-details' "replace_id" %}'; // URL della API che restituisce i dettagli dell'autore
             var url = url.replace("replace_id",{{auhtorScopusId}}) // sostituisco replace_id con lo scopusId dell'autore 
             console.log('URL: ',url)
             
@@ -133,7 +133,7 @@
         }
 
         function redirectAuthorAffiliation(affiliationScopusId){
-            var url = '{% url 'frontend:affiliation-detail' "replace_id" %}' // Creo la URL con groupId replace_id
+            var url = '{% url 'frontend:affiliation-details' "replace_id" %}' // Creo la URL con groupId replace_id
             url = url.replace('replace_id', affiliationScopusId) // sostituisco replace_id con l'id del group
             console.log("URL: ", url) // Scrittura di debug
             window.open(url, "_self") // Apertura della pagina nella stessa tab
