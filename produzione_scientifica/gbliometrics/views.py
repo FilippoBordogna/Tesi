@@ -563,11 +563,12 @@ def snapshotCompute(request, groupId):
 @api_view(['POST']) # Accetta solo metodo POST 
 def snapshotSave(request, title):
     '''
-        API che salva su file uno snapshot per operazioni di confronto future.
+        API che dato un dizionario salva su file uno snapshot per operazioni di confronto future.
         Se l'utente non è loggato lancio un errore.
     '''
     
     if(request.user.is_authenticated): # Utente loggato
+        request.data["title"] = title # Aggiunta del campo che contiene il titolo dello snapshot
         contenuto_byte = json.dumps(request.data, indent=2).encode('utf-8') # Conversione Dizionario->Binario
         file = ContentFile(contenuto_byte) # Creazione del file
         file.name = title # Titolo del file
