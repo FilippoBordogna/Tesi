@@ -72,7 +72,7 @@
                     document.getElementById("heading").innerHTML += "<div>Selezionando 2 snapshot avrai la possibilità di confrontarli</div>"                                                      
                     for(var i in lista){ // Ciclo fra i gruppi
                         var item = `
-                                    <div class="element-wrapper flex-wrapper">
+                                    <div class="element-wrapper flex-wrapper" id="sn-${lista[i].id}">
                                         <div style="flex:7">
                                             <input type="checkbox" id="snapshot-${lista[i].id}" onclick="checkChange(${lista[i].id})" name="snapshot">
                                             <span class="title link-td">${lista[i].title+"("+lista[i].creation.split("T")[0]+")"}</span>
@@ -117,7 +117,7 @@
                     'X-CSRFToken':csrftoken // Inserisco il token CSFR
                 }
             }).then((response)=>{
-                element = document.getElementById("snapshot-"+snapshot.id)
+                element = document.getElementById("sn-"+snapshot.id)
                 element.remove()
                 //buildSnapshotList()
             })

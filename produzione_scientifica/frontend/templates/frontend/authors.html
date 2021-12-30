@@ -68,7 +68,7 @@
                                                                                 <a href="#">Comincia ad aggiungerne</a>
                                                                             </div>
                                                                         `
-                else
+                else {
                     for(var i in lista){ // Ciclo fra gli autori
                         var author_url = '{% url 'api:author-detail-db' "replace_id" %}' // URL della API che restituisce i dettagli dell'utente (dal DB)
                         var author_url = author_url.replace("replace_id", lista[i]) // sostituisco replace_id con l'id dell'autore
@@ -91,7 +91,8 @@
                         })
                     }
                     document.getElementById("item-wrapper").innerHTML += "<div onclick='redirectGroupSnapshot()' class='element-wrapper link-td' align='right'>Visualizza Snapshot</div>"
-                    document.getElementById("item-wrapper").innerHTML += "<div onclick='history.back()' class='element-wrapper link-td'>Indietro</div>"
+                }
+                document.getElementById("item-wrapper").innerHTML += "<div onclick='history.back()' class='element-wrapper link-td'>Indietro</div>"
             })
         }
 

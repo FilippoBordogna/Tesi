@@ -16,9 +16,9 @@
                 <h2>Caricamento delle statistiche ...</h2>
             </div>
             <div id="item-wrapper">
-                <canvas id="myChart"></canvas>
-                <div class='element-wrapper' id="h-index">
-                    <p><b>Valori metrici</b></p>
+                <div class='element-wrapper'>
+                    <h2><b>Valori metrici</b></h2>
+                    <canvas id="myChart"></canvas>
                     <table id="data-table"> <!-- Tabella che conterrà gli autori-->
                         <tr>
                             <th>Dato</th>
@@ -26,8 +26,11 @@
                         </tr>
                     </table>
                 </div>
+            </div>
+            <div id="item-wrapper">
+                <div onclick='history.back()' class='element-wrapper link-td'>Indietro</div>
                 <div class='element-wrapper'>
-                    <p><b>Lista Autori</b></p>
+                    <h2><b>Lista Autori</b></h2>
                     <table id="item-table"> <!-- Tabella che conterrà gli autori-->
                         <tr>
                             <th>Id</th>
@@ -35,21 +38,21 @@
                         </tr>
                     </table>
                 </div>
-            </div>
-            <div id="form-wrapper" name="snapshot-form" style="display: none;">
-                <form id="form"> <!-- Form tramite la quale creo / modifico un gruppo -->
-                    <div class="flex-wrapper">
-                        <div style="flex: 6">
-                            <input id="title" class="form-control" type="text" name="title" placeholder="Titolo dello snapshot">
+                <div id="form-wrapper" name="snapshot-form" style="display: none;">
+                    <form id="form"> <!-- Form tramite la quale creo / modifico un gruppo -->
+                        <div class="flex-wrapper">
+                            <div style="flex: 6">
+                                <input id="title" class="form-control" type="text" name="title" placeholder="Titolo dello snapshot">
+                            </div>
+                            <div style="flex: 1">
+                                <input id="submit" class="btn" type="submit" value="Salva snapshot">
+                            </div>
                         </div>
-                        <div style="flex: 1">
-                            <input id="submit" class="btn" type="submit" value="Salva snapshot">
+                        <div class="flex-wrapper" style="display: none; color: green;" id="save-status">
+                            Il salvataggio è andato a buon fine. <a href="{% url 'frontend:snapshot-list' %}">Qui</a> potrai confrontare questo snapshot con altri
                         </div>
-                    </div>
-                    <div class="flex-wrapper" style="display: none; color: green;" id="save-status">
-                        Il salvataggio è andato a buon fine. <a href="{% url 'frontend:snapshot-list' %}">Qui</a> potrai confrontare questo snapshot con altri
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
             <div onclick='history.back()' class='element-wrapper link-td'>Indietro</div>
         </div>

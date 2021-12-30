@@ -16,9 +16,9 @@
                 <h2>Lettura delle statistiche ...</h2>
             </div>
             <div id="item-wrapper">
-                <canvas id="myChart"></canvas>
-                <div class='element-wrapper' id="h-index">
-                    <p><b>Valori metrici</b></p>
+                <div class='element-wrapper'>
+                    <h2><b>Valori metrici</b></h2>
+                    <canvas id="myChart"></canvas>
                     <table id="data-table"> <!-- Tabella che conterrà gli autori-->
                         <tr>
                             <th>Dato</th>
@@ -26,8 +26,11 @@
                         </tr>
                     </table>
                 </div>
+            </div>
+            <div id="item-wrapper">
+                <div onclick='history.back()' class='element-wrapper link-td'>Indietro</div>
                 <div class='element-wrapper'>
-                    <p><b>Lista Autori</b></p>
+                    <h2><b>Lista Autori</b></h2></p>
                     <table id="item-table"> <!-- Tabella che conterrà gli autori-->
                         <tr>
                             <th>Id</th>
@@ -55,7 +58,10 @@
             .then(function(data){ // Funzione che lavora coi dati della risposta convertiti
                 console.log('Snapshot:', data) // Scrittura di debug
                 var form_wrapper = document.getElementById("form-wrapper")
-                form_wrapper.innerHTML = "<h2>Gruppo "+data.groupName+" al "+data.timestamp.split("_")[0]+"</h2>"
+                form_wrapper.innerHTML = `
+                                            <h2>Snapshot ${data.title}</h2>
+                                            <p>In riferimento al gruppo <b>${data.groupName}</b> al ${data.timestamp.split("_")[0]}</p>
+                                         `
                 var lista = data.groupAuthors
                 table = document.getElementById("item-table")
                 console.log(lista.length)
@@ -90,31 +96,6 @@
                             }
                         })(lista[i].scopusId))
                     }
-                    // Creazione del grafico
-                    var xValues = ["Citazioni a documenti", "Citazioni ad autori", "Numero di documenti"];
-                    var yValues = [data.tot_citation_count, data.tot_cited_by_count, data.tot_document_count];
-                    var barColors = [
-                    "#b91d47",
-                    "#00aba9",
-                    "#2b5797",
-                    ];
-
-                    new Chart("myChart", {
-                    type: "pie",
-                    data: {
-                        labels: xValues,
-                        datasets: [{
-                        backgroundColor: barColors,
-                        data: yValues
-                        }]
-                    },
-                    options: {
-                        title: {
-                        display: true,
-                        text: "Statistiche metriche al " + data.timestamp.split("_")[0] 
-                        }
-                    }
-                    });
 
                     var data_table = document.getElementById("data-table")
                     var row = data_table.insertRow(1) // Inserisco 1 riga
@@ -140,6 +121,32 @@
                     title.innerHTML = "Numero di documenti prodotti"
                     var doc_cit = row.insertCell(1) // Inserisco 1 cella in posizione 1
                     doc_cit.innerHTML = data.tot_document_count
+
+                    // Creazione del grafico
+                    var xValues = ["Citazioni a documenti", "Citazioni ad autori", "Numero di documenti"];
+                    var yValues = [data.tot_citation_count, data.tot_cited_by_count, data.tot_document_count];
+                    var barColors = [
+                    "#0530a3",
+                    "#168ab3",
+                    "#b51f09",
+                    ];
+
+                    new Chart("myChart", {
+                    type: "pie",
+                    data: {
+                        labels: xValues,
+                        datasets: [{
+                        backgroundColor: barColors,
+                        data: yValues
+                        }]
+                    },
+                    options: {
+                        title: {
+                        display: true,
+                        text: "Statistiche metriche al " + data.timestamp.split("_")[0] 
+                        }
+                    }
+                    });
                 }
             })
         }
