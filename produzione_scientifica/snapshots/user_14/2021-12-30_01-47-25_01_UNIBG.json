@@ -1,5 +1,5 @@
 {
-  "groupId": 12,
+  "groupId": 17,
   "groupName": "MyUNIBG",
   "groupAuthors": [
     {
@@ -9,7 +9,7 @@
       "surname": "Paraboschi",
       "full_name": "Paraboschi S.",
       "creation": "2021-12-10T05:16:42.896818+01:00",
-      "last_update": "2021-12-13T20:40:47.891757+01:00",
+      "last_update": "2021-12-30T01:46:50.641137+01:00",
       "affiliation": 1
     },
     {
@@ -19,7 +19,7 @@
       "surname": "Bacis",
       "full_name": "Bacis E.",
       "creation": "2021-12-10T06:00:20.109440+01:00",
-      "last_update": "2021-12-13T20:40:48.695318+01:00",
+      "last_update": "2021-12-30T01:46:52.292095+01:00",
       "affiliation": 1
     },
     {
@@ -29,7 +29,7 @@
       "surname": "Re",
       "full_name": "Re V.",
       "creation": "2021-12-10T06:01:54.287104+01:00",
-      "last_update": "2021-12-13T20:40:50.124694+01:00",
+      "last_update": "2021-12-30T01:46:54.220306+01:00",
       "affiliation": 1
     },
     {
@@ -39,7 +39,7 @@
       "surname": "Manghisoni",
       "full_name": "Manghisoni M.",
       "creation": "2021-12-10T06:02:23.777567+01:00",
-      "last_update": "2021-12-13T20:40:40.512433+01:00",
+      "last_update": "2021-12-30T01:46:55.835984+01:00",
       "affiliation": 1
     },
     {
@@ -49,7 +49,7 @@
       "surname": "Traversi",
       "full_name": "Traversi G.",
       "creation": "2021-12-10T06:14:01.310020+01:00",
-      "last_update": "2021-12-13T20:40:41.650860+01:00",
+      "last_update": "2021-12-30T01:46:57.381609+01:00",
       "affiliation": 1
     },
     {
@@ -59,8 +59,18 @@
       "surname": "Remuzzi",
       "full_name": "Remuzzi A.",
       "creation": "2021-12-10T06:14:20.470994+01:00",
-      "last_update": "2021-12-13T20:40:42.969310+01:00",
+      "last_update": "2021-12-30T01:46:59.230240+01:00",
       "affiliation": 1
+    },
+    {
+      "id": 22,
+      "scopusId": 7101791122,
+      "name": "Pier Luigi",
+      "surname": "Zinzani",
+      "full_name": "Zinzani P.",
+      "creation": "2021-12-10T22:14:47.124996+01:00",
+      "last_update": "2021-12-30T01:47:00.876060+01:00",
+      "affiliation": 52
     },
     {
       "id": 23,
@@ -69,7 +79,7 @@
       "surname": "Recami",
       "full_name": "Recami E.",
       "creation": "2021-12-12T18:49:16.725813+01:00",
-      "last_update": "2021-12-13T20:40:44.173758+01:00",
+      "last_update": "2021-12-30T01:47:02.736476+01:00",
       "affiliation": 47
     },
     {
@@ -79,7 +89,7 @@
       "surname": "Gargantini",
       "full_name": "Gargantini A.",
       "creation": "2021-12-12T18:49:35.679066+01:00",
-      "last_update": "2021-12-13T20:40:45.233218+01:00",
+      "last_update": "2021-12-30T01:47:04.054285+01:00",
       "affiliation": 1
     },
     {
@@ -89,7 +99,7 @@
       "surname": "Previdi",
       "full_name": "Previdi F.",
       "creation": "2021-12-12T18:49:54.712504+01:00",
-      "last_update": "2021-12-13T20:40:46.257732+01:00",
+      "last_update": "2021-12-30T01:47:05.500991+01:00",
       "affiliation": 1
     },
     {
@@ -99,18 +109,8 @@
       "surname": "Gaioni",
       "full_name": "Gaioni L.",
       "creation": "2021-12-12T18:50:18.793907+01:00",
-      "last_update": "2021-12-13T20:40:47.078013+01:00",
+      "last_update": "2021-12-30T01:47:06.396165+01:00",
       "affiliation": 1
-    },
-    {
-      "id": 27,
-      "scopusId": 7006773020,
-      "name": "Claudio",
-      "surname": "Giardini",
-      "full_name": "Giardini C.",
-      "creation": "2021-12-12T18:50:35.196197+01:00",
-      "last_update": "2021-12-13T20:40:47.963204+01:00",
-      "affiliation": 48
     },
     {
       "id": 28,
@@ -119,14 +119,14 @@
       "surname": "Compare",
       "full_name": "Compare A.",
       "creation": "2021-12-12T18:50:48.822287+01:00",
-      "last_update": "2021-12-13T20:40:50.857123+01:00",
+      "last_update": "2021-12-30T01:47:08.157019+01:00",
       "affiliation": 49
     }
   ],
-  "tot_document_count": 2191,
-  "tot_cited_by_count": 32158,
-  "tot_citation_count": 44814,
-  "tot_h_index": 313,
-  "timestamp": "2021-12-13_20-40-50",
+  "tot_document_count": 2735,
+  "tot_cited_by_count": 51397,
+  "tot_citation_count": 75193,
+  "tot_h_index": 383,
+  "timestamp": "2021-12-30_01-47-08",
   "title": "01_UNIBG"
 }
