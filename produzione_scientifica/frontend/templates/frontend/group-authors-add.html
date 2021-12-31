@@ -1,0 +1,170 @@
+{% extends 'base.html' %} <!-- estendo il file base.html (Scheletro) -->
+
+{% block title %}Lista dei Gruppi{% endblock title %} <!-- estensione titolo -->
+
+{% block onload %}
+    {% if user.is_authenticated %} 
+       onload="buildOptionList();"
+    {% endif %}
+{% endblock onload %} <!-- Estensione funzione onload -->
+
+
+{% block content %} <!-- Estensione contenuto del body -->
+    {% if user.is_authenticated %}
+        <div id="items-container">
+            <div class="element-wrapper">
+                <h2>Aggiunta autori tramite file JSON</h2>
+            </div>
+            <div id="form-wrapper">
+                <p>Carica un file <b>JSON</b> con la seguente <b>formattazione</b>:</p>
+                <p>{"scopusIds": [id1, id2, id3, ...]}</p>
+                <form id="form"> <!-- Form tramite la quale creo / modifico un gruppo -->
+                    <div class="flex-wrapper">
+                        <div style="flex: 6">
+                            <input id="file" class="form-control" type="file" name="file" accept="application/JSON">
+                            <p style="padding: 5px" ><label for="groups">Seleziona il gruppo in cui aggiungere gli autori</label>
+                            <select id="select-group">
+                                <option value="0">Nessuno</option>
+                            </select></p>
+                            <p id="comunications"><p>
+                        </div>
+                        <div style="flex: 1">
+                            <input id="submit" class="btn" type="submit">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div id="item-wrapper"></div>
+            <div onclick='history.back()' class='element-wrapper link-td'>Indietro</div>
+        </div>
+    {% else %}
+        {% include 'components/not_logged.html' %} <!-- Link login e registrazione -->
+    {% endif %}
+{% endblock content %}
+
+{% block other %} <!-- Estensione -->
+    <script type="text/javascript">
+        
+        function getCookie(name) { // Dato il nome del cookie mi restituisce il valore
+            var cookieValue = null
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';')
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim()
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        var csrftoken = getCookie('csrftoken'); // Valore del Token CSFR per effettuare le chiamate API con metodo diverso dalla GET
+
+        function buildOptionList(){ // Populo il div chiamato item-wrapper con i gruppi creati dall'utente
+            var wrapper = document.getElementById('form-wrapper');
+            var url = "{% url 'api:groups-list' %}"; // URL della API che restituisce la lista dei gruppi
+            var select = document.getElementById("select-group")
+
+            fetch(url) // Chiamata
+            .then((resp) => resp.json()) // Conversione in JSON della risposta
+            .then(function(data){ // Funzione che lavora coi dati della risposta convertiti
+                console.log('Gruppi:', data) // Scrittura di debug
+        
+                var lista = data
+                if(lista.length==0) // Non ci sono gruppi
+                wrapper.innerHTML = `   
+                                            <p>
+                                                Per aggiungere gli autori devi aver creato almeno un gruppo:
+                                                <a href="{% url 'frontend:groups-list' %}">Gestione dei tuoi gruppi</a>
+                                            </p>
+                                        `
+                else {                                                       
+                    for(var i in lista){ // Ciclo fra i gruppi
+                        var element = document.createElement("option")
+                        element.textContent = lista[i].name
+                        element.value = lista[i].id
+                        select.appendChild(element)
+                    }
+                }
+            })
+        }
+
+        // Sovrascrivo il comportamento successivo al submit della form chiamata form-wrapper
+        var form = document.getElementById('form-wrapper')
+        form.addEventListener('submit', function(e){ // Aggiungo il listener sull'evento di submit
+            e.preventDefault() // Evito che effettui il submit di default
+            console.log('Form submitted') // Scrittura di debug
+            checkAndAdd()
+        })
+
+        var ciccio = null
+        function checkAndAdd() {
+            var comunications = document.getElementById("comunications")
+            var group_id = document.getElementById("select-group").value
+            if(group_id == "0") {
+                comunications.style.color = "red"
+                comunications.innerHTML= "Seleziona il gruppo in cui aggiungere gli autori"
+            }
+            else {
+                file = document.getElementById("file").files[0]
+                if (file) {
+                    var reader = new FileReader();
+                    reader.readAsText(file, "UTF-8")
+                    reader.onload = function (evt) {
+                        var file_content = evt.target.result
+                        try {
+                                var json_content = JSON.parse(file_content)
+                                var scopusIds = json_content.scopusIds
+                                console.log("IDs: ",scopusIds)
+                                if(!scopusIds) {
+                                        throw 'Sezione scopusIds MANCANTE'
+                                    }
+                                    else {
+                                        comunications.style.color = "green"
+                                        comunications.innerHTML= "Procedo ad aggiungere gli autori"
+                                        var url = '{% url 'api:group-add-multiple-authors' "replace_id" %}' // URL dell'API che crea un gruppo
+                                        url = url.replace("replace_id", group_id)
+                                        console.log("CONTENUTO",file_content)
+
+                                        fetch(url, { // Chiamata
+                                            method:'POST', // Metodo
+                                            headers:{
+                                                'Content-type':'application/json', // Indico che passerò un json
+                                                'X-CSRFToken':csrftoken // Inserisco il token CSFR
+                                            },
+                                            body:file_content
+                                        })
+                                        .then(response => response.json())
+                                        .then(function(response){ // Funzione che lavora con i dati ricevuti in risposta
+                                            console.log(response)
+                                            comunications.style.color = "green"
+                                            comunications.innerHTML= "Autori aggiunti correttamente: "+response["added_authors_number"]+" autore/i</p><p>Errori: "+response["errors_number"]+" errori"
+                                            document.getElementById('form').reset() // Svuoto il contenuto della form
+                                        })                                        
+                                    }
+                        }
+                        catch (error) {
+                            console.log("Errore:\n"+error)
+                            comunications.style.color = "red"
+                            comunications.innerHTML= "Il formato del file inserito non è corretto"
+                        }
+                    }
+                    reader.onerror = function (evt) {
+                        console.log("Errore:\nNon riesco a reperire il file")
+                        comunications.style.color = "red"
+                        comunications.innerHTML= "Il formato del file inserito non è corretto"
+                    } 
+                }
+                else{
+                    console.log("Errore:\nNon riesco a reperire il file")
+                    comunications.style.color = "red"
+                    comunications.innerHTML= "Non hai caricato nessun file"
+                }
+            }
+        }
+
+    </script>
+{% endblock other %}
