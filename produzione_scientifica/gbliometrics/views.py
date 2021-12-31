@@ -39,6 +39,7 @@ def groupApiOverview(request):
         'Modifica di un gruppo': '/group-update/<str:groupId>/',
         'Eliminazione di un gruppo': '/group-delete/<str:groupId>/',
         'Aggiunta di un autore': '/group-add-author/<str:groupId>/<str:authorScopusId>/',
+        'Aggiunta di più autori contemporaneamente': '/group-add-multiple-authors/<str:groupId>/',
         'Rimozione di un autore': '/group-remove-author/<str:groupId>/<str:authorId>/'
     }
      
@@ -191,6 +192,39 @@ def groupAddAuthor(request, groupId, authorScopusId):
     else: # Utente NON loggato
         return myError("Non sei loggato") # Errore
 
+@api_view(['POST']) # Accetta solo metodo POST
+def groupAddMultipleAuthors(request, groupId):
+    '''
+        API che aggiunge ad un gruppo gli autori specificati nel corpo della richiesta (campo scopusIds).
+        Se l'utente non è longato lancio un errore.
+        Se il gruppo non è di tua proprietà lancio un errore.
+    '''
+
+    if(request.user.is_authenticated): # Utente loggato
+        try:
+            group = Agroup.objects.get(user=request.user, id=groupId) # Gruppo su cui effettuare le modifiche
+        except Agroup.DoesNotExist: # Gruppo inesistente o non di proprietà dell'utente
+            return myError("Stai provando ad aggiungere un autore ad un gruppo inesistente o non di tua proprieta'") # Errore
+        
+        errors = 0 # Numero di errori
+        added = 0 # Numero di autori aggiunti correttamente
+        for id in request.data["scopusIds"]: # Ciclo fra gli ID
+            risposta = authorUpdate_Create(id)
+            if(risposta.status_code==500): # Errore nel processo di creazione / aggiornamento
+                errors += 1
+            else:
+                added += 1
+                author = Author.objects.get(scopusId=id) # Autore da aggiungere
+                group.authors.add(author) # Aggiungo l'autore al gruppo
+        return_dic = {
+                        "errors_number": errors,
+                        "added_authors_number": added
+                     }
+        
+        return Response(return_dic)
+    else: # Utente NON loggato
+        return myError("Non sei loggato") # Errore
+    
 @api_view(['POST']) # Accetta solo metodo POST
 def groupRemoveAuthor(request, groupId, authorId):
     '''
@@ -389,7 +423,10 @@ def authorUpdate_Create(id):
     '''
     
     esiste = Author.objects.filter(scopusId=id).exists() # Esistenza nel DB dell'autore
-    ar=AuthorRetrieval(author_id=id, refresh=True, view="ENHANCED") # API di Elsevier-Scopus per ricevere informazioni sull'autore
+    try:
+        ar=AuthorRetrieval(author_id=id, refresh=True, view="ENHANCED") # API di Elsevier-Scopus per ricevere informazioni sull'autore
+    except:
+        return myError("Non esiste un autore con questo scopusId")
     au={ # Dizionario contenente i dati per creare / aggiornare l'autore
             'scopusId': ar.identifier,
             'name': ar.given_name,

@@ -14,6 +14,7 @@ urlpatterns = [ # Url appartenenti all'app gbliometrics
     path('groups/group-update/<str:groupId>/', views.groupUpdate, name='group-update'), # Modifica del gruppo dell'utente
     path('groups/group-delete/<str:groupId>/', views.groupDelete, name='group-delete'), # Eliminazione del gruppo dell'utente
     path('groups/group-add-author/<str:groupId>/<str:authorScopusId>/', views.groupAddAuthor, name="group-add-author"), # Aggiunta di un Autore al gruppo
+    path('groups/group-add-multiple-authors/<str:groupId>/', views.groupAddMultipleAuthors ,name="group-add-multiple-authors"), # Aggiunta di PIU' (JSON) autori al gruppo
     path('groups/group-remove-author/<str:groupId>/<str:authorId>/', views.groupRemoveAuthor, name="group-remove-author"), # Rimozione di un Autore al gruppo
     
     # API DELLE AFFILIAZIONI (ELSEVIER + MIA APP)
