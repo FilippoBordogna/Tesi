@@ -34,7 +34,7 @@ def groupApiOverview(request):
     
     api_urls = { # Lista delle API disponibili
         'Lista dei gruppi dell\'utente': '/group-list/',
-        'Dettagli di un gruppo': '/group-detail/<str:groupId>/',
+        'Dettagli di un gruppo': '/group-details/<str:groupId>/',
         'Creazione di un gruppo': '/group-create/',
         'Modifica di un gruppo': '/group-update/<str:groupId>/',
         'Eliminazione di un gruppo': '/group-delete/<str:groupId>/',
@@ -335,8 +335,8 @@ def affiliationApiOverview(request):
     '''
     
     api_urls = { # Lista delle API disponibili
-        'Dettagli affiliazione (da DB se possibile)': '/affiliation-detail/<str:affiliationScopusId>/',
-        'Dettagli affiliazione (da Scopus con conseguente aggiornamento del DB)': '/affiliation-detail/<str:affiliationScopusId>/refresh/'
+        'Dettagli affiliazione (da DB se possibile)': '/affiliation-details/<str:affiliationScopusId>/',
+        'Dettagli affiliazione (da Scopus con conseguente aggiornamento del DB)': '/affiliation-details/<str:affiliationScopusId>/refresh/'
     }
      
     return Response(api_urls, status=200) # Successo
@@ -469,8 +469,8 @@ def authorApiOverview(request):
     '''
     
     api_urls = { # Lista delle API disponibili
-        'Dettagli autore (da Scopus) dato scopusId': '/author-detail/<str:auhtorScopusId>/',
-        'Dettagli autore (da DB) dato authorId': '/authors/author-detail-DB/<str:authorId>/'
+        'Dettagli autore (da Scopus) dato scopusId': '/author-details/<str:auhtorScopusId>/',
+        'Dettagli autore (da DB) dato authorId': '/authors/author-details-DB/<str:authorId>/'
     }
      
     return Response(api_urls, status=200) # Successo
@@ -518,9 +518,9 @@ def snapshotApiOverview(request):
     '''
     
     api_urls = { # Lista delle API disponibili
-        'Lista degli snapshot dell\'utente': '/snapshot-list/',
+        'Lista degli snapshot dell\'utente': '/snapshots-list/',
         'Lettura di uno snapshot salvato': '/snapshot-get/<str:snapshotId>/',
-        'Creazione dello snapshot del gruppo': '/snapshot-get/<str:groupId>/',
+        'Creazione dello snapshot del gruppo': '/snapshot-compute/<str:groupId>/',
         'Salvataggio di uno snapshot': 'snapshot-save/<str:title>/',
         'Eliminazione di uno snapshot salvato': 'snapshot-delete/<str:snapshotId>/'
     }
