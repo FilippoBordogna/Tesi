@@ -1,3 +1,5 @@
+<!-- Pagina che mostra i dettagli (presi da scopus => AGGIORNATI) di un autore -->
+
 {% extends 'base.html' %} <!-- estendo il file base.html (Scheletro) -->
 
 {% block title %}Dettagli dell'autore{% endblock title %} <!-- estensione titolo -->
@@ -13,9 +15,9 @@
 
 
 {% block content %} <!-- Estensione contenuto del body -->
-    {% if user.is_authenticated %}
-        <div id="items-container">
-            <div id="form-wrapper">
+    {% if user.is_authenticated %} <!-- Sezione utente loggato -->
+        <div id="items-container"> 
+            <div id="form-wrapper"> <!-- Intestazione -->
                 <h2>Caricamento dei dettagli autore in corso...</h2>
             </div>
             <div id="item-wrapper">
@@ -29,7 +31,7 @@
                 </div>
                 <div onclick='history.back()' class='element-wrapper link-td'>Indietro</div>
                 <div class='element-wrapper'>
-                    <table id="subjects-table"> <!-- Tabella che conterrà gli autori-->
+                    <table id="subjects-table"> <!-- Tabella che conterrà le materie su cui ha lavorato l'autore -->
                         <tr>
                             <th>Materie d'interesse</th>
                             <th>N° documenti scritti</th>
@@ -39,33 +41,39 @@
                 <div onclick='history.back()' class='element-wrapper link-td'>Indietro</div>
             </div>
         </div>
-    {% else %}
-        {% include 'components/not_logged.html' %} <!-- Link login e registrazione -->
+    {% else %} <!-- Sezione utente NON loggato -->
+        {% include 'components/not_logged.html' %} <!-- Includo la parte di codice da mostrare se utente non loggato -->
     {% endif %}
 {% endblock content %}
 
 {% block other %} <!-- Estensione -->
     <script type="text/javascript">
 
-        function buildAuthorDetails(){ // Populo il div chiamato item-wrapper con i gruppi creati dall'utenteS
+        function buildAuthorDetails(){
+        /*
+            Funzione con cui populo le tabelle 'item-table' e 'subject-table' rispettivamente con
+            Dettagli dell'autore e Materie di interesse 
+        */
+
             var url = '{% url 'api:author-details' "replace_id" %}'; // URL della API che restituisce i dettagli dell'autore
-            var url = url.replace("replace_id",{{auhtorScopusId}}) // sostituisco replace_id con lo scopusId dell'autore 
-            console.log('URL: ',url)
+            var url = url.replace("replace_id",{{auhtorScopusId}}) 
+            // console.log('URL: ',url)
             
             fetch(url) // Chiamata
-            .then((resp) => resp.json()) // Conversione in JSON della risposta
-            .then(function(data){ // Funzione che lavora coi dati della risposta convertiti
-                console.log('Dettagli:', data) // Scrittura di debug
-                var form_wrapper = document.getElementById("form-wrapper")
-                form_wrapper.innerHTML = "<h2>"+data.surname+" "+data.name+"</h2>" // Nome utente
-                var table =  document.getElementById("item-table")
+            .then((resp) => resp.json()) // Conversione Stream -> JSON della risposta
+            .then(function(data){
+                // console.log('Dettagli:', data)
+                var form_wrapper = document.getElementById("form-wrapper") // Intestazione
+                form_wrapper.innerHTML = "<h2>"+data.surname+" "+data.name+"</h2>"
+
+                var table =  document.getElementById("item-table") // Tabella da populare con i dettagli autore
                 
                 var row = table.insertRow(1) // Inserisco 1 riga in posizione 1
-                row.id = "scopusId" // id riga
-                var title = row.insertCell(0) // inserisco una cella in posizione 0
-                title.innerHTML = "ScopusId" // Titolo
-                var scopusId = row.insertCell(1) // inserisco una cella in posizione 1
-                scopusId.innerHTML = data.scopusId // valore del campo
+                row.id = "scopusId" // ID riga
+                var title = row.insertCell(0) // Cella di posizione 0
+                title.innerHTML = "ScopusId"
+                var scopusId = row.insertCell(1) // Cella di posizione 1
+                scopusId.innerHTML = data.scopusId
 
                 var row = table.insertRow(2) 
                 row.id = "full-name"
@@ -79,8 +87,8 @@
                 var title = row.insertCell(0)
                 title.innerHTML = "Affiliazione"
                 var affiliation = row.insertCell(1)
-                affiliation.className = "link-td" // Assegno la classe al td (servirà per il .css)
-                affiliation.onclick = function(){redirectAuthorAffiliation(data.affiliation_scopusId)} // Aggiungo la proprietà onclick
+                affiliation.className = "link-td" // Classe della cella 1
+                affiliation.onclick = function(){redirectAuthorAffiliation(data.affiliation_scopusId)} // Proprietà onclick della cella 1
                 affiliation.innerHTML = data.affiliation_name
 
                 var row = table.insertRow(4)
@@ -118,8 +126,8 @@
                 var publication_range = row.insertCell(1) 
                 publication_range.innerHTML = data.publication_range[0]+"-"+data.publication_range[1]
                 
-                subjects_list = data.subjects
-                table = document.getElementById("subjects-table")
+                var subjects_list = data.subjects
+                table = document.getElementById("subjects-table") // Tabella da popolare con le materie
                 for (var i in subjects_list){
                     j = parseInt(i)
                     var row = table.insertRow(j+1)
@@ -133,10 +141,14 @@
         }
 
         function redirectAuthorAffiliation(affiliationScopusId){
+        /*
+            Funzione che effettua la redirezione alla pagina di dettaglio dell'affiliazione con scopusId specificato 
+        */
+        
             var url = '{% url 'frontend:affiliation-details' "replace_id" %}' // Creo la URL con groupId replace_id
             url = url.replace('replace_id', affiliationScopusId) // sostituisco replace_id con l'id del group
-            console.log("URL: ", url) // Scrittura di debug
-            window.open(url, "_self") // Apertura della pagina nella stessa tab
+            // console.log("URL: ", url)
+            window.open(url, "_self") 
         }
     </script>
 {% endblock other %}

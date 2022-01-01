@@ -1,3 +1,5 @@
+<!-- Pagina di benvenuto -->
+
 {% extends 'base.html' %} <!-- Estensione del template di base -->
 
 {% block title %}Home{% endblock %}
@@ -9,8 +11,8 @@
         <h2>Ciao <b>{{ user.username }}</b></h2>
         <p>Riprendi da dove hai lasciato:</p>
         <p><a href="{% url 'frontend:groups-list' %}">Gestisci i tuoi gruppi</a></p>
-        <p><a href="#">Cerca autori</a></p>
-        {% if user.is_superuser %}
+        <p><a href="{% url 'frontend:group-authors-add' %}">Aggiungi autori ai tuoi gruppi</a></p>
+        {% if user.is_superuser %} <!-- Admin -->
           <p><a href="{% url 'admin:index' %}">Apri pannello di amministrazione</a></p>
         {% endif %}
       </div>

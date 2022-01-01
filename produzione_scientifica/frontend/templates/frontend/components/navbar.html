@@ -1,7 +1,9 @@
+<!-- Navbar che includerò in ogni pagina -->
+
 <nav class="navbar navbar-expand-sm bg-primary navbar-dark fixed-top">
     <a class="navbar-brand" href="{% url 'frontend:home' %}">GBliometrics</a>
     
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated %} <!-- Sezione utente loggato -->
         <ul class="navbar-nav">
             {% if "groups" in request.path %}
                 <li class="nav-item active">
@@ -26,25 +28,24 @@
             </li>
         </ul>
         <ul class="navbar-nav ml-auto">
-            <li class="nav-item dropdown">
+            <li class="nav-item dropdown dropleft">
                 <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
-                {{user.username}}
+                    <i class="fas fa-user"></i>&nbsp;{{user.username}}
                 </a>
                 <div class="dropdown-menu">
-                <a class="dropdown-item" href="{% url 'password_change' %}">Gestione Password</a>
-                <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+                <a class="dropdown-item" href="{% url 'password_change' %}"><i class="fas fa-key"></i>&nbsp;Gestione Password</a>
+                <a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i>&nbsp;Logout</a>
                 </div>
             </li>
         </ul>
-    {% else %}
+    {% else %}  <!-- Sezione utente NON loggato -->
         <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'login' %}">Login</a>
+                <a class="nav-link" href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i>&nbsp;Login</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{% url 'registration_register' %}">Registrati</a>
+                <a class="nav-link" href="{% url 'registration_register' %}"><i class="fas fa-user-plus"></i>&nbsp;Registrati</a>
             </li>
         </ul>
     {% endif %}
 </nav>
-

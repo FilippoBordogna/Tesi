@@ -1,3 +1,5 @@
+<!-- Pagina che mostra la lista dei gruppi di proprietò dell'utente -->
+
 {% extends 'base.html' %} <!-- estendo il file base.html (Scheletro) -->
 
 {% block title %}Lista dei Gruppi{% endblock title %} <!-- estensione titolo -->
@@ -10,10 +12,10 @@
 
 
 {% block content %} <!-- Estensione contenuto del body -->
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated %} <!-- Sezione utente loggato -->
         <div id="items-container">
             <div class="element-wrapper">
-                <h2>Gestione dei gruppi</h2>
+                <h2>Gestione dei gruppi</h2> <!-- Intestazione -->
             </div>
             <div id="form-wrapper">
                 <form id="form"> <!-- Form tramite la quale creo / modifico un gruppo -->
@@ -28,19 +30,22 @@
                     </div>
                 </form>
             </div>
-            <div id="item-wrapper">
+            <div id="item-wrapper"> <!-- Div da popolare con la lista dei gruppi -->
                 Caricamento dei gruppi in corso...
-                <!-- Tramite la funzione buildGroupList() popolerò questo div con i gruppi -->
             </div>	
         </div>
-    {% else %}
-        {% include 'components/not_logged.html' %} <!-- Link login e registrazione -->
+    {% else %} <!-- Sezione utente NON loggato -->
+        {% include 'components/not_logged.html' %} <!-- Includo la parte di codice da mostrare se utente non loggato -->
     {% endif %}
 {% endblock content %}
 
 {% block other %} <!-- Estensione -->
     <script type="text/javascript">
-        function getCookie(name) { // Dato il nome del cookie mi restituisce il valore
+        function getCookie(name) {
+        /*
+            Funzione che dato il nome del cookie ne restituisce il valore se esiste
+        */
+
             var cookieValue = null
             if (document.cookie && document.cookie !== '') {
                 var cookies = document.cookie.split(';')
@@ -57,19 +62,23 @@
         }
 
         var csrftoken = getCookie('csrftoken'); // Valore del Token CSFR per effettuare le chiamate API con metodo diverso dalla GET
-        var activeGroup = null
+        var activeGroup = null // Gruppo da modificare
 
-        function buildGroupList(){ // Populo il div chiamato item-wrapper con i gruppi creati dall'utente
-            var wrapper = document.getElementById('item-wrapper');
+        function buildGroupList(){
+        /*
+            Funzione che popula il div 'item-wrapper' con i gruppi appartenenti all'utente
+        */
+        
+            var wrapper = document.getElementById('item-wrapper') // Div da populare
             wrapper.innerHTML=""
             var url = "{% url 'api:groups-list' %}"; // URL della API che restituisce la lista dei gruppi
 
             fetch(url) // Chiamata
-            .then((resp) => resp.json()) // Conversione in JSON della risposta
-            .then(function(data){ // Funzione che lavora coi dati della risposta convertiti
-                console.log('Gruppi:', data) // Scrittura di debug
+            .then((resp) => resp.json()) // Conversione Stream -> JSON della risposta
+            .then(function(data){
+                // console.log('Gruppi:', data)
         
-                var lista = data
+                var lista = data // Lista di gruppi
                 if(lista.length==0) // Non ci sono gruppi
                     wrapper.innerHTML = `   
                                             <div class="element-wrapper">
@@ -77,7 +86,7 @@
                                                 <span>Comincia creandone uno</span>
                                             </div>
                                         `
-                else {                                                        
+                else { // Ci sono gruppi                                                  
                     for(var i in lista){ // Ciclo fra i gruppi
                         var item = `
                                     <div id="group-${lista[i].id}" class="element-wrapper flex-wrapper">
@@ -96,9 +105,9 @@
                     }
 
                     for(var i in lista){ // Ciclo fra i gruppi
-                        var editBtn = document.getElementsByClassName('edit')[i]
-                        var deleteBtn = document.getElementsByClassName('delete')[i]
-                        var name = document.getElementsByClassName('name')[i]
+                        var editBtn = document.getElementsByClassName('edit')[i] // Bottone modifica
+                        var deleteBtn = document.getElementsByClassName('delete')[i] // Bottone Delete
+                        var name = document.getElementsByClassName('name')[i] // Campo name
 
                         editBtn.addEventListener('click', (function(group){ // Aggiungo il listener sull'evento di click del bottone Edit
                             return function(){
@@ -123,15 +132,15 @@
         }
 
         // Sovrascrivo il comportamento successivo al submit della form chiamata form-wrapper
-        var form = document.getElementById('form-wrapper')
+        var form = document.getElementById('form-wrapper') // Form per la creazione/modifica di un gruppo
         form.addEventListener('submit', function(e){ // Aggiungo il listener sull'evento di submit
             e.preventDefault() // Evito che effettui il submit di default
-            console.log('Form submitted') // Scrittura di debug
+            // console.log('Form submitted')
             var url = '{% url 'api:group-create' %}' // URL dell'API che crea un gruppo
             if(activeGroup != null) { // E' un update (NON una create)
                 var url = '{% url 'api:group-update' "replace_id" %}' // Creo la URL con groupId replace_id
-                url = url.replace('replace_id', activeGroup.id) // sostituisco replace_id con l'id del group
-                console.log("URL: ", url)
+                url = url.replace('replace_id', activeGroup.id) 
+                // console.log("URL: ", url)
                 activeGroup = null
             }
             var name = document.getElementById('name').value // valore del campo name
@@ -148,43 +157,53 @@
                                         "other_info":other_info
                                     })
             }
-            ).then(function(response){ // Funzione che lavora con i dati ricevuti in risposta
+            ).then(function(response){ 
                 buildGroupList(); // Ricreo la lista degli autori
                 document.getElementById('form').reset() // Svuoto il contenuto della form
-                
             })
         })
 
         function editGroup(group) {
-            console.log("Update Cliccato: ", group) // Scrittura di debug
+        /*
+            Funzione che mette nella variabile globale 'activeGroup' e riempe i campi della form con quelli presenti al momento
+        */
+
+            // console.log("Update Cliccato: ", group) // Scrittura di debug
             activeGroup = group
-            document.getElementById('name').value = group.name
-            document.getElementById('other-info').value = group.other_info
+            document.getElementById('name').value = group.name // nome
+            document.getElementById('other-info').value = group.other_info // descrizione
         }
 
         function deleteGroup(group){
-            console.log('Eliminazione Cliccata: ', group)
+        /*
+            Funzione che dato un gruppo lo elimina
+        */
+
+            // console.log('Eliminazione Cliccata: ', group)
             var url = '{% url 'api:group-delete' "replace_id" %}' // Creo la URL con groupId replace_id
-            url = url.replace('replace_id', group.id) // sostituisco replace_id con l'id del group
-            console.log("URL: ", url)
-            fetch(url,{
+            url = url.replace('replace_id', group.id)
+            // console.log("URL: ", url)
+            fetch(url,{ // Chiamata
                 method: 'DELETE',
                 headers: {
                     'Content-type':'application/json', // Indico che passerò un json
                     'X-CSRFToken':csrftoken // Inserisco il token CSFR
                 }
             }).then((response)=>{
-                element = document.getElementById("group-"+group.id)
+                element = document.getElementById("group-"+group.id) // elemento da rimuovere
                 element.remove()
                 document.getElementById('form').reset()
-                //buildGroupList()
             })
         }
 
         function redirectGroupDetail(group){
+        /*
+            Funzione che dato un gruppo redirige alla pagina di dettaglio di esso
+        */
+
             var url = '{% url 'frontend:authors-list' "replace_id" %}' // Creo la URL con groupId replace_id
-            url = url.replace('replace_id', group.id) // sostituisco replace_id con l'id del group
-            console.log("URL: ", url)
+            url = url.replace('replace_id', group.id)
+            // console.log("URL: ", url)
             window.open(url, "_self") // Apertura della pagina nella stessa tab
         }
     </script>

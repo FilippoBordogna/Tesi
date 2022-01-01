@@ -1,3 +1,5 @@
+<!-- Pagina che mostra la lista di autori in un gruppo -->
+
 {% extends 'base.html' %} <!-- estendo il file base.html (Scheletro) -->
 
 {% block title %}Lista degli Utenti{% endblock title %} <!-- estensione titolo -->
@@ -10,10 +12,10 @@
 
 
 {% block content %} <!-- Estensione contenuto del body -->
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated %} <!-- Sezione utente loggato -->
         <div id="items-container">
             <div id="form-wrapper">
-                <h2>Caricamento Autori...</h2>
+                <h2>Caricamento Autori...</h2> <!-- Intestazione -->
             </div>
             <div id="item-wrapper">
                 <table id="item-table"> <!-- Tabella che conterrà gli autori-->
@@ -25,14 +27,19 @@
                 </table>
             </div>
         </div>
-    {% else %}
-        {% include 'components/not_logged.html' %} <!-- Link login e registrazione -->
+    {% else %} <!-- Sezione utente NON loggato -->
+        {% include 'components/not_logged.html' %} <!-- Includo la parte di codice da mostrare se utente non loggato -->
     {% endif %}
 {% endblock content %}
 
 {% block other %} <!-- Estensione -->
+
     <script type="text/javascript">
-        function getCookie(name) { // Dato il nome del cookie mi restituisce il valore
+        function getCookie(name) {
+        /*
+            Funzione che dato il nome del cookie ne restituisce il valore se esiste
+        */
+
             var cookieValue = null
             if (document.cookie && document.cookie !== '') {
                 var cookies = document.cookie.split(';')
@@ -50,58 +57,68 @@
 
         var csrftoken = getCookie('csrftoken'); // Valore del Token CSFR per effettuare le chiamate API con metodo diverso dalla GET
 
-        function buildAuthorList(){ // Populo il div chiamato item-wrapper con i gruppi creati dall'utente
+        function buildAuthorList(){
+        /*
+            Funzione con cui populo la tabella 'item-table' con la lista degli autori appartenenti al gruppo
+        */
+
             var url = '{% url 'api:group-details' "replace_id" %}'; // URL della API che restituisce i dettagli del gruppo
-            var url = url.replace("replace_id",{{groupId}}) // sostituisco replace_id con l'id dell'autore 
+            var url = url.replace("replace_id",{{groupId}})
 
             fetch(url) // Chiamata
-            .then((resp) => resp.json()) // Conversione in JSON della risposta
-            .then(function(data){ // Funzione che lavora coi dati della risposta convertiti
-                console.log('Autori:', data) // Scrittura di debug
-                var form_wrapper = document.getElementById("form-wrapper")
+            .then((resp) => resp.json()) // Conversione Stream -> JSON della risposta
+            .then(function(data){
+                // console.log('Autori:', data)
+                var form_wrapper = document.getElementById("form-wrapper") // Intestazione
                 form_wrapper.innerHTML = "<h2>Autori del gruppo "+data.name+"</h2>"
-                var lista = data.authors.sort() // Non sembra funzionare (RICONTROLLA)
+                var t_wrapper = document.getElementById("item-wrapper")
+                var lista = data.authors.sort() // Ordinamento degli autori: Non sembra funzionare (RICONTROLLA)
                 if (lista.length==0) // Non ci sono autori
-                    document.getElementById("item-wrapper").innerHTML = `   
+                    t_wrapper.innerHTML = `   
                                                                             <div class="element-wrapper">
                                                                                 <h2>Non sono ancora presenti autori.</h2>
-                                                                                <a href="#">Comincia ad aggiungerne</a>
+                                                                                <a href="{% url 'frontend:group-authors-add' %}">Comincia ad aggiungerne</a>
                                                                             </div>
-                                                                        `
-                else {
+                                                                        ` // Intestazione pre-tabella
+                else { // Sono presenti autori
                     for(var i in lista){ // Ciclo fra gli autori
                         var author_url = '{% url 'api:author-details-db' "replace_id" %}' // URL della API che restituisce i dettagli dell'utente (dal DB)
-                        var author_url = author_url.replace("replace_id", lista[i]) // sostituisco replace_id con l'id dell'autore
-                        console.log("ID AUTORE: "+author_url) // Scrittura di debug
+                        var author_url = author_url.replace("replace_id", lista[i])
+                        // console.log("ID AUTORE: "+author_url)
                         
                         fetch(author_url) // Chiamata
-                        .then((resp) => resp.json())  // Conversione in JSON della risposta
-                        .then(function(details){ // Funzione che lavora coi dati della risposta convertiti
-                            table = document.getElementById("item-table")
-                            var row = table.insertRow(1) // Inserisco 1 riga
-                            row.id = "author-"+details.id // id della riga
-                            var id = row.insertCell(0) // Inserisco 1 cella in posizione 0
+                        .then((resp) => resp.json())  // Conversione Stream -> JSON della risposta
+                        .then(function(details){ 
+                            table = document.getElementById("item-table") // Tabella da populare
+
+                            var row = table.insertRow(1) // riga 1
+                            row.id = "author-"+details.id // ID della riga
+                            var id = row.insertCell(0) // Cella di posizione 0
                             id.innerHTML = details.scopusId
-                            var full_name = row.insertCell(1) // Inserisco 1 cella in posizione 1
+                            var full_name = row.insertCell(1) // Cella di posizione 1
                             full_name.innerHTML = details.surname+" "+details.name
-                            full_name.className = "link-td" // Assegno la classe al td (servirà per il .css)
-                            full_name.onclick = function(){redirectAuthorDetail(details.scopusId)} // Aggiungo la proprietà onclick
-                            var button = row.insertCell(2) // Inserisco 1 cella in posizione 2
-                            button.innerHTML = `<button class="btn btn-sm btn-outline-dark delete" onclick="deleteAuthor(${details.id})">Rimuovi</button> ` // Bottone di rimozione
+                            full_name.className = "link-td" // Classe della cella 1
+                            full_name.onclick = function(){redirectAuthorDetail(details.scopusId)} // Proprietà onclick della cella 1
+                            var button = row.insertCell(2) // Cella di posizione 2
+                            button.innerHTML = `<button class="btn btn-sm btn-outline-dark delete" onclick="deleteAuthor(${details.id})">Rimuovi</button> ` // Bottone di rimozione autore
                         })
                     }
-                    document.getElementById("item-wrapper").innerHTML += "<div onclick='redirectGroupSnapshot()' class='element-wrapper link-td' align='right'>Visualizza Snapshot</div>"
+                    t_wrapper.innerHTML += "<div onclick='redirectGroupSnapshot()' class='element-wrapper link-td' align='right'>Visualizza Snapshot</div>" // Paragrafo post-tabella
                 }
-                document.getElementById("item-wrapper").innerHTML += "<div onclick='history.back()' class='element-wrapper link-td'>Indietro</div>"
+                document.getElementById("item-wrapper").innerHTML += "<div onclick='history.back()' class='element-wrapper link-td'>Indietro</div>" // Paragrafo post-tabella
             })
         }
 
         function deleteAuthor(author){
-            console.log('Eliminazione Cliccata: ', author)
-            var url = '{% url 'api:group-remove-author' "replace_id" "replace_id2" %}' // Creo la URL con groupId replace_id
-            url = url.replace('replace_id', {{groupId}}) // sostituisco replace_id con l'id del group
-            url = url.replace('replace_id2', author) // sostituisco replace_id con l'id dell'autore
-            console.log("URL: ", url) // Scrittura di debug
+        /*
+            Funzione che dato un autore lo rimuove dal gruppo    
+        */
+
+            // console.log('Eliminazione Cliccata: ', author)
+            var url = '{% url 'api:group-remove-author' "replace_id" "replace_id2" %}' // URL dell'API che rimuove un autore
+            url = url.replace('replace_id', {{groupId}}) 
+            url = url.replace('replace_id2', author)
+            // console.log("URL: ", url)
             fetch(url,{ // Chiamata
                 method: 'POST',
                 headers: {
@@ -109,24 +126,31 @@
                     'X-CSRFToken':csrftoken // Inserisco il token CSFR
                 }
             }).then((response)=>{ // Risposta
-                row = document.getElementById("author-"+author)
-                row.parentNode.removeChild(row) // Eliminazione del tr
-                //buildAuthorList()
+                row = document.getElementById("author-"+author) // riga della tabella da cancellare
+                row.parentNode.removeChild(row)
             })
         }
 
         function redirectAuthorDetail(authorScopusId){
+        /*
+            Funzione che effettua la redirezione alla pagina di dettaglio dell'autore con scopusId specificato 
+        */
+
             var url = '{% url 'frontend:author-details' "replace_id" %}' // Creo la URL con groupId replace_id
             url = url.replace('replace_id', authorScopusId) // sostituisco replace_id con l'id del group
-            console.log("URL: ", url) // Scrittura di debug
-            window.open(url, "_self") // Apertura della pagina nella stessa tab
+            // console.log("URL: ", url)
+            window.open(url, "_self")
         }
 
         function redirectGroupSnapshot(){
-            var url = '{% url 'frontend:snapshot-compute' "replace_id" %}' // Creo la URL con groupId replace_id
+        /*
+            Funzione che effettua la redirezione alla pagina di computazione dello snapshot 
+        */
+
+            var url = '{% url 'frontend:snapshot-compute' "replace_id" %}' // URL della pagina che computa lo snapshot 
             url = url.replace("replace_id", {{groupId}})
-            console.log("URL: ", url) // Scrittura di debug
-            window.open(url, "_self") // Apertura della pagina nella stessa tab
+            // console.log("URL: ", url)
+            window.open(url, "_self")
         }
     </script>
 {% endblock other %}

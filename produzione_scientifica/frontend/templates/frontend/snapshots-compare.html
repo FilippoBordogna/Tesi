@@ -1,3 +1,5 @@
+<!-- Pagina che confronta graficamente e tabularmente 2 snapshot salvati in precedenza dall'utente -->
+
 {% extends 'base.html' %} <!-- estendo il file base.html (Scheletro) -->
 
 {% block title %}Lettura dello snapshot{% endblock title %} <!-- estensione titolo -->
@@ -10,10 +12,10 @@
 
 
 {% block content %} <!-- Estensione contenuto del body -->
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated %} <!-- Sezione utente loggato -->
         <div id="items-container">
-            <div id="form-wrapper">
-                <h2>Lettura delle statistiche ...</h2>
+            <div id="form-wrapper"> <!-- Intestazione -->
+                <h2>Lettura delle statistiche ...</h2> 
             </div>
             <div id="item-wrapper">
                 <div class='element-wrapper'>
@@ -42,30 +44,34 @@
             </div>
             <div onclick='history.back()' class='element-wrapper link-td'>Indietro</div>
         </div>
-    {% else %}
-        {% include 'components/not_logged.html' %} <!-- Link login e registrazione -->
+    {% else %} <!-- Sezione utente non loggato -->
+        {% include 'components/not_logged.html' %} <!-- Includo la parte di codice da mostrare se utente non loggato -->
     {% endif %}
 {% endblock content %}
 
 {% block other %} <!-- Estensione -->
     <script type="text/javascript">
 
-        function buildSnapshot(){ // Populo il div chiamato item-wrapper con i gruppi creati dall'utente
-            var url1 = '{% url 'api:snapshot-get' "replace_id" %}'; // URL della API che restituisce lo snapshot del gruppo
-            var url1 = url1.replace("replace_id",{{snapshotId1}}) // sostituisco replace_id con l'id dell'autore 
+        function buildSnapshot(){
+        /*
+            Funzione che popula le tabelle 'data-table', 'item-table' e costruisce il grafico
+        */ 
+
+            var url1 = '{% url 'api:snapshot-get' "replace_id" %}'; // URL della API che restituisce lo snapshot del gruppo 1
+            var url1 = url1.replace("replace_id",{{snapshotId1}})
 
             fetch(url1) // Chiamata
-            .then((resp) => resp.json()) // Conversione in JSON della risposta
-            .then(function(data1){ // Funzione che lavora coi dati della risposta convertiti
-                var url2 = '{% url 'api:snapshot-get' "replace_id" %}'; // URL della API che restituisce lo snapshot del gruppo
-                var url2 = url2.replace("replace_id",{{snapshotId2}}) // sostituisco replace_id con l'id dell'autore 
+            .then((resp) => resp.json()) // Conversione Stream -> JSON della risposta
+            .then(function(data1){
+                var url2 = '{% url 'api:snapshot-get' "replace_id" %}'; // URL della API che restituisce lo snapshot del gruppo 2
+                var url2 = url2.replace("replace_id",{{snapshotId2}})
                 fetch(url2) // Chiamata
-                .then((resp) => resp.json()) // Conversione in JSON della risposta
+                .then((resp) => resp.json()) // Conversione Stream -> JSON della risposta
                 .then(function(data2){
-                    console.log('Snapshot 1:', data1) // Scrittura di debug
-                    console.log('Snapshot 2:', data2) // Scrittura di debug
+                    // console.log('Snapshot 1:', data1) // Scrittura di debug
+                    // console.log('Snapshot 2:', data2) // Scrittura di debug
 
-                    var form_wrapper = document.getElementById("form-wrapper")
+                    var form_wrapper = document.getElementById("form-wrapper") // Intestazione
                     form_wrapper.innerHTML = `
                                                 <h1>Confronto tra snapshot:</h1>
                                                 <ol>
@@ -73,70 +79,70 @@
                                                     <li><b>${data2.title}</b>: Effettuato il giorno ${data2.timestamp.split("_")[0]} sul gruppo ${data2.groupName}</li>
                                                 </ol>
                                             `
-                    var lista1 = data1.groupAuthors
-                    var lista2 = data2.groupAuthors
+                    var lista1 = data1.groupAuthors // Lista degli autori del gruppo 1
+                    var lista2 = data2.groupAuthors // Lista degli autori del gruppo 2
 
-                    var row_num1 = lista1.length
-                    var row_num2 = lista2.length
-                    var row_num_min = Math.min(row_num1, row_num2)
+                    var row_num1 = lista1.length // numero di autori nel gruppo 1
+                    var row_num2 = lista2.length // numero di autori nel gruppo 2
+                    var row_num_min = Math.min(row_num1, row_num2) // Numero minimo fra i 2 precedenti
 
-                    var table = document.getElementById("item-table")
-                    var i=0
+                    var table = document.getElementById("item-table") // Tabella che contiene gli autori
+                    var i=0 // Indice ciclo
                     for(; i<row_num_min; i++){ // Ciclo fra gli autori
                         var row = table.insertRow(i+1) // Inserisco 1 riga
-                        var full_name1 = row.insertCell(0) // Inserisco 1 cella in posizione 0
+                        var full_name1 = row.insertCell(0) // Cella di posizione 0
                         full_name1.innerHTML = lista1[i].surname+" "+lista1[i].name  
-                        var full_name2 = row.insertCell(1) // Inserisco 1 cella in posizione 1
+                        var full_name2 = row.insertCell(1) // Cella di posizione 1
                         full_name2.innerHTML = lista2[i].surname+" "+lista2[i].name                     
                     }
 
-                    for(var j=i; j<row_num1; j++) {
-                        var row = table.insertRow(j+1) // Inserisco 1 riga
-                        var full_name1 = row.insertCell(0) // Inserisco 1 cella in posizione 0
+                    for(var j=i; j<row_num1; j++) { // Ciclo sui rimanenti autori del gruppo 1
+                        var row = table.insertRow(j+1) 
+                        var full_name1 = row.insertCell(0)
                         full_name1.innerHTML = lista1[j].surname+" "+lista1[j].name  
-                        var full_name2 = row.insertCell(1) // Inserisco 1 cella in posizione 1
+                        var full_name2 = row.insertCell(1)
                         full_name2.innerHTML = "-" 
                     }
 
-                    for(var j=i; j<row_num2; j++) {
-                        var row = table.insertRow(j+1) // Inserisco 1 riga
-                        var full_name1 = row.insertCell(0) // Inserisco 1 cella in posizione 0
+                    for(var j=i; j<row_num2; j++) { // Ciclo sui rimanenti autori del gruppo 2
+                        var row = table.insertRow(j+1)
+                        var full_name1 = row.insertCell(0)
                         full_name1.innerHTML = "-" 
-                        var full_name2 = row.insertCell(1) // Inserisco 1 cella in posizione 1
+                        var full_name2 = row.insertCell(1)
                         full_name2.innerHTML = lista2[j].surname+" "+lista2[j].name 
                     }
 
-                    var data_table = document.getElementById("data-table")
+                    var data_table = document.getElementById("data-table") // Tabella dei dati metrici
                     var row = data_table.insertRow(1) // Inserisco 1 riga
-                    var title = row.insertCell(0) // Inserisco 1 cella in posizione 0
+                    var title = row.insertCell(0) // Cella di posizione 0
                     title.innerHTML = "Indice di produttività H".bold()
-                    var h_index1 = row.insertCell(1) // Inserisco 1 cella in posizione 1
+                    var h_index1 = row.insertCell(1) // Cella di posizione 1
                     h_index1.innerHTML = data1.tot_h_index.toString().bold()
-                    var h_index2 = row.insertCell(2) // Inserisco 1 cella in posizione 1
+                    var h_index2 = row.insertCell(2) // Cella di posizione 1
                     h_index2.innerHTML = data2.tot_h_index.toString().bold()
 
-                    var row = data_table.insertRow(2) // Inserisco 1 riga
-                    var title = row.insertCell(0) // Inserisco 1 cella in posizione 0
+                    var row = data_table.insertRow(2)
+                    var title = row.insertCell(0)
                     title.innerHTML = "Citazioni a documenti"
-                    var doc_cit1 = row.insertCell(1) // Inserisco 1 cella in posizione 1
+                    var doc_cit1 = row.insertCell(1)
                     doc_cit1.innerHTML = data1.tot_citation_count
-                    var doc_cit2 = row.insertCell(2) // Inserisco 1 cella in posizione 1
+                    var doc_cit2 = row.insertCell(2)
                     doc_cit2.innerHTML = data2.tot_citation_count
 
-                    var row = data_table.insertRow(3) // Inserisco 1 riga
-                    var title = row.insertCell(0) // Inserisco 1 cella in posizione 0
+                    var row = data_table.insertRow(3)
+                    var title = row.insertCell(0)
                     title.innerHTML = "Citazioni ad autori"
-                    var auth_cit1 = row.insertCell(1) // Inserisco 1 cella in posizione 1
+                    var auth_cit1 = row.insertCell(1)
                     auth_cit1.innerHTML = data1.tot_cited_by_count
-                    var auth_cit2 = row.insertCell(2) // Inserisco 1 cella in posizione 1
+                    var auth_cit2 = row.insertCell(2)
                     auth_cit2.innerHTML = data2.tot_cited_by_count
 
-                    var row = data_table.insertRow(4) // Inserisco 1 riga
-                    var title = row.insertCell(0) // Inserisco 1 cella in posizione 0
+                    var row = data_table.insertRow(4)
+                    var title = row.insertCell(0)
                     title.innerHTML = "Numero di documenti prodotti"
-                    var doc_cit1 = row.insertCell(1) // Inserisco 1 cella in posizione 1
+                    var doc_cit1 = row.insertCell(1)
                     doc_cit1.innerHTML = data1.tot_document_count
-                    var doc_cit2 = row.insertCell(2) // Inserisco 1 cella in posizione 1
+                    var doc_cit2 = row.insertCell(2)
                     doc_cit2.innerHTML = data2.tot_document_count
 
                     // Creazione del grafico

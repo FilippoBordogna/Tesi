@@ -1,3 +1,5 @@
+<!-- Pagina che mostra l'elenco degli snapshot salvati da un utente -->
+
 {% extends 'base.html' %} <!-- estendo il file base.html (Scheletro) -->
 
 {% block title %}Lista dei Gruppi{% endblock title %} <!-- estensione titolo -->
@@ -10,28 +12,31 @@
 
 
 {% block content %} <!-- Estensione contenuto del body -->
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated %} <!-- Sezione utente loggato -->
         <div id="items-container">
             <div id="form-wrapper">
-                <div id="heading" class="element-wrapper">
+                <div id="heading" class="element-wrapper"> <!-- Intestazione -->
                     <h2>Gestione degli Snapshot</h2>
                 </div>
             </div>
-            <div id="item-wrapper" class="element-wrapper">
+            <div id="item-wrapper" class="element-wrapper"> <!-- Caricherò qui gli snapshot -->
                 Caricamento degli Snapshot in corso...
-                <!-- Tramite la funzione buildGroupList() popolerò questo div con i gruppi -->
             </div>
             <div onclick='redirectSnapshotsCompare()' id="compare-snapshots" class='element-wrapper link-td' style='text-align:right; display:none'>Confronta i 2 snapshot</div>
             <div onclick='history.back()' class='element-wrapper link-td'>Indietro</div>
         </div>
-    {% else %}
-        {% include 'components/not_logged.html' %} <!-- Link login e registrazione -->
+    {% else %} <!-- Sezione utente NON loggato -->
+        {% include 'components/not_logged.html' %} <!-- Includo la parte di codice da mostrare se utente non loggato -->
     {% endif %}
 {% endblock content %}
 
 {% block other %} <!-- Estensione -->
     <script type="text/javascript">
-        function getCookie(name) { // Dato il nome del cookie mi restituisce il valore
+        function getCookie(name) {
+        /*
+            Funzione che dato il nome di un cookie ne restituisce il valore, se esiste
+        */
+
             var cookieValue = null
             if (document.cookie && document.cookie !== '') {
                 var cookies = document.cookie.split(';')
@@ -48,17 +53,20 @@
         }
 
         var csrftoken = getCookie('csrftoken'); // Valore del Token CSFR per effettuare le chiamate API con metodo diverso dalla GET
-        var activeSnapshot = null
 
-        function buildSnapshotList(){ // Populo il div chiamato item-wrapper con i gruppi creati dall'utente
-            var wrapper = document.getElementById('item-wrapper');
+        function buildSnapshotList(){
+        /*
+            Funzione che popula il div 'item-wrapper' con gli snapshot salvati
+        */
+
+            var wrapper = document.getElementById('item-wrapper') // Div in cui è presente la tabella
             wrapper.innerHTML=""
             var url = "{% url 'api:snapshots-list' %}"; // URL della API che restituisce la lista dei gruppi
 
             fetch(url) // Chiamata
-            .then((resp) => resp.json()) // Conversione in JSON della risposta
-            .then(function(data){ // Funzione che lavora coi dati della risposta convertiti
-                console.log('Snapshot:', data) // Scrittura di debug
+            .then((resp) => resp.json()) // Conversione Stream -> JSON della risposta
+            .then(function(data){
+                // console.log('Snapshot:', data)
         
                 var lista = data
                 if(lista.length==0) // Non ci sono gruppi
@@ -82,12 +90,12 @@
                                         </div>
                                     </div>
                                 ` // Creazione dell'elemento contenente titolo dello snapshot e bottone per l'eliminazione
-                        wrapper.innerHTML += item; // Aggiunta dell'elemento al div
+                        wrapper.innerHTML += item;
                     }
 
                     for(var i in lista){ // Ciclo fra i gruppi
-                        var deleteBtn = document.getElementsByClassName('delete')[i]
-                        var title = document.getElementsByClassName('title')[i]
+                        var deleteBtn = document.getElementsByClassName('delete')[i] // Bottone di eliminazione
+                        var title = document.getElementsByClassName('title')[i] // Campo contenenete il titolo dello snapshot
 
                         deleteBtn.addEventListener('click', (function(snapshot){ // Aggiungo il listener sull'evento di click del bottone Delete
                             return function(){
@@ -106,10 +114,14 @@
         }
 
         function deleteSnapshot(snapshot){
-            console.log('Eliminazione Cliccata: ', snapshot)
-            var url = '{% url 'api:snapshot-delete' "replace_id" %}' // Creo la URL con groupId replace_id
-            url = url.replace('replace_id', snapshot.id) // sostituisco replace_id con l'id del group
-            console.log("URL: ", url)
+        /*
+            Funzione che dato uno snapshot lo elimina
+        */
+
+            // console.log('Eliminazione Cliccata: ', snapshot)
+            var url = '{% url 'api:snapshot-delete' "replace_id" %}' // URL dell'API che elimina uno snapshot
+            url = url.replace('replace_id', snapshot.id)
+            // console.log("URL: ", url)
             fetch(url,{
                 method: 'DELETE',
                 headers: {
@@ -117,18 +129,22 @@
                     'X-CSRFToken':csrftoken // Inserisco il token CSFR
                 }
             }).then((response)=>{
-                element = document.getElementById("sn-"+snapshot.id)
+                element = document.getElementById("sn-"+snapshot.id) // Elemento da eliminare
                 element.remove()
-                //buildSnapshotList()
             })
         }
 
         selected_snapshots = [null, null] // mi riferirò al vettore con la sigla [x/null,y/null] 
         // Inserisco in posizione 0 ed elimino in posizione 1
+        
         function checkChange(snapshot){ // mi riferirò alla variabile snapshot con z
-            console.log("PRIMA: "+selected_snapshots) // Scrittua di debug
-            current = document.getElementById("snapshot-"+snapshot)
-            compare = document.getElementById("compare-snapshots")
+        /*
+            Funzione che dato lo snapshot che ha cambiato stato modifica gli snapshot selezionati
+        */
+
+            // console.log("PRIMA: "+selected_snapshots) // Scrittua di debug
+            current = document.getElementById("snapshot-"+snapshot) // Snapshot che ha cambiato stato
+            compare = document.getElementById("compare-snapshots") // Div che mostra l'opzione di comparazione
             if(current.checked) { // Elemento checkato
                 if(selected_snapshots[0]!=null) { // situazione [x,y]
                     document.getElementById("snapshot-"+selected_snapshots[1]).checked = false // tolgo il check dalla variabile più "vecchia"
@@ -150,22 +166,28 @@
                compare.style.display="block" // Mostro il link al confronto
             else // 1 o 0 snapshot checkati
                 compare.style.display="none" // Nascondo il link al confronto
-            console.log("DOPO: "+selected_snapshots) // Scrittua di debug
+            // console.log("DOPO: "+selected_snapshots) // Scrittua di debug
         }
 
         function redirectSnapshotGet(snapshot){
+        /*
+            Funzione che dato uno snapshot redirige alla visualizzazione dello stesso
+        */
             var url = '{% url 'frontend:snapshot-get' "replace_id" %}' // Creo la URL con groupId replace_id
-            url = url.replace('replace_id', snapshot.id) // sostituisco replace_id con l'id del group
-            console.log("URL: ", url)
-            window.open(url, "_self") // Apertura della pagina nella stessa tab
+            url = url.replace('replace_id', snapshot.id)
+            // console.log("URL: ", url)
+            window.open(url, "_self")
         }
 
         function redirectSnapshotsCompare(){
+        /*
+            unzione che redirige alla comparazione dei 2 snapshot selezionati
+        */
             var url = '{% url 'frontend:snapshots-compare' "replace_id" "replace_id2" %}' // Creo la URL con groupId replace_id
-            url = url.replace('replace_id', selected_snapshots[0]) // sostituisco replace_id con l'id del group
-            url = url.replace('replace_id2', selected_snapshots[1]) // sostituisco replace_id con l'id del group
-            console.log("URL: ", url)
-            window.open(url, "_self") // Apertura della pagina nella stessa tab
+            url = url.replace('replace_id', selected_snapshots[0])
+            url = url.replace('replace_id2', selected_snapshots[1])
+            // console.log("URL: ", url)
+            window.open(url, "_self")
         }
     </script>
 {% endblock other %}

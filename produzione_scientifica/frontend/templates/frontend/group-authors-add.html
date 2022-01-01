@@ -1,3 +1,5 @@
+<!-- Pagina che permette di aggiungere più utenti ad un gruppo tramite un file JSON -->
+
 {% extends 'base.html' %} <!-- estendo il file base.html (Scheletro) -->
 
 {% block title %}Lista dei Gruppi{% endblock title %} <!-- estensione titolo -->
@@ -8,17 +10,16 @@
     {% endif %}
 {% endblock onload %} <!-- Estensione funzione onload -->
 
-
 {% block content %} <!-- Estensione contenuto del body -->
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated %} <!-- Sezione utente loggato -->
         <div id="items-container">
-            <div class="element-wrapper">
+            <div class="element-wrapper"> <!-- Intestazione -->
                 <h2>Aggiunta autori tramite file JSON</h2>
             </div>
             <div id="form-wrapper">
                 <p>Carica un file <b>JSON</b> con la seguente <b>formattazione</b>:</p>
                 <p>{"scopusIds": [id1, id2, id3, ...]}</p>
-                <form id="form"> <!-- Form tramite la quale creo / modifico un gruppo -->
+                <form id="form"> <!-- Form tramite la quale viene caricato il file e scelto il gruppo -->
                     <div class="flex-wrapper">
                         <div style="flex: 6">
                             <input id="file" class="form-control" type="file" name="file" accept="application/JSON">
@@ -26,7 +27,7 @@
                             <select id="select-group">
                                 <option value="0">Nessuno</option>
                             </select></p>
-                            <p id="comunications"><p>
+                            <p id="comunications"><p> <!-- Paragrafo che conterrà le comunicazione (Errori, Risultato dell'inserimento) -->
                         </div>
                         <div style="flex: 1">
                             <input id="submit" class="btn" type="submit">
@@ -34,18 +35,21 @@
                     </div>
                 </form>
             </div>
-            <div id="item-wrapper"></div>
             <div onclick='history.back()' class='element-wrapper link-td'>Indietro</div>
         </div>
-    {% else %}
-        {% include 'components/not_logged.html' %} <!-- Link login e registrazione -->
+    {% else %} <!-- Sezione utente NON loggato -->
+        {% include 'components/not_logged.html' %} <!-- Includo la parte di codice da mostrare se utente non loggato -->
     {% endif %}
 {% endblock content %}
 
 {% block other %} <!-- Estensione -->
     <script type="text/javascript">
         
-        function getCookie(name) { // Dato il nome del cookie mi restituisce il valore
+        function getCookie(name) {
+        /*
+            Funzione che dato il nome del cookie ne restituisce il valore se esiste
+        */
+
             var cookieValue = null
             if (document.cookie && document.cookie !== '') {
                 var cookies = document.cookie.split(';')
@@ -63,15 +67,19 @@
 
         var csrftoken = getCookie('csrftoken'); // Valore del Token CSFR per effettuare le chiamate API con metodo diverso dalla GET
 
-        function buildOptionList(){ // Populo il div chiamato item-wrapper con i gruppi creati dall'utente
-            var wrapper = document.getElementById('form-wrapper');
+        function buildOptionList(){
+        /*
+            Funzione che popula la select con i nomi dei gruppi di proprietà dell'utente
+        */
+
+            var wrapper = document.getElementById('form-wrapper'); // Form che contiene le informazioni riguardo file e gruppo
             var url = "{% url 'api:groups-list' %}"; // URL della API che restituisce la lista dei gruppi
             var select = document.getElementById("select-group")
 
             fetch(url) // Chiamata
             .then((resp) => resp.json()) // Conversione in JSON della risposta
-            .then(function(data){ // Funzione che lavora coi dati della risposta convertiti
-                console.log('Gruppi:', data) // Scrittura di debug
+            .then(function(data){ 
+                //console.log('Gruppi:', data)
         
                 var lista = data
                 if(lista.length==0) // Non ci sono gruppi
@@ -81,8 +89,8 @@
                                                 <a href="{% url 'frontend:groups-list' %}">Gestione dei tuoi gruppi</a>
                                             </p>
                                         `
-                else {                                                       
-                    for(var i in lista){ // Ciclo fra i gruppi
+                else {  // Ci sono gruppi                                                     
+                    for(var i in lista){ // Ciclo fra i gruppi, creo una option e la aggiungo alla select
                         var element = document.createElement("option")
                         element.textContent = lista[i].name
                         element.value = lista[i].id
@@ -93,41 +101,47 @@
         }
 
         // Sovrascrivo il comportamento successivo al submit della form chiamata form-wrapper
-        var form = document.getElementById('form-wrapper')
-        form.addEventListener('submit', function(e){ // Aggiungo il listener sull'evento di submit
+        document.getElementById('form-wrapper').addEventListener('submit', function(e){ // Aggiungo il listener sull'evento di submit
             e.preventDefault() // Evito che effettui il submit di default
-            console.log('Form submitted') // Scrittura di debug
+            // console.log('Form submitted')
             checkAndAdd()
         })
 
-        var ciccio = null
         function checkAndAdd() {
-            var comunications = document.getElementById("comunications")
-            var group_id = document.getElementById("select-group").value
-            if(group_id == "0") {
+        /*
+            Funziona che controlla che
+            - sia selezionato un gruppo
+            - sia stato caricato un file con il giusto formato
+            Se è tutto OK carica gli autori nel gruppo 
+            Altrimenti ritorna l'errore
+        */
+        
+            var comunications = document.getElementById("comunications") // Div contenente le comunicazioni
+            var group_id = document.getElementById("select-group").value // valore della select (option selezionata)
+            if(group_id == "0") { // Gruppo non selezionato
                 comunications.style.color = "red"
                 comunications.innerHTML= "Seleziona il gruppo in cui aggiungere gli autori"
             }
-            else {
-                file = document.getElementById("file").files[0]
-                if (file) {
-                    var reader = new FileReader();
+            else { // Gruppo selezionato
+                file = document.getElementById("file").files[0] // File caricato
+                if (file) { // Il file esiste
+                    var reader = new FileReader(); // Lettore di file
                     reader.readAsText(file, "UTF-8")
                     reader.onload = function (evt) {
-                        var file_content = evt.target.result
+                        var file_content = evt.target.result // risultato della lettura
                         try {
-                                var json_content = JSON.parse(file_content)
-                                var scopusIds = json_content.scopusIds
-                                console.log("IDs: ",scopusIds)
-                                if(!scopusIds) {
+                                var json_content = JSON.parse(file_content) // Conversione file di testo -> JSON
+                                var scopusIds = json_content.scopusIds // Id degli attori
+                                // console.log("IDs: ",scopusIds)
+                                if(!scopusIds) { // Non è presente il campo scopusIds
                                         throw 'Sezione scopusIds MANCANTE'
                                     }
                                     else {
                                         comunications.style.color = "green"
-                                        comunications.innerHTML= "Procedo ad aggiungere gli autori"
-                                        var url = '{% url 'api:group-add-multiple-authors' "replace_id" %}' // URL dell'API che crea un gruppo
+                                        comunications.innerHTML= "Procedo ad aggiungere gli autori..."
+                                        var url = '{% url 'api:group-add-multiple-authors' "replace_id" %}' // URL dell'API che aggiunge più autori in un gruppo
                                         url = url.replace("replace_id", group_id)
-                                        console.log("CONTENUTO",file_content)
+                                        // console.log("CONTENUTO",file_content)
 
                                         fetch(url, { // Chiamata
                                             method:'POST', // Metodo
@@ -139,27 +153,32 @@
                                         })
                                         .then(response => response.json())
                                         .then(function(response){ // Funzione che lavora con i dati ricevuti in risposta
-                                            console.log(response)
+                                            // console.log(response)
                                             comunications.style.color = "green"
-                                            comunications.innerHTML= "Autori aggiunti correttamente: "+response["added_authors_number"]+" autore/i</p><p>Errori: "+response["errors_number"]+" errori"
+                                            var url_authors_list = '{% url 'frontend:authors-list' "replace_id" %}' // URL della Pagina che mostra la lista di autori in un gruppo
+                                            url_authors_list = url_authors_list.replace("replace_id", group_id)
+                                            comunications.innerHTML= `
+                                                                        Autori aggiunti correttamente: ${response["added_authors_number"]}</br>
+                                                                        Errori: ${response["errors_number"]}</br>
+                                                                        <a href=${url_authors_list}>Visualizza l'elenco aggiornato degli autori</a>`
                                             document.getElementById('form').reset() // Svuoto il contenuto della form
                                         })                                        
                                     }
                         }
-                        catch (error) {
-                            console.log("Errore:\n"+error)
+                        catch (error) { // Formato del file errato
+                            // console.log("Errore:\n"+error)
                             comunications.style.color = "red"
                             comunications.innerHTML= "Il formato del file inserito non è corretto"
                         }
                     }
-                    reader.onerror = function (evt) {
-                        console.log("Errore:\nNon riesco a reperire il file")
+                    reader.onerror = function (evt) { // Errore nel caricamento del file
+                        // console.log("Errore:\nNon riesco a reperire il file")
                         comunications.style.color = "red"
                         comunications.innerHTML= "Il formato del file inserito non è corretto"
                     } 
                 }
-                else{
-                    console.log("Errore:\nNon riesco a reperire il file")
+                else{ // Impossibile aprire il file
+                    // console.log("Errore:\nNon riesco a reperire il file")
                     comunications.style.color = "red"
                     comunications.innerHTML= "Non hai caricato nessun file"
                 }

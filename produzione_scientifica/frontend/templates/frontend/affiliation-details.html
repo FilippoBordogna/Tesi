@@ -1,9 +1,8 @@
+ <!-- Pagina che mostra i dettagli (presi da Scopus => AGGIORNATI) di una affiliazione -->
+
 {% extends 'base.html' %} <!-- estendo il file base.html (Scheletro) -->
 
 {% block title %}Dettagli dell'affiliazione{% endblock title %} <!-- estensione titolo -->
-
-{% block style %}
-{% endblock style %}
 
 {% block onload %}
     {% if user.is_authenticated %}
@@ -13,14 +12,14 @@
 
 
 {% block content %} <!-- Estensione contenuto del body -->
-    {% if user.is_authenticated %}
+    {% if user.is_authenticated %}  <!-- Sezione utente loggato -->
         <div id="items-container">
-            <div id="form-wrapper">
+            <div id="form-wrapper"> <!-- Intestazione -->
                 <h2>Caricamento dei dettagli dell'affiliazione ...</h2>
             </div>
             <div id="item-wrapper">
                 <div class='element-wrapper'>
-                    <table id="item-table"> <!-- Tabella che conterrà gli autori-->
+                    <table id="item-table"> <!-- Tabella che conterrà i dettagli -->
                         <tr>
                             <th>Dettagli</th>
                             <th>-</th>
@@ -30,32 +29,38 @@
             </div>
             <div onclick='history.back()' class='element-wrapper link-td'>Indietro</div>
         </div>
-    {% else %}
-        {% include 'components/not_logged.html' %} <!-- Link login e registrazione -->
+    {% else %}  <!-- Sezione utente NON loggato -->
+        {% include 'components/not_logged.html' %} <!-- Includo la parte di codice da mostrare se utente non loggato -->
     {% endif %}
 {% endblock content %}
 
 {% block other %} <!-- Estensione -->
     <script type="text/javascript">
-        function buildAffiliationDetails(){ // Populo il div chiamato item-wrapper con i gruppi creati dall'utenteS
+
+        function buildAffiliationDetails(){ 
+        /* 
+            Funzione con cui populo la tabella 'item-table' con i dettagli di una affiliazione.
+        */
+
             var url = '{% url 'api:affiliation-details-refresh' "replace_id" %}'; // URL della API che restituisce i dettagli dell'affiliazione
-            var url = url.replace("replace_id",{{affiliationScopusId}}) // sostituisco replace_id con lo scopusId dell'autore 
-            console.log('URL: ',url)
+            var url = url.replace("replace_id",{{affiliationScopusId}})
+            // console.log('URL: ',url)
             
-            fetch(url) // Chiamata
-            .then((resp) => resp.json()) // Conversione in JSON della risposta
-            .then(function(data){ // Funzione che lavora coi dati della risposta convertiti
-                console.log('Dettagli:', data) // Scrittura di debug
-                var form_wrapper = document.getElementById("form-wrapper")
-                form_wrapper.innerHTML = "<h2>"+data.name+"</h2>" // Nome utente
-                var table =  document.getElementById("item-table")
+            fetch(url) // Chiamata API
+            .then((resp) => resp.json()) // Conversione in Stream -> JSON della risposta
+            .then(function(data){ 
+                // console.log('Dettagli:', data)
+                var form_wrapper = document.getElementById("form-wrapper") // Intestazione della pagina
+                form_wrapper.innerHTML = "<h2>"+data.name+"</h2>"
+
+                var table =  document.getElementById("item-table") // Tabella da populare con i dettagli affiliazione
                 
                 var row = table.insertRow(1) // Inserisco 1 riga in posizione 1
-                row.id = "scopusId" // id riga
-                var title = row.insertCell(0) // inserisco una cella in posizione 0
-                title.innerHTML = "ScopusId" // Titolo
-                var scopusId = row.insertCell(1) // inserisco una cella in posizione 1
-                scopusId.innerHTML = data.scopusId // valore del campo
+                row.id = "scopusId" // ID riga
+                var title = row.insertCell(0) // Cella di posizione 0
+                title.innerHTML = "ScopusId" 
+                var scopusId = row.insertCell(1) // Cella di posizione 1
+                scopusId.innerHTML = data.scopusId
 
                 var row = table.insertRow(2) 
                 row.id = "address"
@@ -76,8 +81,8 @@
                 var title = row.insertCell(0)
                 title.innerHTML = "Sito"
                 var aff_url = row.insertCell(1)
-                aff_url.className = "link-td"
-                aff_url.onclick = function(){window.open(data.url)} // Aggiungo la proprietà onclick
+                aff_url.className = "link-td" // Classe della cella 1
+                aff_url.onclick = function(){window.open(data.url)} // Proprietà onclick della cella 1
                 aff_url.innerHTML = data.url
 
                 var row = table.insertRow(5)
