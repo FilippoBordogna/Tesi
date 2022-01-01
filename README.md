@@ -49,13 +49,12 @@ InstToken = ... (Opzionale)
 - [x] Pagina di visualizzazione di tutti gli snapshot salvati (FRONTEND)
 - [x] Pagina di visualizzazione di uno snapshot salvato in precedenza (FRONTEND)
 - [x] Pagina di confronto degli snapshot (FRONTEND)
-- [ ] Pagina di aggiunta degli autori ad un gruppo (FRONTEND)
-- [ ] Aggiornare le apiOverview in riferimento alla modifica delle URL delle API (BACKEND)
-- [ ] Effettuare i controlli nelle chiamata AJAX laddove necessario (FRONTEND)
+- [x] Pagina di aggiunta degli autori ad un gruppo (FRONTEND)
+- [x] Aggiornare le apiOverview in riferimento alla modifica delle URL delle API (BACKEND)
+- [ ] Effettuare ulteriori controlli nelle chiamata AJAX laddove necessario (FRONTEND)
 - [ ] Aggiungere la possibilità di modificare il titolo di uno snapshot salvato (API + FRONTEND)
-- [ ] Aggiungere la possibilità di prendere i dati dei dettagli affiliazione anche da Scopus (Aggiungi un parametro refresh che stabilisce da dove vengano presi i dati) (FRONTEND)
-- [ ] Ricontrollare i refusi sui commenti dovuti al copia e incolla di parti di codice
-- [ ] Aggiungere paginazione laddove necessario
+- [ ] Aggiungere la possibilità di reperire i dati dei dettagli affiliazione anche da Scopus (Parametro refresh nella URL che stabilisce la fonte dei dati) (FRONTEND)
+- [ ] Aggiungere paginazione se diventasse necessario (FRONTEND)
 - [ ] Aggiungere alla pagina dei dettagli degli autori una sezione contenente l'elenco dei documenti scritti (FRONTEND + API)
 - [ ] Migliorare la grafica (FRONTEND)
 
