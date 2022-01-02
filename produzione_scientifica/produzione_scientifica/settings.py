@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'gbliometrics', # Backend
     'rest_framework', # API REST
-    'frontend' # Frontend
+    'frontend', # Frontend
     ]
 
 MIDDLEWARE = [
