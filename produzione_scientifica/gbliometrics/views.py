@@ -95,14 +95,15 @@ def groupCreate(request):
         request.data['last_update'] = datetime.now()
         request.data['authors'] = []
         
-        if(Agroup.objects.filter(user=request.user, name=request.data['name']).exists()): # Elemento con uguali campi user e name già presente
+        if(not ('name' in request.data)):
+            return myError("Il campo name è obbligatorio")
+        elif(Agroup.objects.filter(user=request.user, name=request.data['name']).exists()): # Elemento con uguali campi user e name già presente
             return myError("E' già presente un gruppo associato al tuo utente con lo stesso nome") # Errore
 
         else: # Non esiste un elemento con uguali campi user e name
             serializers = AgroupSerializer(data=request.data) # Conversione JSON->Agroup
             if(serializers.is_valid()): # Oggetto creato correttamente
                 serializers.save(); # Salvo l'oggetto nel DB
-                      
                 return Response(serializers.data, status=200) # Successo
             else:
                 return myError(serializers.error_messages)
@@ -123,7 +124,7 @@ def groupUpdate(request, groupId):
         try:
             group = Agroup.objects.get(user=request.user, id=groupId) # Gruppo su cui effettuare le modifiche
         except Agroup.DoesNotExist: # Gruppo inesistente o non di proprietà dell'utente
-            return myError("Stai provando modificare i dati di un gruppo inesistente o non di tua proprieta'") # Errore
+            return myError("Stai provando a modificare i dati di un gruppo inesistente o non di tua proprieta'") # Errore
         
         # Sovrascrivo i campi id, user, data di creazione e data di ultima modifica per evitare modifiche che favoriscono inconsistenza
         request.data['id'] = group.id
@@ -179,16 +180,19 @@ def groupAddAuthor(request, groupId, authorScopusId):
         except Agroup.DoesNotExist: # Gruppo inesistente o non di proprietà dell'utente
             return myError("Stai provando ad aggiungere un autore ad un gruppo inesistente o non di tua proprieta'") # Errore
         
-        risposta = authorUpdate_Create(authorScopusId) # Creo o aggiorno i dati dell'autore
-        if(risposta.status_code==500): # Errore nel processo di creazione / aggiornamento
-            return risposta # Errore
-        
-        author = Author.objects.get(scopusId=authorScopusId) # Autore da aggiungere
-        group.authors.add(author) # Aggiungo l'autore al gruppo
+        if(group.authors.filter(scopusId=authorScopusId).exists()): # L'autore fa già parte del gruppo
+            return myError("L'autore è già presente nel gruppo") # Errore
+        else: # L'autore è effettivamente da aggiungere
+            risposta = authorUpdate_Create(authorScopusId) # Creo o aggiorno i dati dell'autore
+            if(risposta.status_code==500): # Errore nel processo di creazione / aggiornamento
+                return risposta # Errore
+            
+            author = Author.objects.get(scopusId=authorScopusId) # Autore da aggiungere
+            group.authors.add(author) # Aggiungo l'autore al gruppo
 
-        serializer = AgroupSerializer(group, many=False) # Conversione Agroup->Dizionario
-        
-        return Response(serializer.data, status=200) # Successo
+            serializer = AgroupSerializer(group, many=False) # Conversione Agroup->Dizionario
+            
+            return Response(serializer.data, status=200) # Successo
     else: # Utente NON loggato
         return myError("Non sei loggato") # Errore
 
@@ -209,19 +213,25 @@ def groupAddMultipleAuthors(request, groupId):
         errors = 0 # Numero di errori
         added = 0 # Numero di autori aggiunti correttamente
         for id in request.data["scopusIds"]: # Ciclo fra gli ID
-            risposta = authorUpdate_Create(id)
-            if(risposta.status_code==500): # Errore nel processo di creazione / aggiornamento
+            if(group.authors.filter(scopusId=id).exists()):
                 errors += 1
             else:
-                added += 1
-                author = Author.objects.get(scopusId=id) # Autore da aggiungere
-                group.authors.add(author) # Aggiungo l'autore al gruppo
+                risposta = authorUpdate_Create(id)
+                if(risposta.status_code==500): # Errore nel processo di creazione / aggiornamento
+                    errors += 1
+                else:
+                    added += 1
+                    author = Author.objects.get(scopusId=id) # Autore da aggiungere
+                    group.authors.add(author) # Aggiungo l'autore al gruppo
+                    
         return_dic = {
                         "errors_number": errors,
                         "added_authors_number": added
                      }
-        
-        return Response(return_dic)
+        if(added == 0):
+            return myError("Tutti gli autori specificati sono inesistenti o già presenti nel gruppo") # Errore
+        else:
+            return Response(return_dic) # Successo
     else: # Utente NON loggato
         return myError("Non sei loggato") # Errore
     
@@ -237,7 +247,7 @@ def groupRemoveAuthor(request, groupId, authorId):
         try:
             group = Agroup.objects.get(user=request.user, id=groupId) # Gruppo su cui effettuare le modifiche
         except Agroup.DoesNotExist: # Gruppo inesistente o non di proprietà dell'utente
-            return myError("Stai provando a rimuovere un utente ad un gruppo inesistente o non di tua proprieta'") # Errore
+            return myError("Stai provando a rimuovere un utente da un gruppo inesistente o non di tua proprieta'") # Errore
         
         
         if(group.authors.filter(id=authorId).exists()): # L'autore esiste
@@ -352,19 +362,21 @@ def affiliationDetails(request, affiliationScopusId, refresh):
             - Se l'oggetto non è presente nel DB lo creo
             - Se l'oggetto è presente lo aggiorno
         Ritorno i dettagli in formato JSON
-        N.B. PER IL MOMENTO QUESTA CHIAMATA E' DISPONIBILE ANCHE SE NON LOGGATI (IN FUTURO CHISSA')
+        Se l'utente non è loggato lancio un errore.
     '''
-    
-    esiste = Affiliation.objects.filter(scopusId=affiliationScopusId).exists() # Se uso .get() anzichè .filter() errore
-    
-    if(not(refresh) and esiste): # Ho i dati e non devo aggiornare: Prendo i dati dal DB
-        affiliation = Affiliation.objects.get(scopusId=affiliationScopusId) # Affiliazione di cui ci interessano le informazioni
-        serializer = AffiliationSerializer(affiliation, many=False) # Conversione Affiliation->Dizionario
+    if(request.user.is_authenticated): # Utente loggato
+        esiste = Affiliation.objects.filter(scopusId=affiliationScopusId).exists() # Se uso .get() anzichè .filter() errore
         
-        return Response(serializer.data, status=200) # Successo
-    else: # Non ho i dati oppure li devo aggiornare
-        response = affiliationUpdate_Create(affiliationScopusId) # Creo o aggiorno il record dell'affiliazione
-        return response # Errore o Successo
+        if(not(refresh) and esiste): # Ho i dati e non devo aggiornare: Prendo i dati dal DB
+            affiliation = Affiliation.objects.get(scopusId=affiliationScopusId) # Affiliazione di cui ci interessano le informazioni
+            serializer = AffiliationSerializer(affiliation, many=False) # Conversione Affiliation->Dizionario
+            
+            return Response(serializer.data, status=200) # Successo
+        else: # Non ho i dati oppure li devo aggiornare
+            response = affiliationUpdate_Create(affiliationScopusId) # Creo o aggiorno il record dell'affiliazione
+            return response # Errore o Successo
+    else: # Utente NON loggato
+        return myError("Non sei loggato") # Errore
     
 ####################################################################################
 #################################### API AUTORI ####################################
@@ -482,28 +494,34 @@ def authorDetails(request, authorScopusId):
         Se l'oggetto non è presente nel DB lo aggiungo.
         Se l'oggetto è presente nel DB aggiorno i dati
         In ogni caso ritornerò i dati di Scopus (di cui i campi del DB sono un sottoinsieme)
-        N.B. PER IL MOMENTO QUESTA CHIAMATA E' DISPONIBILE ANCHE SE NON LOGGATI (IN FUTURO CHISSA')
+        Se l'utente non è loggato lancio un errore.
     '''
     
-    risposta = authorUpdate_Create(authorScopusId) # Creo / Aggiorno un autore
-    return risposta # Errore o Successo
+    if(request.user.is_authenticated): # Utente loggato
+        risposta = authorUpdate_Create(authorScopusId) # Creo / Aggiorno un autore
+        return risposta # Errore o Successo
+    else: # Utente NON loggato
+        return myError("Non sei loggato") # Errore
 
 @api_view(['GET']) # Accetta solo metodo GET
 def authorDetailsDB(request, authorId):
     '''
         API che ritorna i dettagli di un autore presi dal DB.
         Se l'oggetto non è presente nel DB lancio un errore.
-        N.B. PER IL MOMENTO QUESTA CHIAMATA E' DISPONIBILE ANCHE SE NON LOGGATI (IN FUTURO CHISSA')
+        Se l'utente non è loggato lancio un errore.
     '''
 
-    try:
-        author = Author.objects.get(id=authorId) # Autore di cui ci interessano i dettagli
-    except Author.DoesNotExist:
-        return myError("Non esiste un autore con id = "+authorId) # Errore
-    
-    serializer = AuthorSerializer(author, many=False) # Conversione Snapshot->Dizionario
+    if(request.user.is_authenticated): # Utente loggato
+        try:
+            author = Author.objects.get(id=authorId) # Autore di cui ci interessano i dettagli
+        except Author.DoesNotExist:
+            return myError("Non esiste un autore con id = "+authorId) # Errore
         
-    return Response(serializer.data, status=200) # Successo
+        serializer = AuthorSerializer(author, many=False) # Conversione Snapshot->Dizionario
+            
+        return Response(serializer.data, status=200) # Successo
+    else:
+        return myError("Non sei loggato") # Errore
     
     #return authorUpdate_Create(author.scopusId) Non aggiorno i dati siccome mi interessa solo il nome e l'ID
 
