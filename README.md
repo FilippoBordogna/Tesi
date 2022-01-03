@@ -51,8 +51,8 @@ InstToken = ... (Opzionale)
 - [x] Pagina di confronto degli snapshot (FRONTEND)
 - [x] Pagina di aggiunta degli autori ad un gruppo (FRONTEND)
 - [x] Aggiornare le apiOverview in riferimento alla modifica delle URL delle API (BACKEND)
-- [ ] Testing delle API
-- [ ] Effettuare ulteriori controlli sullo stato della risposta nelle chiamata AJAX laddove necessario (FRONTEND)
+- [x] Testing delle API
+- [ ] Effettuare ulteriori controlli sullo stato della risposta nelle chiamata AJAX se diventasse necessario (FRONTEND)
 - [ ] Aggiungere la possibilità di modificare il titolo di uno snapshot salvato (API + FRONTEND)
 - [ ] Aggiungere la possibilità di reperire i dati dei dettagli affiliazione anche da Scopus (Parametro refresh nella URL che stabilisce la fonte dei dati) (FRONTEND)
 - [ ] Aggiungere paginazione se diventasse necessario (FRONTEND)
@@ -66,7 +66,7 @@ InstToken = ... (Opzionale)
  	- [Frontend: Templates](produzione_scientifica/frontend)
  	- [Snapshots: File su cui sono salvati gli stati temporali di un gruppo di autori](produzione_scientifica/snapshots)
  	- [Templates: Modelli HTML per la gestione degli utenti](produzione_scientifica/templates)
-- Nella cartella [TEST](TEST) sono presenti le prove preliminari effettuate tramite client Python.
+- Nella cartella [Prove](TEST) sono presenti le prove preliminari effettuate tramite client Python.
 
 ## GUIDE seguite:
 - Classe User custom: 
