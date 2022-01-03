@@ -1,0 +1,42 @@
+{
+  "groupId": 18,
+  "groupName": "Prova",
+  "groupAuthors": [
+    {
+      "id": 5,
+      "scopusId": 6603694127,
+      "name": "Stefano",
+      "surname": "Paraboschi",
+      "full_name": "Paraboschi S.",
+      "creation": "2021-12-10T05:16:42.896818+01:00",
+      "last_update": "2021-12-14T03:30:36.320759+01:00",
+      "affiliation": 1
+    },
+    {
+      "id": 10,
+      "scopusId": 56875463900,
+      "name": "Enrico",
+      "surname": "Bacis",
+      "full_name": "Bacis E.",
+      "creation": "2021-12-10T06:00:20.109440+01:00",
+      "last_update": "2021-12-14T03:30:37.225044+01:00",
+      "affiliation": 1
+    },
+    {
+      "id": 11,
+      "scopusId": 8680609500,
+      "name": "Valerio",
+      "surname": "Re",
+      "full_name": "Re V.",
+      "creation": "2021-12-10T06:01:54.287104+01:00",
+      "last_update": "2021-12-14T03:30:38.221141+01:00",
+      "affiliation": 1
+    }
+  ],
+  "tot_document_count": 626,
+  "tot_cited_by_count": 11778,
+  "tot_citation_count": 16926,
+  "tot_h_index": 86,
+  "timestamp": "2021-12-14_03-30-38",
+  "title": "prova"
+}
