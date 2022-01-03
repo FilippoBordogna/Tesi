@@ -43,6 +43,7 @@ class GroupsAPITest(TestCase):
         '''
             Funzione che crea gli oggetti nel DB di test
         '''
+        
         # Creazione utenti
         user1 = createUser(username="user-test", email="test@gmail.com", password="test")
         user2 = createUser(username="user-test2", email="test2@gmail.com", password="test")
@@ -52,19 +53,28 @@ class GroupsAPITest(TestCase):
         group2 = createGroup(user2, "test-group")
         group3 = createGroup(user1, "test-group2")
     
-    def test_groupApiOverview(self):
+    def test_groupsApiOverview(self):
         '''
-            Test riguardante l'API groupAPIOverview:
+            Test riguardante l'API groupsAPIOverview:
             Mi aspetto un codice 200 in ogni caso
         '''
         
-        response = self.client.get(reverse('api:group-api-overview'))
+        # Richiesta senza aver effettuato il login
+        response = self.client.get(reverse('api:groups-api-overview'))
+        self.assertEqual(response.status_code, 200)
+        
+        # Richiesta avendo effettuato il login
+        logged_in = self.client.login(email="test@gmail.com", password="test")
+        self.assertTrue(logged_in) # Login andato a buon fine
+        
+        response = self.client.get(reverse('api:groups-api-overview'))
         self.assertEqual(response.status_code, 200)
 
     def test_groupList(self):
         '''
             Test riguardante l'API groupList:
             Mi aspetto un codice 500 se non loggato
+            Mi aspetto un codice 200 se loggato
             Se loggato come user 1 mi aspetto di ricevere solo il gruppo 1 e non il gruppo 2
         '''
         
@@ -129,12 +139,12 @@ class GroupsAPITest(TestCase):
         # Richiesta di un gruppo non di proprietà dell'utente
         response = self.client.get(reverse('api:group-details', kwargs={'groupId':group2.id}))
         self.assertEqual(response.status_code, 500)
-        self.assertIn('inesistente o non di tua proprieta',response.json()['message'])
+        self.assertIn('non di tua proprieta',response.json()['message'])
         
         # Richiesta di un gruppo non esistente
         response = self.client.get(reverse('api:group-details', kwargs={'groupId':1000}))
         self.assertEqual(response.status_code, 500)
-        self.assertIn('inesistente o non di tua proprieta',response.json()['message'])
+        self.assertIn('inesistente',response.json()['message'])
         
         
     def test_groupCreate(self):
@@ -154,12 +164,11 @@ class GroupsAPITest(TestCase):
         self.assertIn(string_no_auth, response.json()['message'])
         
         # Richiesta avendo effettuato il login
+        logged_in = self.client.login(email="test@gmail.com", password="test")
+        self.assertTrue(logged_in) # Login andato a buon fine
         
         # Utenti
         user1 = CustomUser.objects.get(email="test@gmail.com")
-        
-        logged_in = self.client.login(email="test@gmail.com", password="test")
-        self.assertTrue(logged_in) # Login andato a buon fine
         
         # Creazione corretta
         response = self.client.post(reverse('api:group-create'), {"name": "Prova"}, content_type="application/json")
@@ -196,6 +205,8 @@ class GroupsAPITest(TestCase):
         self.assertIn(string_no_auth, response.json()['message'])
         
         # Richiesta avendo effettuato il login
+        logged_in = self.client.login(email="test@gmail.com", password="test")
+        self.assertTrue(logged_in) # Login andato a buon fine
         
         # Utenti
         user1 = CustomUser.objects.get(email="test@gmail.com")
@@ -206,9 +217,6 @@ class GroupsAPITest(TestCase):
         group2 = Agroup.objects.get(name="test-group", user=user2)
         group3 = Agroup.objects.get(name="test-group2", user=user1)
         
-        logged_in = self.client.login(email="test@gmail.com", password="test")
-        self.assertTrue(logged_in) # Login andato a buon fine
-
         # Modifica corretta
         response = self.client.post(reverse('api:group-update', kwargs={'groupId': group1.id}), {"name": "updated-group"}, content_type="application/json")
         self.assertEqual(response.status_code, 200)
@@ -248,6 +256,8 @@ class GroupsAPITest(TestCase):
         self.assertIn(string_no_auth, response.json()['message'])
         
         # Richiesta avendo effettuato il login
+        logged_in = self.client.login(email="test@gmail.com", password="test")
+        self.assertTrue(logged_in) # Login andato a buon fine
         
         # Utenti
         user1 = CustomUser.objects.get(email="test@gmail.com")
@@ -256,9 +266,6 @@ class GroupsAPITest(TestCase):
         # Gruppi
         group3 = Agroup.objects.get(name="test-group2", user=user1)
         group2 = Agroup.objects.get(name="test-group", user=user2)
-        
-        logged_in = self.client.login(email="test@gmail.com", password="test")
-        self.assertTrue(logged_in) # Login andato a buon fine
         
         # Cancellazione corretta
         response = self.client.delete(reverse('api:group-delete', kwargs={'groupId':group3.id}))
@@ -294,6 +301,8 @@ class GroupsAPITest(TestCase):
         self.assertIn(string_no_auth, response.json()['message'])
         
         # Richiesta avendo effettuato il login
+        logged_in = self.client.login(email="test@gmail.com", password="test")
+        self.assertTrue(logged_in) # Login andato a buon fine
         
         # Utenti
         user1 = CustomUser.objects.get(email="test@gmail.com")
@@ -302,9 +311,6 @@ class GroupsAPITest(TestCase):
         # Gruppi
         group1 = Agroup.objects.get(name="test-group", user=user1)
         group2 = Agroup.objects.get(name="test-group", user=user2)
-        
-        logged_in = self.client.login(email="test@gmail.com", password="test")
-        self.assertTrue(logged_in) # Login andato a buon fine
         
         # Aggiunta corretta
         response = self.client.post(reverse('api:group-add-author', kwargs={'groupId':group1.id, 'authorScopusId':6603694127}))
@@ -352,6 +358,8 @@ class GroupsAPITest(TestCase):
         self.assertIn(string_no_auth, response.json()['message'])
         
         # Richiesta avendo effettuato il login
+        logged_in = self.client.login(email="test@gmail.com", password="test")
+        self.assertTrue(logged_in) # Login andato a buon fine
         
         # Utenti
         user1 = CustomUser.objects.get(email="test@gmail.com")
@@ -383,9 +391,6 @@ class GroupsAPITest(TestCase):
                                     10
                                 ]
                             }
-        
-        logged_in = self.client.login(email="test@gmail.com", password="test")
-        self.assertTrue(logged_in) # Login andato a buon fine
         
         # Aggiunta corretta
         response = self.client.post(reverse('api:group-add-multiple-authors', kwargs={'groupId':group1.id}), correct_add, content_type="application/json")
