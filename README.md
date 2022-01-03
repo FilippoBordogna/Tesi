@@ -8,10 +8,12 @@ Tool che gestisce diverse funzionalità tramite una interfaccia grafica tra cui:
 
 ## MATERIALE UTILIZZATO:
 - [API Phyton per accedere al Database di Scopus mediante le loro API REST](https://github.com/jkitchin/scopus)
-- [SOAP Client for querying the Web of Science database](https://github.com/enricobacis/wos) (al momento inutilizzato)
+<!--- [SOAP Client for querying the Web of Science database](https://github.com/enricobacis/wos)-->
 - [Framework Phyton Django](https://www.djangoproject.com)
 	- [Django Registration](https://django-registration.readthedocs.io/en/3.2/index.html)
-	- [Django Rest Framework](https://www.django-rest-framework.org) 
+	- [Django Rest Framework](https://www.django-rest-framework.org)
+- [AJAX](https://api.jquery.com/jquery.ajax)
+- [Bootstrap 4](https://getbootstrap.com/docs/4.0/getting-started/introduction/)
 
 ## ATTENZIONE:
 E' necessario possedere una API Key ed eventualmente un token per poter reperire le API di Scopus.
@@ -82,7 +84,7 @@ InstToken = ... (Opzionale)
 - API Rest
   - https://www.django-rest-framework.org/tutorial/quickstart
   - https://www.youtube.com/watch?v=TmsD8QExZ84&ab_channel=DennisIvy
-- AJAX
+- AJAX e Django
   - https://www.youtube.com/watch?v=hISSGMafzvU&ab_channel=DennisIvy
 - BOOTSTRAP 4
   - https://www.w3schools.com/bootstrap4
