@@ -127,16 +127,16 @@ def groupUpdate(request, groupId):
             return myError("Stai provando a modificare i dati di un gruppo inesistente o non di tua proprieta'") # Errore
         
         # Sovrascrivo i campi id, user, data di creazione e data di ultima modifica per evitare modifiche che favoriscono inconsistenza
-        request.data['id'] = group.id
-        request.data['user'] = request.user.id
-        request.data['last_update'] = datetime.now()
-        request.data['creation'] = group.creation
-        request.data['authors'] = group.authors.all()
+        data=dict()
+        data['name']=request.data['name']
+        data['last_update'] = datetime.now()
+        data['creation'] = group.creation
+        data['user'] = group.user.id
         
         if(Agroup.objects.filter(user=request.user, name=request.data['name'], ).exclude(id=groupId).exists()): # Elemento con uguali campi user e name già presente (con id diverso)
             return myError("E' già presente un gruppo associato al tuo utente con lo stesso nome") # Errore
         
-        serializers = AgroupSerializer(instance=group, data=request.data) # Apporto all'istanza dell'oggetto Agroup le modifiche specificate
+        serializers = AgroupSerializer(instance=group, data=data) # Apporto all'istanza dell'oggetto Agroup le modifiche specificate
         if(serializers.is_valid()): # Formato corretto
             serializers.save(); # Salvo le modifiche all'oggetto nel DB
             
@@ -364,6 +364,7 @@ def affiliationDetails(request, affiliationScopusId, refresh):
         Ritorno i dettagli in formato JSON
         Se l'utente non è loggato lancio un errore.
     '''
+    
     if(request.user.is_authenticated): # Utente loggato
         esiste = Affiliation.objects.filter(scopusId=affiliationScopusId).exists() # Se uso .get() anzichè .filter() errore
         

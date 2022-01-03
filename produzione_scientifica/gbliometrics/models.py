@@ -86,6 +86,7 @@ class Agroup(models.Model):
         unique_together = ('user','name') # La coppia di camoi deve essere univoca
         
 class Snapshot(models.Model):
+    
     def user_directory_path(instance, title): # Funzione che crea il percorso ed il nome del file json
         filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")+"_"+title+".json"
         return 'snapshots/user_{0}/{1}'.format(instance.user.id, filename)
