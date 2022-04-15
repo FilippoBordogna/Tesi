@@ -86,6 +86,6 @@ InstToken = ... (Opzionale)
   - https://www.youtube.com/watch?v=TmsD8QExZ84&ab_channel=DennisIvy
 - AJAX e Django
   - https://www.youtube.com/watch?v=hISSGMafzvU&ab_channel=DennisIvy
-- BOOTSTRAP 4
+- BOOTSTRAP
   - https://www.w3schools.com/bootstrap4
   - https://www.w3schools.com/js/js_graphics_chartjs.asp
