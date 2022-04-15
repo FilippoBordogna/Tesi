@@ -54,7 +54,7 @@ InstToken = ... (Opzionale)
 - [x] Testing delle API
 - [ ] Effettuare ulteriori controlli sullo stato della risposta nelle chiamata AJAX se diventasse necessario (FRONTEND)
 - [ ] Aggiungere la possibilità di modificare il titolo di uno snapshot salvato (API + FRONTEND)
-- [ ] Aggiungere la possibilità di reperire i dati dei dettagli affiliazione anche da Scopus (Parametro refresh nella URL che stabilisce la fonte dei dati) (FRONTEND)
+- [ ] Aggiungere la possibilità di reperire i dati dei dettagli affiliazione anche da Scopus (Parametro refresh nella URL che stabilisce la fonte dei dati) (FRONTEND + BACKEND)
 - [ ] Aggiungere paginazione se diventasse necessario (FRONTEND)
 - [ ] Aggiungere alla pagina dei dettagli degli autori una sezione contenente l'elenco dei documenti scritti (FRONTEND + API)
 - [ ] Migliorare la grafica (FRONTEND)
