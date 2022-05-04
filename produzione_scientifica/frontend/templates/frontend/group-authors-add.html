@@ -142,7 +142,7 @@
                                         var url = '{% url 'api:group-add-multiple-authors' "replace_id" %}' // URL dell'API che aggiunge più autori in un gruppo
                                         url = url.replace("replace_id", group_id)
                                         // console.log("CONTENUTO",file_content)
-
+                                        //console.log("URL: ",url)
                                         fetch(url, { // Chiamata
                                             method:'POST', // Metodo
                                             headers:{
@@ -153,14 +153,23 @@
                                         })
                                         .then(response => response.json())
                                         .then(function(response){ // Funzione che lavora con i dati ricevuti in risposta
-                                            // console.log(response)
-                                            comunications.style.color = "green"
+                                            //console.log("Reponse: ",response)
                                             var url_authors_list = '{% url 'frontend:authors-list' "replace_id" %}' // URL della Pagina che mostra la lista di autori in un gruppo
                                             url_authors_list = url_authors_list.replace("replace_id", group_id)
-                                            comunications.innerHTML= `
-                                                                        Autori aggiunti correttamente: ${response["added_authors_number"]}</br>
-                                                                        Errori: ${response["errors_number"]}</br>
-                                                                        <a href=${url_authors_list}>Visualizza l'elenco aggiornato degli autori</a>`
+
+                                            if(response["status"]!="false") { // Almeno 1 autore inserito
+                                                comunications.style.color = "green"
+                                                comunications.innerHTML= `
+                                                                            Autori aggiunti correttamente: ${response["added_authors_number"]}</br>
+                                                                            Errori: ${response["errors_number"]}</br>
+                                                                            <a href=${url_authors_list}>Visualizza l'elenco aggiornato degli autori</a>`
+                                            }
+                                            else { // Nessun autore inserito
+                                                comunications.style.color = "red"
+                                                comunications.innerHTML= `
+                                                                            Tutti gli autori specificati sono inesistenti o già presenti nel gruppo</br>
+                                                                            <a href=${url_authors_list}>Visualizza l'elenco degli autori</a>`
+                                            }
                                             document.getElementById('form').reset() // Svuoto il contenuto della form
                                         })                                        
                                     }
