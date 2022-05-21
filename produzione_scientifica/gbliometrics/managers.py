@@ -6,9 +6,9 @@ class CustomUserManager(BaseUserManager):
     """
         Manager del modello utente custom dove l'email è l'id di autenticazione anzichè l'username (comunque unico)
     """
-    def create_user(self, email, password, **extra_fields): # L'username è sottinteso (?) 
+    def create_user(self, email, password, **extra_fields): # L'username è sottinteso
         """
-            Crea e salva un utente di cui sono dati email, username (sottinteso(?)) e password
+            Crea e salva un utente di cui sono dati email, username (sottinteso) e password
         """
         if not email:
             raise ValueError(ugettext_lazy('The Email must be set'))
@@ -18,9 +18,9 @@ class CustomUserManager(BaseUserManager):
         user.save()
         return user
 
-    def create_superuser(self, email, password, **extra_fields): # L'username è sottinteso (?) 
+    def create_superuser(self, email, password, **extra_fields): # L'username è sottinteso
         """
-            Creo e salvo un superutente (admin) di cui sono dati email, username (sottinteso(?)) e password
+            Creo e salvo un superutente (admin) di cui sono dati email, username (sottinteso) e password
         """
         # Permessi da ADMIN a TRUE altrimenti lancio ERRORE
         extra_fields.setdefault('is_staff', True) 

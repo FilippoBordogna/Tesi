@@ -200,7 +200,7 @@ def groupAddAuthor(request, groupId, authorScopusId):
 def groupAddMultipleAuthors(request, groupId):
     '''
         API che aggiunge ad un gruppo gli autori specificati nel corpo della richiesta (campo scopusIds).
-        Se l'utente non è longato lancio un errore.
+        Se l'utente non è loggato lancio un errore.
         Se il gruppo non è di tua proprietà lancio un errore.
     '''
 
