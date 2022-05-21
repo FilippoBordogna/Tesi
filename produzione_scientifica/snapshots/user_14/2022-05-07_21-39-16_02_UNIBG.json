@@ -1,0 +1,132 @@
+{
+  "groupId": 17,
+  "groupName": "MyUNIBG",
+  "groupAuthors": [
+    {
+      "id": 5,
+      "scopusId": 6603694127,
+      "name": "Stefano",
+      "surname": "Paraboschi",
+      "full_name": "Paraboschi S.",
+      "creation": "2021-12-10T05:16:42.896818+01:00",
+      "last_update": "2022-05-07T20:27:08.048033+01:00",
+      "affiliation": 1
+    },
+    {
+      "id": 10,
+      "scopusId": 56875463900,
+      "name": "Enrico",
+      "surname": "Bacis",
+      "full_name": "Bacis E.",
+      "creation": "2021-12-10T06:00:20.109440+01:00",
+      "last_update": "2022-05-07T20:27:09.477637+01:00",
+      "affiliation": 1
+    },
+    {
+      "id": 11,
+      "scopusId": 8680609500,
+      "name": "Valerio",
+      "surname": "Re",
+      "full_name": "Re V.",
+      "creation": "2021-12-10T06:01:54.287104+01:00",
+      "last_update": "2022-05-07T20:27:10.619469+01:00",
+      "affiliation": 1
+    },
+    {
+      "id": 12,
+      "scopusId": 14066377200,
+      "name": "Massimo",
+      "surname": "Manghisoni",
+      "full_name": "Manghisoni M.",
+      "creation": "2021-12-10T06:02:23.777567+01:00",
+      "last_update": "2022-05-07T20:27:11.875391+01:00",
+      "affiliation": 1
+    },
+    {
+      "id": 13,
+      "scopusId": 14066834400,
+      "name": "Gianluca",
+      "surname": "Traversi",
+      "full_name": "Traversi G.",
+      "creation": "2021-12-10T06:14:01.310020+01:00",
+      "last_update": "2022-05-07T20:27:13.262548+01:00",
+      "affiliation": 1
+    },
+    {
+      "id": 14,
+      "scopusId": 7006098570,
+      "name": "Andrea",
+      "surname": "Remuzzi",
+      "full_name": "Remuzzi A.",
+      "creation": "2021-12-10T06:14:20.470994+01:00",
+      "last_update": "2022-05-07T20:27:14.403844+01:00",
+      "affiliation": 1
+    },
+    {
+      "id": 22,
+      "scopusId": 7101791122,
+      "name": "Pier Luigi",
+      "surname": "Zinzani",
+      "full_name": "Zinzani P.",
+      "creation": "2021-12-10T22:14:47.124996+01:00",
+      "last_update": "2022-05-07T20:27:16.103037+01:00",
+      "affiliation": 52
+    },
+    {
+      "id": 23,
+      "scopusId": 24796317600,
+      "name": "Erasmo",
+      "surname": "Recami",
+      "full_name": "Recami E.",
+      "creation": "2021-12-12T18:49:16.725813+01:00",
+      "last_update": "2022-05-07T20:27:17.238715+01:00",
+      "affiliation": 47
+    },
+    {
+      "id": 24,
+      "scopusId": 55897877400,
+      "name": "Angelo",
+      "surname": "Gargantini",
+      "full_name": "Gargantini A.",
+      "creation": "2021-12-12T18:49:35.679066+01:00",
+      "last_update": "2022-05-07T20:27:18.541534+01:00",
+      "affiliation": 1
+    },
+    {
+      "id": 25,
+      "scopusId": 6701743648,
+      "name": "F.",
+      "surname": "Previdi",
+      "full_name": "Previdi F.",
+      "creation": "2021-12-12T18:49:54.712504+01:00",
+      "last_update": "2022-05-07T20:27:19.865509+01:00",
+      "affiliation": 1
+    },
+    {
+      "id": 26,
+      "scopusId": 24483009100,
+      "name": "Luigi",
+      "surname": "Gaioni",
+      "full_name": "Gaioni L.",
+      "creation": "2021-12-12T18:50:18.793907+01:00",
+      "last_update": "2022-05-07T20:27:20.824196+01:00",
+      "affiliation": 1
+    },
+    {
+      "id": 28,
+      "scopusId": 24402625500,
+      "name": "Angelo",
+      "surname": "Compare",
+      "full_name": "Compare A.",
+      "creation": "2021-12-12T18:50:48.822287+01:00",
+      "last_update": "2022-05-07T20:27:22.108033+01:00",
+      "affiliation": 49
+    }
+  ],
+  "tot_document_count": 2768,
+  "tot_cited_by_count": 52980,
+  "tot_citation_count": 77583,
+  "tot_h_index": 391,
+  "timestamp": "2022-05-07_20-27-22",
+  "title": "02_UNIBG"
+}
