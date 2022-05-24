@@ -9,7 +9,7 @@ from .models import Affiliation, Agroup, Author, CustomUser, Snapshot
 
 class GroupInline(admin.StackedInline): # Oggetto Inline che verrà aggiunto
     model = Agroup
-    extra = 0
+    extra = 0 
     fieldsets = ( # Campi di visualizzazione
         ('Dati', {'fields': ('id', 'name', 'other_info')}),
         ('Timestamps', {'fields': ('creation', 'last_update')}),

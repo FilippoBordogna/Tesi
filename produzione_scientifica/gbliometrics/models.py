@@ -13,16 +13,16 @@ from django.dispatch import receiver
 class CustomUser(AbstractUser):
     email = models.EmailField(ugettext_lazy('email address'), unique=True)
 
-    USERNAME_FIELD = 'email' # email dell'utente
-    REQUIRED_FIELDS = ['username'] # Campi richiesti oltre all'USERNAME_FIELD e la Password
+    USERNAME_FIELD = 'email' # chiave primaria
+    REQUIRED_FIELDS = ['username'] # Campi richiesti oltre alla chiave primaria e la Password
 
-    objects = CustomUserManager()
+    objects = CustomUserManager() # Dichiarazione del Manager
 
-    def __str__(self):
+    def __str__(self): # Funzione che definisce il comportamento della conversione in stringa
         return self.username+" : "+self.email
   
 
-class Affiliation(models.Model):
+class Affiliation(models.Model): 
     # ATTENZIONE: Prima di eliminare una affiliazione devo eliminare la dipendenza degli autori da quella affiliazione.
     # IDs
     scopusId = models.PositiveBigIntegerField(unique=True) # Identificativo (uso solo questo poichè è possibile costruire l'eid come 10-s2.0-<scopusId>)
@@ -76,14 +76,13 @@ class Agroup(models.Model):
     creation = models.DateTimeField() # Data di creazione
     last_update = models.DateTimeField() # Ultima modifica
     
-    
     REQUIRED_FIELDS = ['user', 'name']
     
     def __str__(self):
         return self.user.username+"@"+self.name # Nome elemento nella vista dell'admin
     
     class Meta:
-        unique_together = ('user','name') # La coppia di camoi deve essere univoca
+        unique_together = ('user','name') # La coppia di campi deve essere univoca
         
 class Snapshot(models.Model):
     

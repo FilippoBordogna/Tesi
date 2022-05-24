@@ -135,10 +135,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Aggiunti a mano 
 AUTH_USER_MODEL = 'gbliometrics.CustomUser' # Override della classe user (per inserire la mail)
 
-LOGIN_REDIRECT_URL='frontend:home' # Pagina a cui ridirigere dopo il login
-LOGOUT_REDIRECT_URL = 'frontend:home' # Pagina a cui ridirigere dopo il logout
+LOGIN_REDIRECT_URL='frontend:home' # Pagina a cui ridirigere dopo il login (<package>:<pagina>)
+LOGOUT_REDIRECT_URL = 'frontend:home' # Pagina a cui ridirigere dopo il logout (<package>:<pagina>)
 
 EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend" # Simulazione di mail tramite file
 EMAIL_FILE_PATH = str(BASE_DIR.joinpath('sent_emails')) # Cartella in cui salveremo i file (mail)
 
-ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window
+ACCOUNT_ACTIVATION_DAYS = 7 # Una settimana di finestra di attivazione
